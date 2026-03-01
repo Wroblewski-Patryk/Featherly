@@ -4,6 +4,7 @@ import { onMounted } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
+import BlockEditorSidebar from '@/Components/BlockEditorSidebar.vue';
 
 const props = defineProps(['template']);
 const store = useBlockBuilderStore();
@@ -88,19 +89,7 @@ function saveTemplate() {
                     </div>
                     
                     <!-- Active Block Settings -->
-                    <div v-else class="animate-in slide-in-from-right-4 fade-in duration-300">
-                         <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-bold flex items-center gap-2"><div class="badge badge-primary badge-sm">{{ store.activeBlock.type }}</div>Settings</h3>
-                            <button @click="store.setActiveBlock(null)" class="btn btn-xs btn-outline">← Back</button>
-                         </div>
-                         
-                         <div v-if="store.activeBlock.type === 'nav'" class="space-y-4">
-                             <div class="form-control">
-                                 <label class="label"><span class="label-text">Menu Items (JSON)</span></label>
-                                 <textarea v-model="store.activeBlock.content.items" class="textarea textarea-bordered textarea-sm h-32" placeholder='[{"name":"Home", "link":"/"}]'></textarea>
-                             </div>
-                         </div>
-                    </div>
+                    <BlockEditorSidebar v-else />
                 </div>
             </div>
         </div>

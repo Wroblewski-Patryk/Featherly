@@ -21,7 +21,14 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                     paddingTop: '0', paddingBottom: '0',
                     backgroundColor: 'transparent',
                     textColor: 'inherit',
-                    customClasses: ''
+                    customClasses: '',
+                    animations: {
+                        enabled: false,
+                        preset: 'fadeUp',
+                        duration: 1,
+                        delay: 0,
+                        trigger: 'in-view'
+                    }
                 }
             };
             this.blocks.push(newBlock);

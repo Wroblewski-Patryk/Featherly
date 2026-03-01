@@ -20,14 +20,16 @@ class PostController extends Controller
     public function create()
     {
         return Inertia::render('Admin/Posts/Edit', [
-            'post' => new Post()
+            'post' => new Post(),
+            'templates' => \App\Models\Template::all()
         ]);
     }
 
     public function edit(Post $post)
     {
         return Inertia::render('Admin/Posts/Edit', [
-            'post' => $post
+            'post' => $post,
+            'templates' => \App\Models\Template::all()
         ]);
     }
 

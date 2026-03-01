@@ -5,7 +5,7 @@ use App\Models\Page;
 use Inertia\Inertia;
 
 // Admin Routes
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::name('admin.')->prefix('admin')->group(function () {
     Route::middleware('guest')->group(function () {
             Route::get('login', [\App\Http\Controllers\Admin\AuthController::class , 'showLoginForm'])->name('login');
             Route::post('login', [\App\Http\Controllers\Admin\AuthController::class , 'login']);
@@ -28,15 +28,29 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class , 'index'])->name('settings.index');
                 Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class , 'store'])->name('settings.store');
             }
-            );        });
+            );
+        });
 
 // Public Routes
 Route::get('/', function () {
-    $homeSlug = \App\Models\Setting::where('key', 'home_page_slug')->value('value') ?? 'home';
-    $page = Page::with(['headerOverride', 'footerOverride'])->where('slug', $homeSlug)->first();
+    $settings = \App\Models\Setting::where('key', 'general')->value('value') ?? [];
+    $homeId = $settings['home_page_id'] ?? null;
 
-    return Inertia::render('Welcome', [
-    'page' => $page
+    if ($homeId) {
+        $page = Page::with(['headerOverride', 'footerOverride'])->find($homeId);
+    }
+    else {
+        $page = Page::with(['headerOverride', 'footerOverride'])->where('slug->en', 'home')->orWhere('slug->pl', 'home')->first();
+    }
+
+    if (!$page) {
+        // Fallback or abort
+        return Inertia::render('Welcome', ['page' => null]);
+    }
+
+    return Inertia::render('Public/Page', [
+    'page' => $page,
+    'settings' => $settings
     ]);
 });
 
@@ -69,17 +83,18 @@ Route::get('/live-preview', function () {
 })->name('live-preview');
 
 Route::get('/{slug}', function ($slug) {
-    $homeSlug = \App\Models\Setting::where('key', 'home_page_slug')->value('value') ?? 'home';
-    if ($slug === $homeSlug) {
+    if ($slug === 'home')
         return redirect('/');
-    }
 
-    $page = Page::with(['headerOverride', 'footerOverride'])->where('json_extract(slug, "$.en")', $slug)
-        ->orWhere('json_extract(slug, "$.pl")', $slug)
-        ->orWhere('slug', 'LIKE', '%"' . $slug . '"%')
+    $page = Page::with(['headerOverride', 'footerOverride'])
+        ->where('slug->en', $slug)
+        ->orWhere('slug->pl', $slug)
         ->firstOrFail();
 
-    return Inertia::render('Welcome', [
-    'page' => $page
+    $settings = \App\Models\Setting::where('key', 'general')->value('value') ?? [];
+
+    return Inertia::render('Public/Page', [
+    'page' => $page,
+    'settings' => $settings
     ]);
 })->where('slug', '^(?!admin|livewire|storage|_debugbar|build|api).*$');

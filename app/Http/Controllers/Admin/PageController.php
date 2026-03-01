@@ -19,16 +19,17 @@ class PageController extends Controller
 
     public function create()
     {
-        // Placeholder for the Block Builder
         return Inertia::render('Admin/Pages/Edit', [
-            'page' => new Page()
+            'page' => new Page(),
+            'templates' => \App\Models\Template::all()
         ]);
     }
 
     public function edit(Page $page)
     {
         return Inertia::render('Admin/Pages/Edit', [
-            'page' => $page
+            'page' => $page,
+            'templates' => \App\Models\Template::all()
         ]);
     }
 

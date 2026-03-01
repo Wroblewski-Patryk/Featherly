@@ -35,9 +35,9 @@ function applyTheme(themeName) {
 <template>
     <div class="min-h-screen bg-base-200 text-base-content font-sans">
         <!-- Top Navbar -->
-        <div class="navbar bg-base-100 shadow-sm border-b border-base-300 z-50 sticky top-0">
+        <div class="navbar bg-base-100/80 backdrop-blur-md shadow-lg border-b border-base-300 z-50 sticky top-0 px-4">
             <div class="flex-1">
-                <a class="btn btn-ghost normal-case text-xl font-bold">VueCMS</a>
+                <a class="btn btn-ghost normal-case text-2xl font-black tracking-tighter bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent italic">VueCMS</a>
             </div>
             
             <div class="flex-none gap-2">
