@@ -17,6 +17,7 @@ return new class extends Migration
             $table->json('slug');
             $table->json('content')->nullable(); // For Filament Builder blocks
             $table->json('settings')->nullable(); // For page-wide GSAP settings (parallax, etc)
+            $table->boolean('is_published')->default(false);
             $table->timestamps();
         });
     }

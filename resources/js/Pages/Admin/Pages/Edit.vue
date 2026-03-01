@@ -1,9 +1,10 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
+import BlockEditorSidebar from '@/Components/BlockEditorSidebar.vue';
 
 const props = defineProps(['page']);
 const store = useBlockBuilderStore();
@@ -11,10 +12,35 @@ const store = useBlockBuilderStore();
 const form = useForm({
     title: props.page?.title || { pl: '', en: '' },
     slug: props.page?.slug || { pl: '', en: '' },
-    status: props.page?.status || 'draft',
+    is_published: props.page?.is_published || false,
     content: null,
     meta_title: props.page?.meta_title || { pl: '', en: '' },
     meta_description: props.page?.meta_description || { pl: '', en: '' },
+    og_image: props.page?.og_image || '',
+    header_template_id: props.page?.header_template_id || '',
+    footer_template_id: props.page?.footer_template_id || '',
+});
+
+// Auto-generate slug from title if it's a new page or user is typing title and slug is empty
+const generateSlug = (text) => {
+    return text.toString().toLowerCase()
+        .replace(/\s+/g, '-')           // Replace spaces with -
+        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+        .replace(/^-+/, '')             // Trim - from start of text
+        .replace(/-+$/, '');            // Trim - from end of text
+};
+
+watch(() => form.title.pl, (newTitle) => {
+    if (!props.page?.id || !form.slug.pl || form.slug.pl === generateSlug(form.title.pl.slice(0, -1))) {
+        form.slug.pl = generateSlug(newTitle);
+    }
+});
+
+watch(() => form.title.en, (newTitle) => {
+    if (!props.page?.id || !form.slug.en || form.slug.en === generateSlug(form.title.en.slice(0, -1))) {
+        form.slug.en = generateSlug(newTitle);
+    }
 });
 
 onMounted(() => {
@@ -102,12 +128,27 @@ function savePage() {
                                     <label class="label"><span class="label-text">Slug (PL)</span></label>
                                     <input type="text" v-model="form.slug.pl" class="input input-bordered input-sm w-full" />
                                 </div>
-                                <div class="form-control mb-4">
-                                    <label class="label"><span class="label-text">Status</span></label>
-                                    <select v-model="form.status" class="select select-bordered select-sm w-full">
-                                        <option value="draft">Draft</option>
-                                        <option value="published">Published</option>
+                                <div class="divider text-xs opacity-50">Templates Overrides</div>
+                                <div class="form-control mb-2">
+                                    <label class="label"><span class="label-text text-xs">Header</span></label>
+                                    <select v-model="form.header_override_id" class="select select-bordered select-sm w-full">
+                                        <option value="">Default (Global)</option>
+                                        <option v-for="t in templates" :key="t.id" :value="t.id">{{ t.name }}</option>
                                     </select>
+                                </div>
+                                <div class="form-control mb-4">
+                                    <label class="label"><span class="label-text text-xs">Footer</span></label>
+                                    <select v-model="form.footer_override_id" class="select select-bordered select-sm w-full">
+                                        <option value="">Default (Global)</option>
+                                        <option v-for="t in templates" :key="t.id" :value="t.id">{{ t.name }}</option>
+                                    </select>
+                                </div>
+                                <div class="divider text-xs opacity-50">Publishing</div>
+                                <div class="form-control mb-4">
+                                    <label class="label cursor-pointer justify-start gap-4">
+                                        <input type="checkbox" v-model="form.is_published" class="checkbox checkbox-primary checkbox-sm" />
+                                        <span class="label-text">Published</span>
+                                    </label>
                                 </div>
                             </div>
 
@@ -129,62 +170,23 @@ function savePage() {
                             <button @click="store.addBlock('hero')" class="btn btn-outline btn-sm justify-start gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg> Hero
                             </button>
+                            <button @click="store.addBlock('heading')" class="btn btn-outline btn-sm justify-start gap-2 text-xs">
+                                <span class="font-bold">H1-H4</span> Heading
+                            </button>
                             <button @click="store.addBlock('text')" class="btn btn-outline btn-sm justify-start gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" /></svg> Text
                             </button>
-                            <button @click="store.addBlock('image')" class="btn btn-outline btn-sm justify-start gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" /></svg> Image
+                            <button @click="store.addBlock('columns')" class="btn btn-outline btn-sm justify-start gap-2 text-xs">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg> Columns
+                            </button>
+                            <button @click="store.addBlock('image')" class="btn btn-outline btn-sm justify-start gap-2 col-span-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" /></svg> Image Library
                             </button>
                         </div>
                     </div>
                     
                     <!-- Active Block Settings -->
-                    <div v-else class="animate-in slide-in-from-right-4 fade-in duration-300">
-                         <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-bold flex items-center gap-2">
-                                <div class="badge badge-primary badge-sm">{{ store.activeBlock.type }}</div>
-                                Settings
-                            </h3>
-                            <button @click="store.setActiveBlock(null)" class="btn btn-xs btn-outline">← Back to Page</button>
-                         </div>
-                         
-                         <!-- Block Content Fields -->
-                         <div v-if="store.activeBlock.type === 'hero'" class="space-y-4">
-                             <div class="form-control">
-                                 <label class="label"><span class="label-text">Headline</span></label>
-                                 <input type="text" v-model="store.activeBlock.content.headline" class="input input-bordered input-sm" />
-                             </div>
-                             <div class="form-control">
-                                 <label class="label"><span class="label-text">Subheadline</span></label>
-                                 <textarea v-model="store.activeBlock.content.subheadline" class="textarea textarea-bordered textarea-sm"></textarea>
-                             </div>
-                         </div>
-                         
-                         <div v-if="store.activeBlock.type === 'text'" class="space-y-4">
-                             <div class="form-control">
-                                 <label class="label"><span class="label-text">Content</span></label>
-                                 <textarea v-model="store.activeBlock.content.text" class="textarea textarea-bordered textarea-sm h-32"></textarea>
-                             </div>
-                         </div>
-
-                         <div class="divider">Appearance</div>
-
-                         <div class="form-control mb-4">
-                             <label class="label"><span class="label-text">Custom CSS Classes</span></label>
-                             <input type="text" v-model="store.activeBlock.appearance.customClasses" placeholder="e.g. text-center pt-12" class="input input-bordered input-sm w-full font-mono text-xs" />
-                         </div>
-                         
-                         <div class="grid grid-cols-2 gap-4">
-                             <div class="form-control">
-                                 <label class="label"><span class="label-text text-xs">Bg Color</span></label>
-                                 <input type="color" v-model="store.activeBlock.appearance.backgroundColor" class="input input-bordered input-sm p-1 w-full h-8" />
-                             </div>
-                             <div class="form-control">
-                                 <label class="label"><span class="label-text text-xs">Text Color</span></label>
-                                 <input type="color" v-model="store.activeBlock.appearance.textColor" class="input input-bordered input-sm p-1 w-full h-8" />
-                             </div>
-                         </div>
-                    </div>
+                    <BlockEditorSidebar v-else />
                 </div>
             </div>
         </div>

@@ -1,9 +1,10 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
+import BlockEditorSidebar from '@/Components/BlockEditorSidebar.vue';
 
 const props = defineProps(['post']);
 const store = useBlockBuilderStore();
@@ -17,6 +18,27 @@ const form = useForm({
     meta_title: props.post?.meta_title || { pl: '', en: '' },
     meta_description: props.post?.meta_description || { pl: '', en: '' },
     og_image: props.post?.og_image || '',
+});
+
+const generateSlug = (text) => {
+    return text.toString().toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-\-+/g, '-')
+        .replace(/^-+/, '')
+        .replace(/-+$/, '');
+};
+
+watch(() => form.title.pl, (newTitle) => {
+    if (!props.post?.id || !form.slug.pl || form.slug.pl === generateSlug(form.title.pl.slice(0, -1))) {
+        form.slug.pl = generateSlug(newTitle);
+    }
+});
+
+watch(() => form.title.en, (newTitle) => {
+    if (!props.post?.id || !form.slug.en || form.slug.en === generateSlug(form.title.en.slice(0, -1))) {
+        form.slug.en = generateSlug(newTitle);
+    }
 });
 
 onMounted(() => {
@@ -130,8 +152,14 @@ function savePost() {
 
                         <div class="divider">Add Blocks</div>
                         <div class="grid grid-cols-2 gap-2">
+                             <button @click="store.addBlock('heading')" class="btn btn-outline btn-sm justify-start gap-2 text-xs">
+                                <span class="font-bold">H1-H4</span> Heading
+                            </button>
                             <button @click="store.addBlock('text')" class="btn btn-outline btn-sm justify-start gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" /></svg> Text
+                            </button>
+                            <button @click="store.addBlock('columns')" class="btn btn-outline btn-sm justify-start gap-2 text-xs">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg> Columns
                             </button>
                             <button @click="store.addBlock('image')" class="btn btn-outline btn-sm justify-start gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" /></svg> Image
@@ -140,20 +168,7 @@ function savePost() {
                     </div>
                     
                     <!-- Active Block Settings -->
-                    <div v-else class="animate-in slide-in-from-right-4 fade-in duration-300">
-                         <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-bold flex items-center gap-2"><div class="badge badge-primary badge-sm">{{ store.activeBlock.type }}</div>Settings</h3>
-                            <button @click="store.setActiveBlock(null)" class="btn btn-xs btn-outline">← Back to Post</button>
-                         </div>
-                         
-                         <!-- Block Content Fields -->
-                         <div v-if="store.activeBlock.type === 'text'" class="space-y-4">
-                             <div class="form-control">
-                                 <label class="label"><span class="label-text">Content</span></label>
-                                 <textarea v-model="store.activeBlock.content.text" class="textarea textarea-bordered textarea-sm h-48"></textarea>
-                             </div>
-                         </div>
-                    </div>
+                    <BlockEditorSidebar v-else />
                 </div>
             </div>
         </div>

@@ -43,21 +43,23 @@ const pageProps = usePage().props;
 
 const activeHeader = computed(() => {
   if (pageProps.page?.header_override?.content) return pageProps.page.header_override.content;
-  return pageProps.header;
+  return pageProps.settings?.default_header_content; // Fallback or global header
 });
 
 const activeFooter = computed(() => {
   if (pageProps.page?.footer_override?.content) return pageProps.page.footer_override.content;
-  return pageProps.footer;
+  return pageProps.settings?.default_footer_content;
 });
 
 const cssVariables = computed(() => {
-  const settings = pageProps.site_settings || {};
+  const brand = pageProps.settings?.brand_colors || {};
+  const fonts = pageProps.settings?.brand_fonts || {};
   return {
-    '--color-primary': settings.color_primary || '#000000',
-    '--color-secondary': settings.color_secondary || '#ffffff',
-    '--font-heading': settings.font_heading ? `"${settings.font_heading}", sans-serif` : 'inherit',
-    '--font-body': settings.font_body ? `"${settings.font_body}", sans-serif` : 'inherit',
+    '--p': brand.primary || '#4f46e5',
+    '--s': brand.secondary || '#10b981',
+    '--a': brand.accent || '#f59e0b',
+    '--font-heading': fonts.heading ? `"${fonts.heading}", sans-serif` : 'inherit',
+    '--font-body': fonts.body ? `"${fonts.body}", sans-serif` : 'inherit',
   };
 });
 </script>
