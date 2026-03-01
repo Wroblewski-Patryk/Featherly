@@ -23,6 +23,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::resource('pages', \App\Http\Controllers\Admin\PageController::class)->except(['show']);
                 Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->except(['show']);
                 Route::resource('media', \App\Http\Controllers\Admin\MediaController::class)->only(['index', 'store', 'destroy']);
+                Route::resource('templates', \App\Http\Controllers\Admin\TemplateController::class)->except(['show']);
+
+                Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class , 'index'])->name('settings.index');
+                Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class , 'store'])->name('settings.store');
             }
             );        });
 
