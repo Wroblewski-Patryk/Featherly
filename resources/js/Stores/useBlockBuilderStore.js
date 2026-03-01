@@ -5,6 +5,83 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         blocks: [],
         activeBlockId: null,
         isDirty: false,
+        categories: [
+            {
+                id: 'content',
+                label: '1. Content',
+                icon: 'fas fa-font',
+                blocks: [
+                    { type: 'paragraph', label: 'Paragraph', icon: 'fas fa-paragraph' },
+                    { type: 'heading', label: 'Heading', icon: 'fas fa-heading' },
+                    { type: 'list', label: 'List', icon: 'fas fa-list-ul' },
+                    { type: 'quote', label: 'Quote', icon: 'fas fa-quote-left' },
+                    { type: 'button', label: 'Button', icon: 'fas fa-mouse-pointer' },
+                    { type: 'divider', label: 'Divider', icon: 'fas fa-minus' },
+                    { type: 'spacer', label: 'Spacer', icon: 'fas fa-arrows-alt-v' },
+                    { type: 'table', label: 'Table', icon: 'fas fa-table' },
+                    { type: 'custom_code', label: 'HTML/Code', icon: 'fas fa-code' },
+                ]
+            },
+            {
+                id: 'media',
+                label: '2. Media',
+                icon: 'fas fa-images',
+                blocks: [
+                    { type: 'image', label: 'Image', icon: 'fas fa-image' },
+                    { type: 'gallery', label: 'Gallery', icon: 'fas fa-th' },
+                    { type: 'video', label: 'Video', icon: 'fas fa-video' },
+                    { type: 'audio', label: 'Audio', icon: 'fas fa-volume-up' },
+                    { type: 'file', label: 'File', icon: 'fas fa-file-download' },
+                    { type: 'media_text', label: 'Media & Text', icon: 'fas fa-columns' },
+                    { type: 'carousel', label: 'Carousel', icon: 'fas fa-sliders-h' },
+                ]
+            },
+            {
+                id: 'layout',
+                label: '3. Layout',
+                icon: 'fas fa-layer-group',
+                blocks: [
+                    { type: 'section', label: 'Section', icon: 'fas fa-vector-square' },
+                    { type: 'columns', label: 'Columns', icon: 'fas fa-columns' },
+                    { type: 'group', label: 'Group', icon: 'fas fa-object-group' },
+                    { type: 'stack', label: 'Stack/Flex', icon: 'fas fa-layer-group' },
+                ]
+            },
+            {
+                id: 'marketing',
+                label: '4. Marketing',
+                icon: 'fas fa-bullhorn',
+                blocks: [
+                    { type: 'hero', label: 'Hero', icon: 'fas fa-star' },
+                    { type: 'cta_box', label: 'CTA Box', icon: 'fas fa-comment-alt' },
+                    { type: 'card', label: 'Card', icon: 'fas fa-id-card' },
+                    { type: 'testimonial', label: 'Testimonial', icon: 'fas fa-user-check' },
+                    { type: 'faq', label: 'FAQ', icon: 'fas fa-question-circle' },
+                    { type: 'pricing', label: 'Pricing', icon: 'fas fa-tags' },
+                    { type: 'counter', label: 'Counter', icon: 'fas fa-sort-numeric-up' },
+                ]
+            },
+            {
+                id: 'theme',
+                label: '5. Theme (FSE)',
+                icon: 'fas fa-palette',
+                blocks: [
+                    { type: 'site_logo', label: 'Site Logo', icon: 'fas fa-fingerprint' },
+                    { type: 'navigation', label: 'Navigation', icon: 'fas fa-bars' },
+                    { type: 'breadcrumbs', label: 'Breadcrumbs', icon: 'fas fa-ellipsis-h' },
+                    { type: 'posts_list', label: 'Post List', icon: 'fas fa-th-list' },
+                ]
+            },
+            {
+                id: 'embed',
+                label: '6. Embeds',
+                icon: 'fas fa-external-link-alt',
+                blocks: [
+                    { type: 'google_maps', label: 'Maps', icon: 'fas fa-map-marked-alt' },
+                    { type: 'language_switcher', label: 'Lang', icon: 'fas fa-globe' },
+                ]
+            }
+        ],
     }),
     actions: {
         init(initialBlocks) {
@@ -13,53 +90,87 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         },
         createBlockObject(type, parentId = null) {
             const defaults = {
-                heading: { text: 'New Heading', level: 'h2', align: 'left' },
-                text: { text: 'Enter your content here...', align: 'left' },
-                hero: { headline: 'Premium Headline', subheadline: 'Elegant subtext for your high-end website.', primaryLabel: 'Get Started', secondaryLabel: 'Learn More' },
-                image: { url: '', alt: '' },
+                // 1. Content
+                paragraph: { text: 'This is a paragraph block. You can edit this text in the sidebar.' },
+                heading: { text: 'New Heading', level: 2, align: 'left' },
+                list: { items: ['Item 1', 'Item 2'], type: 'bullets' },
+                quote: { text: 'Quote text', author: '', type: 'standard' },
                 button: { label: 'Click Me', url: '#', style: 'primary', align: 'left', newTab: false },
+                divider: { style: 'solid', weight: '1px' },
+                spacer: { height: 'py-10' },
+                table: { rows: [['Cell 1', 'Cell 2']] },
+                custom_code: { html: '<div>Custom HTML</div>', js: '' },
+
+                // 2. Media
+                image: { url: '', alt: '', caption: '', link: '' },
+                gallery: { images: [] },
+                video: { source: 'youtube', url: '', autoplay: false },
+                audio: { url: '' },
+                file: { url: '', label: 'Download File' },
+                media_text: { media_url: '', text: '', media_position: 'left' },
+                carousel: { items: [] },
+
+                // 3. Layout
                 section: { width: 'boxed', bgColor: 'transparent', align: 'left' },
-                columns: { columns: 2 },
-                contact_form: { title: 'Contact Us', successMessage: 'Message sent successfully!', button_text: 'Send Message' },
-                form_input: { label: 'Label', placeholder: 'Enter text...', name: 'field_' + Date.now(), type: 'text', required: false },
-                form_textarea: { label: 'Label', placeholder: 'Enter message...', name: 'field_' + Date.now(), required: false },
-                form_select: { label: 'Label', name: 'field_' + Date.now(), options: 'Option 1\nOption 2', required: false },
-                form_submit: { label: 'Submit', style: 'primary', fullWidth: false },
-                language_switcher: { style: 'pill' },
-                form_input: { label: 'Name', name: 'name', type: 'text', placeholder: '' },
-                form_textarea: { label: 'Message', name: 'message', placeholder: '' },
-                form_select: { label: 'Subject', name: 'subject', options: [] },
-                form_submit: { text: 'Send Message' },
+                columns: { count: 2, stackOnMobile: true },
+                group: {},
+                stack: { direction: 'col', gap: '4' },
+
+                // 4. Marketing
+                hero: { headline: 'Premium Headline', subheadline: 'Elegant subtext.', primaryLabel: 'Get Started', secondaryLabel: 'Learn More', bg_image: '' },
+                cta_box: { title: 'Ready to start?', button_label: 'Contact' },
+                card: { title: 'Feature', description: '', icon: 'fas fa-star' },
+                testimonial: { text: '', author: '', company: '' },
+                faq: { items: [{ q: 'Question?', a: 'Answer.' }] },
+                pricing: { plans: [] },
+                counter: { number: 100, suffix: '+', label: 'Clients' },
+
+                // 5. Theme
+                site_logo: { width: '150px' },
+                navigation: { menu_id: null },
+                breadcrumbs: {},
+                posts_list: { count: 3, layout: 'grid' },
+
+                // 6. Embed & Forms
+                google_maps: { address: '', zoom: 14 },
+                form_input: { label: 'Name', name: 'name', type: 'text', placeholder: 'Enter your name', required: true },
+                form_textarea: { label: 'Message', name: 'message', placeholder: 'How can we help?', required: true },
+                form_select: { label: 'Select Option', name: 'category', options: 'Option 1\nOption 2', required: false },
+
+                // Legacy / Compatibility
+                portfolio: { projects: [] },
                 language_switcher: { style: 'dropdown' },
                 menu: { menu_id: null },
-                portfolio: {
-                    projects: [
-                        { title: 'Project 1', date: '2024', description: '', desktop_image: '', mobile_image: '', url: '' }
-                    ]
-                },
-                custom_code: { html: '<div>Custom HTML</div>', js: 'console.log("Hello");' }
             };
 
             const block = {
                 id: crypto.randomUUID(),
                 type,
-                parent_id: parentId, // Changed from parentId to parent_id to match existing structure
+                parent_id: parentId,
                 content: defaults[type] || {},
-                children: [], // Ensure children array is always present
+                children: [],
                 settings: {
                     id: '',
                     class: '',
                     animations: {
                         enabled: false,
-                        type: 'fade-up', // fade-up, slide-left, reveal-text
-                        duration: 1,
+                        trigger: 'onEnter', // onEnter, onScroll, onLoad, onHover
+                        preset: 'fade-up', // fade-up, slide-left, reveal-text, zoom-in, clip-reveal
+                        duration: 0.8,
                         delay: 0,
-                        ease: 'power2.out'
+                        ease: 'power2.out',
+                        timelineId: '', // For sequencing
+                        once: true,
                     },
                     layout: {
                         fullHeight: false,
                         fixedBg: false,
-                        padding: 'py-20'
+                        padding: 'py-20',
+                        zIndex: 1
+                    },
+                    style: {
+                        textColor: '',
+                        bgColor: '',
                     }
                 }
             };

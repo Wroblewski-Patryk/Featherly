@@ -9,10 +9,10 @@
   - SEO: meta_title, meta_description, og_image (opcjonalnie)
 - Builder:
   - dodaj/usuń/przenieś blok (reorder)
-  - edycja ustawień bloku w panelu bocznym (sidebar)
+  - edycja ustawień bloku (Content, Media, Layout, Marketing, Theme)
+  - **Magic Sauce**: Panel animacji GSAP dla każdego bloku (triggers, presets, duration, delay)
   - podgląd (desktop/tablet/mobile)
-  - zapis wersji roboczej
-  - publikacja
+  - zapis wersji roboczej / publikacja
 - Rewizje:
   - przechowywać historię zmian (min. 10)
   - możliwość przywrócenia

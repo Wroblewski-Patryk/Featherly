@@ -5,47 +5,89 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 export function useGsapRuntime() {
-    const animateBlock = (el, animation) => {
-        if (!el || !animation || !animation.enabled) return;
+    // Map of active timelines to allow sequencing by ID
+    const timelines = {};
 
-        const { preset, duration, delay, trigger } = animation;
-
-        // Define presets
-        const presets = {
-            fadeUp: { opacity: 0, y: 50 },
-            fadeIn: { opacity: 0 },
-            slideLeft: { opacity: 0, x: -100 },
-            scaleIn: { opacity: 0, scale: 0.8 },
-        };
-
-        const startVars = presets[preset] || presets.fadeUp;
-        const endVars = {
-            opacity: 1,
-            y: 0,
-            x: 0,
-            scale: 1,
-            duration: duration || 1,
-            delay: delay || 0,
-            ease: 'power2.out'
-        };
-
-        if (trigger === 'on-load') {
-            gsap.fromTo(el, startVars, endVars);
-        } else {
-            // In view trigger
-            gsap.fromTo(el, startVars, {
-                ...endVars,
+    const getTimeline = (id) => {
+        if (!id) return null;
+        if (!timelines[id]) {
+            timelines[id] = gsap.timeline({
                 scrollTrigger: {
-                    trigger: el,
-                    start: 'top 85%',
-                    toggleActions: 'play none none none',
+                    trigger: `[data-timeline="${id}"]`,
+                    start: 'top 80%',
+                    toggleActions: 'play none none none'
                 }
             });
         }
+        return timelines[id];
+    };
+
+    const animateBlock = (el, animation) => {
+        if (!el || !animation || !animation.enabled) return;
+
+        const { preset, duration, delay, trigger, ease, timelineId, once } = animation;
+
+        // 1. Define Advanced Presets
+        const presets = {
+            'fade-up': { from: { opacity: 0, y: 30 }, to: { opacity: 1, y: 0 } },
+            'fade-in': { from: { opacity: 0 }, to: { opacity: 1 } },
+            'slide-left': { from: { opacity: 0, x: -50 }, to: { opacity: 1, x: 0 } },
+            'slide-right': { from: { opacity: 0, x: 50 }, to: { opacity: 1, x: 0 } },
+            'zoom-in': { from: { opacity: 0, scale: 0.9 }, to: { opacity: 1, scale: 1 } },
+            'clip-reveal': {
+                from: { clipPath: 'inset(0 100% 0 0)' },
+                to: { clipPath: 'inset(0 0% 0 0)' }
+            },
+            'reveal-text': { from: { opacity: 0, y: 20 }, to: { opacity: 1, y: 0, stagger: 0.02 } }
+        };
+
+        const config = presets[preset] || presets['fade-up'];
+        const commonVars = {
+            duration: duration || 0.8,
+            delay: delay || 0,
+            ease: ease || 'power2.out',
+            overwrite: 'auto'
+        };
+
+        // 2. Handle Sequencing (Timeline ID)
+        if (timelineId) {
+            const tl = getTimeline(timelineId);
+            tl.fromTo(el, config.from, { ...config.to, ...commonVars }, '>');
+            return;
+        }
+
+        // 3. Handle Triggers
+        if (trigger === 'onLoad') {
+            gsap.fromTo(el, config.from, { ...config.to, ...commonVars });
+        } else if (trigger === 'onScroll') {
+            // Scrubbing animation based on scroll position
+            gsap.fromTo(el, config.from, {
+                ...config.to,
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top bottom',
+                    end: 'top center',
+                    scrub: true,
+                }
+            });
+        } else if (trigger === 'onEnter') {
+            // Once-off entrance animation
+            gsap.fromTo(el, config.from, {
+                ...config.to,
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 85%',
+                    toggleActions: once ? 'play none none none' : 'play none none reverse',
+                }
+            });
+        }
+        // onHover is handled via CSS/Native JS for better performance usually, 
+        // but can be added here if complex GSAP hover is needed.
     };
 
     const cleanup = () => {
         ScrollTrigger.getAll().forEach(t => t.kill());
+        Object.values(timelines).forEach(tl => tl.kill());
     };
 
     return { animateBlock, cleanup };

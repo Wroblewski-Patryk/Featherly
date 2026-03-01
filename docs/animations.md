@@ -1,88 +1,48 @@
-# GSAP Animations System (MVP)
+# GSAP Animations System (The Magic Sauce) 🎬
 
-## Cel
-System musi obsługiwać animacje GSAP w sposób konfigurowalny:
-- per blok (wejście do widoku / start na load)
-- per strona i per szablon (master timeline)
-- z użyciem presetów (żeby było szybkie i spójne)
-- z możliwością spięcia bloków w timeline przez label/position
+Our CMS stands out by treating animations not as individual block features, but as a universal "Magic Sauce" (Meta-Block property) available to every element in the system.
 
-## Zasada główna (bardzo ważne)
-Publiczne strony muszą być czytelne bez JS.
-GSAP to progressive enhancement: treść widoczna, animacja tylko “upiększa”.
+## Core Philosophy: Progressive Enhancement
+- **Content First**: Public pages must be fully readable without JavaScript.
+- **GSAP as Polish**: Animations only "beautify" the experience and should not break the layout if they fail to load.
+- **Performance**: Use efficient triggers and clean up timelines during re-renders.
 
-## Koncepcje
-### 1) Presets (biblioteka animacji)
-Presety to nazwy + mapowanie na GSAP vars.
-Przykłady presetów:
-- fadeUp
-- fadeIn
-- slideLeft
-- slideRight
-- scaleIn
-- staggerChildrenFadeUp
+## 1. The Unified Animation Settings Panel
+Each block instance in the CMS (whether it's a Heading, Image, or Column) inherits these core settings:
 
-Presety muszą być:
-- wersjonowane (zmiana presetu nie psuje starych stron)
-- rozszerzalne (łatwo dodać nowy preset)
+### Triggers & Events
+- **onEnter (Entrance)**: The initial animation when a block enters the screen.
+- **onScroll**: Scroll-based interactions (ScrollTrigger).
+- **onLoad**: Immediate execution on page ready.
+- **onHover**: Interactive states for user engagement.
 
-### 2) Per-block entrance animation
-Każdy block instance może mieć:
-- enabled: boolean
-- trigger: onLoad | onEnterViewport
-- preset: string
-- duration, delay, ease
-- once: true/false (dla viewport)
-- stagger (opcjonalnie)
+### Core Parameters
+- **Preset**: Select from a curated library of professional GSAP transitions.
+- **Duration**: Speed of the animation (e.g., 0.6s).
+- **Delay**: Staggering or timing offsets (e.g., 0.2s).
+- **Ease**: Natural movement curves (e.g., `power2.out`, `expo.inOut`).
+- **Scope**: Choose whether the animation applies to the `Element` itself, its `Inner Group`, or the entire `Section`.
 
-### 3) Timelines: page + template
-- Template timeline: dla layoutów typu Header/Hero “zawsze podobny”
-- Page timeline: master timeline dla danej strony
-Block może się “wpiąć” do timeline:
-- timeline.parent: page | template
-- timeline.label: string
-- timeline.position: string (GSAP position: '+=0.2', '<', '>-0.1', 'label', itp.)
+### Sequential Storytelling (Timeline ID)
+- Blocks can be assigned a **Timeline ID**.
+- Elements with the same ID can be sequenced into a single, complex GSAP Timeline, allowing for cinematic page reveals.
 
-### 4) Triggery (MVP)
-- onLoad: po renderze strony i gotowości runtime
-- onEnterViewport: IntersectionObserver (MVP) lub ScrollTrigger (later)
+## 2. Animation Preset Library
+Curated, high-end presets that ensure visual consistency:
+- **fadeUp / fadeIn**: Subtle entrance from bottom or zero opacity.
+- **slideLeft / slideRight**: Directional movement.
+- **scaleIn**: Pop-in effect with natural elastic easing.
+- **clipReveal**: Sophisticated clip-path reveals (Horizontal, Vertical, Diagonal).
+- **staggerChildren**: Automatically applies a delay sequence to child elements (e.g., list items or gallery images).
 
-### 5) Reduced motion
-Respektuj prefers-reduced-motion:
-- wyłącz lub mocno skróć animacje
-- nie psuj layoutu
+## 3. Runtime Responsibilities
+The "GSAP Runtime" is the engine that executes these plans on the frontend:
+- **Scan & Initialize**: Scans the DOM for block configurations (passed via data-attributes or JSON).
+- **Intersection Observer**: Handles `onEnter` triggers efficiently.
+- **Admin Sandbox**: In the Page Builder, the runtime must:
+  - Provide real-time previews.
+  - Safely "kill" and restart tweens during editing to prevent memory leaks and ghost animations.
 
-## Minimal schema per block instance (JSON)
-animation:
-- enabled: boolean
-- trigger: 'onLoad'|'onEnterViewport'
-- preset: string
-- duration: number
-- delay: number
-- ease: string
-- once: boolean
-- stagger:
-  - enabled: boolean
-  - each: number
-  - from: 'start'|'center'|'end'|'random'
-
-timeline:
-- enabled: boolean
-- parent: 'page'|'template'
-- label: string
-- position: string
-
-## Runtime: odpowiedzialności
-- “GSAP Runtime” inicjalizuje animacje po renderze publicznej strony.
-- Runtime skanuje DOM i czyta config bloków przez:
-  - data-attributes, lub
-  - JSON w embed script, lub
-  - mapę configu przekazaną z backendu
-- Runtime musi wspierać:
-  - public render SSR (preferowane)
-  - admin preview (builder preview)
-
-## Admin preview
-- Preview powinien uruchamiać runtime w “sandbox mode”
-- Musi czyścić animacje przy re-renderze (kill tweens/timelines)
-- Nie może powodować memory leaków przy częstych zmianach w builderze
+## 4. Accessibility (Reduced Motion)
+- Always respect the `prefers-reduced-motion` media query.
+- When enabled, animations should be simplified to basic fades or disabled entirely to ensure user comfort.
