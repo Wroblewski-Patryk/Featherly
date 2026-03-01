@@ -1,76 +1,56 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import ResourceTable from '@/Components/ResourceTable.vue';
 
 const props = defineProps(['templates']);
+const tableRef = ref(null);
 const deleteForm = useForm({});
 
-function deleteTemplate(id) {
-    if (confirm('Are you sure you want to delete this template?')) {
-        deleteForm.delete(`/admin/templates/${id}`);
-    }
+const columns = [
+    { key: 'id', label: 'ID', sortable: true },
+    { key: 'name', label: 'Name', sortable: true },
+    { key: 'type', label: 'Type', sortable: true, optional: true },
+    { key: 'is_active', label: 'Status', sortable: true, optional: true },
+    { key: 'actions', label: 'Actions', sortable: false, align: 'right' }
+];
+
+function deleteTemplate(item) {
+    deleteForm.delete(`/admin/templates/${item.id}`);
 }
 </script>
 
 <template>
     <Head title="Manage Templates" />
     <AdminLayout>
-        <template #header>
-            <div class="flex justify-between items-center text-base-content">
-                <div>
-                    <h1 class="text-3xl font-black tracking-tight flex items-center gap-3">
-                        <i class="fas fa-layer-group text-primary"></i>
-                        Templates
-                    </h1>
-                    <p class="text-sm opacity-50 mt-1">Manage global headers and footers.</p>
+        <ResourceTable
+            title="Templates"
+            description="Reusable layouts for headers, footers, and global sections."
+            icon="fas fa-layer-group"
+            :resources="templates"
+            :columns="columns"
+            create-route="/admin/templates/create"
+            create-label="Create Template"
+            persistence-key="templates"
+            ref="tableRef"
+            @delete-confirmed="deleteTemplate"
+        >
+            <template #cell-type="{ item }">
+                <div class="badge badge-neutral capitalize font-bold bg-base-300 border-none px-3">
+                    {{ item.type }}
                 </div>
-                <Link href="/admin/templates/create" class="btn btn-primary px-6 shadow-lg shadow-primary/20">
-                    <i class="fas fa-plus mr-2"></i> Create Template
-                </Link>
-            </div>
-        </template>
+            </template>
 
-        <div class="bg-base-100 rounded-box shadow-sm border border-base-300 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="table w-full">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Created At</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="template in templates.data" :key="template.id">
-                            <td>{{ template.id }}</td>
-                            <td class="font-medium">{{ template.name }}</td>
-                            <td>
-                                <div class="badge badge-neutral capitalize">{{ template.type }}</div>
-                            </td>
-                            <td>{{ new Date(template.created_at).toLocaleDateString() }}</td>
-                            <td class="flex gap-2">
-                                <Link :href="`/admin/templates/${template.id}/edit`" class="btn btn-sm btn-ghost">Edit</Link>
-                                <button @click="deleteTemplate(template.id)" class="btn btn-sm btn-error btn-outline">Delete</button>
-                            </td>
-                        </tr>
-                        <tr v-if="templates.data.length === 0">
-                            <td colspan="5" class="text-center py-8 text-base-content/50">No templates found. Create a global header or footer.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="join mt-4 flex justify-center" v-if="templates.links.length > 3">
-                <Link 
-                    v-for="(link, k) in templates.links" 
-                    :key="k" 
-                    :href="link.url || '#'" 
-                    class="join-item btn btn-sm"
-                    :class="{'btn-active': link.active, 'btn-disabled': !link.url}"
-                    v-html="link.label" />
-            </div>
-        </div>
+            <template #cell-actions="{ item }">
+                <div class="flex justify-end gap-2">
+                    <Link :href="`/admin/templates/${item.id}/edit`" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all">
+                        <i class="fas fa-edit text-xs"></i>
+                    </Link>
+                    <button @click="tableRef?.openDeleteModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all">
+                        <i class="fas fa-trash text-xs"></i>
+                    </button>
+                </div>
+            </template>
+        </ResourceTable>
     </AdminLayout>
 </template>

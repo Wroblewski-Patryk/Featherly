@@ -9,11 +9,33 @@ use Inertia\Inertia;
 
 class PageController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pages = Page::latest()->paginate(10);
+        $query = Page::query();
+
+        $query->when($request->search, function ($q, $search) {
+            $q->where(function ($sq) use ($search) {
+                    $sq->where('title->pl', 'like', "%{$search}%")
+                        ->orWhere('title->en', 'like', "%{$search}%")
+                        ->orWhere('slug->pl', 'like', "%{$search}%")
+                        ->orWhere('slug->en', 'like', "%{$search}%");
+                }
+                );
+            });
+
+        if ($request->has('sort') && $request->has('direction')) {
+            $sort = $request->sort;
+            if (in_array($sort, ['title', 'slug'])) {
+                $sort .= '->pl'; // Default to PL for sorting translatable fields
+            }
+            $query->orderBy($sort, $request->direction);
+        }
+        else {
+            $query->latest();
+        }
+
         return Inertia::render('Admin/Pages/Index', [
-            'pages' => $pages
+            'pages' => $query->paginate(10)->withQueryString()
         ]);
     }
 
