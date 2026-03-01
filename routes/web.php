@@ -5,7 +5,8 @@ use App\Models\Page;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    $page = Page::where('slug', 'home')->first();
+    $homeSlug = \App\Models\Setting::where('key', 'home_page_slug')->value('value') ?? 'home';
+    $page = Page::where('slug', $homeSlug)->first();
 
     return Inertia::render('Welcome', [
     'page' => $page
@@ -34,6 +35,12 @@ Route::get('/blog/{slug}', function (string $slug) {
     ]);
 });
 Route::get('/{slug}', function ($slug) {
+    // If user tries to visit the slug directly, check if it's the home page
+    $homeSlug = \App\Models\Setting::where('key', 'home_page_slug')->value('value') ?? 'home';
+    if ($slug === $homeSlug) {
+        return redirect('/');
+    }
+
     $page = Page::where('slug', $slug)->firstOrFail();
 
     return Inertia::render('Welcome', [
