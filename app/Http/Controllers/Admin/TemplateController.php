@@ -31,6 +31,7 @@ class TemplateController extends Controller
             'name' => 'required|string|max:255',
             'type' => 'required|in:header,footer',
             'is_active' => 'boolean',
+            'is_default' => 'boolean',
             'content' => 'nullable|array'
         ]);
 
@@ -52,6 +53,7 @@ class TemplateController extends Controller
             'name' => 'required|string|max:255',
             'type' => 'required|in:header,footer',
             'is_active' => 'boolean',
+            'is_default' => 'boolean',
             'content' => 'nullable|array'
         ]);
 

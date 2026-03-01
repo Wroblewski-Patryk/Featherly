@@ -4,8 +4,15 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Page;
 use Inertia\Inertia;
 
+use App\Http\Controllers\Admin\PageController as AdminPageController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\LocaleController;
+
 // Redirect default login name to Admin login
 Route::redirect('login', 'admin/login')->name('login');
+
+// Locale Switcher
+Route::get('lang/{locale}', [LocaleController::class , 'switch'])->name('lang.switch');
 
 // Admin Routes
 Route::name('admin.')->prefix('admin')->group(function () {
@@ -23,7 +30,7 @@ Route::name('admin.')->prefix('admin')->group(function () {
                 }
                 )->name('dashboard');
 
-                Route::resource('pages', \App\Http\Controllers\Admin\PageController::class)->except(['show']);
+                Route::resource('pages', AdminPageController::class)->except(['show']);
                 Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->except(['show']);
                 Route::resource('media', \App\Http\Controllers\Admin\MediaController::class)->only(['index', 'store', 'destroy']);
                 Route::resource('templates', \App\Http\Controllers\Admin\TemplateController::class)->except(['show']);
@@ -34,11 +41,9 @@ Route::name('admin.')->prefix('admin')->group(function () {
                 Route::resource('languages', \App\Http\Controllers\Admin\LanguageController::class)->except(['show']);
 
                 Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class , 'index'])->name('settings.index');
-
                 Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class , 'store'])->name('settings.store');
             }
-            );
-        });
+            );        });
 
 // Public Routes
 Route::get('/', function () {
@@ -53,7 +58,6 @@ Route::get('/', function () {
     }
 
     if (!$page) {
-        // Fallback or abort
         return Inertia::render('Welcome', ['page' => null]);
     }
 
@@ -64,8 +68,6 @@ Route::get('/', function () {
 });
 
 Route::post('/contact', [ContactController::class , 'store'])->name('contact.store');
-
-Route::get('/{slug}', [PageController::class , 'show'])->name('pages.show');
 
 Route::get('/blog', function (\Illuminate\Http\Request $request) {
     $posts = \App\Models\Post::where('is_published', true)

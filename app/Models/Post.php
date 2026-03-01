@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Translatable\HasTranslations;
 use App\Models\Revision;
 
 class Post extends Model
 {
-    use HasTranslations;
+    use HasFactory, HasTranslations;
 
     public function revisions(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
