@@ -4,13 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Template extends Model
+class Menu extends Model
 {
     protected $guarded = [];
 
     protected $casts = [
-        'content' => 'array',
-        'is_active' => 'boolean',
-        'is_default' => 'boolean',
+        'items' => 'array',
     ];
 }

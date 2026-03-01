@@ -20,7 +20,8 @@ class TemplateController extends Controller
     public function create()
     {
         return Inertia::render('Admin/Templates/Edit', [
-            'template' => new Template()
+            'template' => new Template(),
+            'menus' => \App\Models\Menu::all()
         ]);
     }
 
@@ -40,7 +41,8 @@ class TemplateController extends Controller
     public function edit(Template $template)
     {
         return Inertia::render('Admin/Templates/Edit', [
-            'template' => $template
+            'template' => $template,
+            'menus' => \App\Models\Menu::all()
         ]);
     }
 

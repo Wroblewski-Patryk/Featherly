@@ -2,6 +2,8 @@
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import { ref } from 'vue';
 
+const props = defineProps(['menus']);
+
 const store = useBlockBuilderStore();
 const activeSidebarTab = ref('content');
 </script>
@@ -103,16 +105,94 @@ const activeSidebarTab = ref('content');
                         <label class="label"><span class="label-text text-xs opacity-50">Label</span></label>
                         <input type="text" v-model="store.activeBlock.content.label" class="input input-bordered w-full" />
                     </div>
+                </div>
+
+                <!-- Form Input -->
+                <div v-if="store.activeBlock.type === 'form_input'" class="space-y-4">
                     <div class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50">URL</span></label>
-                        <input type="text" v-model="store.activeBlock.content.url" class="input input-bordered w-full" placeholder="https://..." />
+                        <label class="label"><span class="label-text text-xs opacity-50">Label</span></label>
+                        <input type="text" v-model="store.activeBlock.content.label" class="input input-bordered w-full" />
                     </div>
                     <div class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50">Variant</span></label>
+                        <label class="label"><span class="label-text text-xs opacity-50">Placeholder</span></label>
+                        <input type="text" v-model="store.activeBlock.content.placeholder" class="input input-bordered w-full" />
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-xs opacity-50">Input Type</span></label>
+                        <select v-model="store.activeBlock.content.type" class="select select-bordered w-full">
+                            <option value="text">Text</option>
+                            <option value="email">Email</option>
+                            <option value="number">Number</option>
+                            <option value="tel">Phone</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Form Textarea -->
+                <div v-if="store.activeBlock.type === 'form_textarea'" class="space-y-4">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-xs opacity-50">Label</span></label>
+                        <input type="text" v-model="store.activeBlock.content.label" class="input input-bordered w-full" />
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-xs opacity-50">Placeholder</span></label>
+                        <input type="text" v-model="store.activeBlock.content.placeholder" class="input input-bordered w-full" />
+                    </div>
+                </div>
+
+                <!-- Form Select -->
+                <div v-if="store.activeBlock.type === 'form_select'" class="space-y-4">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-xs opacity-50">Label</span></label>
+                        <input type="text" v-model="store.activeBlock.content.label" class="input input-bordered w-full" />
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-xs opacity-50">Options (one per line)</span></label>
+                        <textarea v-model="store.activeBlock.content.options" class="textarea textarea-bordered w-full h-32"></textarea>
+                    </div>
+                </div>
+
+                <!-- Form Submit -->
+                <div v-if="store.activeBlock.type === 'form_submit'" class="space-y-4">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-xs opacity-50">Label</span></label>
+                        <input type="text" v-model="store.activeBlock.content.label" class="input input-bordered w-full" />
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-xs opacity-50">Width</span></label>
+                        <label class="label cursor-pointer justify-start gap-4">
+                            <input type="checkbox" v-model="store.activeBlock.content.fullWidth" class="checkbox checkbox-primary" />
+                            <span class="label-text">Full Width</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Language Switcher -->
+                <div v-if="store.activeBlock.type === 'language_switcher'" class="space-y-4">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-xs opacity-50">Style</span></label>
                         <select v-model="store.activeBlock.content.style" class="select select-bordered w-full">
-                            <option value="primary">Solid Primary</option>
-                            <option value="outline">Outline Primary</option>
-                            <option value="ghost">Ghost (Glass)</option>
+                            <option value="pill">Pill Shape</option>
+                            <option value="dropdown">Dropdown</option>
+                            <option value="flags">Flags Only</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Menu Block -->
+                <div v-if="store.activeBlock.type === 'menu'" class="space-y-4">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-xs opacity-50">Select Menu</span></label>
+                        <select v-model="store.activeBlock.content.menu_id" class="select select-bordered w-full">
+                            <option :value="null">Select Menu...</option>
+                            <option v-for="menu in menus" :key="menu.id" :value="menu.id">{{ menu.name }}</option>
+                        </select>
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-xs opacity-50">Layout</span></label>
+                        <select v-model="store.activeBlock.content.layout" class="select select-bordered w-full">
+                            <option value="horizontal">Horizontal (Header)</option>
+                            <option value="vertical">Vertical (Footer)</option>
                         </select>
                     </div>
                 </div>
@@ -194,6 +274,21 @@ const activeSidebarTab = ref('content');
 
             <!-- ADVANCED TAB -->
             <div v-if="activeSidebarTab === 'advanced'" class="space-y-6">
+                <!-- HTML Attributes -->
+                <section>
+                    <h4 class="text-[10px] font-bold opacity-30 uppercase tracking-widest mb-4">HTML Attributes</h4>
+                    <div class="space-y-4">
+                        <div class="form-control">
+                            <label class="label py-1"><span class="label-text text-[10px] opacity-40">HTML ID</span></label>
+                            <input type="text" v-model="store.activeBlock.appearance.elementId" placeholder="e.g. my-custom-id" class="input input-sm input-bordered font-mono text-xs" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label py-1"><span class="label-text text-[10px] opacity-40">HTML Class</span></label>
+                            <input type="text" v-model="store.activeBlock.appearance.elementClass" placeholder="e.g. wrapper-class" class="input input-sm input-bordered font-mono text-xs" />
+                        </div>
+                    </div>
+                </section>
+
                 <!-- GSAP Animations -->
                 <section class="p-4 bg-primary/5 rounded-2xl border border-primary/10">
                     <div class="flex items-center justify-between mb-4">
@@ -226,7 +321,7 @@ const activeSidebarTab = ref('content');
                 </section>
 
                 <div class="form-control">
-                    <label class="label"><span class="label-text text-xs opacity-50">Custom CSS Classes</span></label>
+                    <label class="label"><span class="label-text text-xs opacity-50">Utility Classes (Tailwind)</span></label>
                     <input type="text" v-model="store.activeBlock.appearance.customClasses" placeholder="e.g. glass shadow-xl" class="input input-bordered w-full font-mono text-xs" />
                 </div>
             </div>

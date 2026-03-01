@@ -23,6 +23,16 @@ class Page extends Model
         'content' => 'array',
         'settings' => 'array',
     ];
+    public function getResolvedHeaderIdAttribute()
+    {
+        return $this->header_override_id ?? Template::where('type', 'header')->where('is_default', true)->value('id');
+    }
+
+    public function getResolvedFooterIdAttribute()
+    {
+        return $this->footer_override_id ?? Template::where('type', 'footer')->where('is_default', true)->value('id');
+    }
+
     public function headerOverride()
     {
         return $this->belongsTo(Template::class , 'header_override_id');

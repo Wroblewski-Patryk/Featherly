@@ -24,7 +24,8 @@ class PageController extends Controller
             'templates' => [
                 'header' => \App\Models\Template::where('type', 'header')->get(),
                 'footer' => \App\Models\Template::where('type', 'footer')->get(),
-            ]
+            ],
+            'menus' => \App\Models\Menu::all()
         ]);
     }
 
@@ -51,7 +52,8 @@ class PageController extends Controller
             'templates' => [
                 'header' => \App\Models\Template::where('type', 'header')->get(),
                 'footer' => \App\Models\Template::where('type', 'footer')->get(),
-            ]
+            ],
+            'menus' => \App\Models\Menu::all()
         ]);
     }
 
