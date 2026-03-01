@@ -9,11 +9,27 @@ use Inertia\Inertia;
 
 class TemplateController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $templates = Template::latest()->paginate(10);
+        $query = \App\Models\Template::query();
+
+        $query->when($request->search, function ($q, $search) {
+            $q->where(function ($sq) use ($search) {
+                    $sq->where('name', 'like', "%{$search}%")
+                        ->orWhere('type', 'like', "%{$search}%");
+                }
+                );
+            });
+
+        if ($request->has('sort') && $request->has('direction')) {
+            $query->orderBy($request->sort, $request->direction);
+        }
+        else {
+            $query->latest();
+        }
+
         return Inertia::render('Admin/Templates/Index', [
-            'templates' => $templates
+            'templates' => $query->paginate(10)->withQueryString()
         ]);
     }
 

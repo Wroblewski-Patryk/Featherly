@@ -9,10 +9,23 @@ use Inertia\Inertia;
 
 class MenuController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Menu::query();
+
+        $query->when($request->search, function ($q, $search) {
+            $q->where('name', 'like', "%{$search}%");
+        });
+
+        if ($request->has('sort') && $request->has('direction')) {
+            $query->orderBy($request->sort, $request->direction);
+        }
+        else {
+            $query->latest();
+        }
+
         return Inertia::render('Admin/Menus/Index', [
-            'menus' => Menu::latest()->get()
+            'menus' => $query->paginate(10)->withQueryString()
         ]);
     }
 

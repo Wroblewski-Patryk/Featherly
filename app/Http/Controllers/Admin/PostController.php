@@ -9,11 +9,33 @@ use Inertia\Inertia;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::latest()->paginate(10);
+        $query = Post::query();
+
+        $query->when($request->search, function ($q, $search) {
+            $q->where(function ($sq) use ($search) {
+                    $sq->where('title->pl', 'like', "%{$search}%")
+                        ->orWhere('title->en', 'like', "%{$search}%")
+                        ->orWhere('slug->pl', 'like', "%{$search}%")
+                        ->orWhere('slug->en', 'like', "%{$search}%");
+                }
+                );
+            });
+
+        if ($request->has('sort') && $request->has('direction')) {
+            $sort = $request->sort;
+            if (in_array($sort, ['title', 'slug'])) {
+                $sort .= '->pl'; // Default to PL for sorting translatable fields
+            }
+            $query->orderBy($sort, $request->direction);
+        }
+        else {
+            $query->latest();
+        }
+
         return Inertia::render('Admin/Posts/Index', [
-            'posts' => $posts
+            'posts' => $query->paginate(10)->withQueryString()
         ]);
     }
 

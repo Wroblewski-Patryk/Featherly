@@ -9,10 +9,27 @@ use Inertia\Inertia;
 
 class TranslationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Translation::query();
+
+        $query->when($request->search, function ($q, $search) {
+            $q->where('key', 'like', "%{$search}%")
+                ->orWhere('group', 'like', "%{$search}%")
+                ->orWhere('text->pl', 'like', "%{$search}%")
+                ->orWhere('text->en', 'like', "%{$search}%");
+        });
+
+        if ($request->has('sort') && $request->has('direction')) {
+            $sort = str_replace('.', '->', $request->sort);
+            $query->orderBy($sort, $request->direction);
+        }
+        else {
+            $query->latest();
+        }
+
         return Inertia::render('Admin/Translations/Index', [
-            'translations' => Translation::latest()->get()
+            'translations' => $query->paginate(20)->withQueryString()
         ]);
     }
 

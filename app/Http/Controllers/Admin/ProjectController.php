@@ -10,10 +10,32 @@ use Inertia\Inertia;
 
 class ProjectController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Project::query();
+
+        $query->when($request->search, function ($q, $search) {
+            $q->where(function ($sq) use ($search) {
+                    $sq->where('title->pl', 'like', "%{$search}%")
+                        ->orWhere('title->en', 'like', "%{$search}%")
+                        ->orWhere('category', 'like', "%{$search}%");
+                }
+                );
+            });
+
+        if ($request->has('sort') && $request->has('direction')) {
+            $sort = $request->sort;
+            if (in_array($sort, ['title'])) {
+                $sort .= '->pl'; // Default to PL for sorting translatable fields
+            }
+            $query->orderBy($sort, $request->direction);
+        }
+        else {
+            $query->orderBy('order');
+        }
+
         return Inertia::render('Admin/Projects/Index', [
-            'projects' => Project::orderBy('order')->get()
+            'projects' => $query->paginate(10)->withQueryString()
         ]);
     }
 

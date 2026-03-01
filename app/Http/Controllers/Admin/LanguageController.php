@@ -9,10 +9,24 @@ use Inertia\Inertia;
 
 class LanguageController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Language::query();
+
+        $query->when($request->search, function ($q, $search) {
+            $q->where('name', 'like', "%{$search}%")
+                ->orWhere('code', 'like', "%{$search}%");
+        });
+
+        if ($request->has('sort') && $request->has('direction')) {
+            $query->orderBy($request->sort, $request->direction);
+        }
+        else {
+            $query->orderBy('is_default', 'desc')->orderBy('name', 'asc');
+        }
+
         return Inertia::render('Admin/Languages/Index', [
-            'languages' => Language::all()
+            'languages' => $query->paginate(10)->withQueryString()
         ]);
     }
 
