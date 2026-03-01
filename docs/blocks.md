@@ -1,69 +1,59 @@
-# Blocks System Documentation
+# Bloki treści – wersja zaktualizowana
 
-Our CMS uses a block-based architecture inspired by the best features of WordPress Gutenberg and Elementor, with a unique "magic sauce" for GSAP-driven animations.
+System bloków umożliwia elastyczne budowanie stron i wpisów poprzez łączenie gotowych komponentów.  Każdy blok jest reprezentowany jako obiekt w tablicy JSON w polu `content`.  Poniżej zestawiono główne kategorie oraz przykładowe typy bloków obsługiwane w projekcie.
 
-## 1. Fundament: Treść (Content Blocks)
-Essential text-based blocks for daily content creation.
-- **Akapit / Tekst (Paragraph)**: Core text block.
-- **Nagłówek (Heading)**: H1–H6 with alignment controls.
-- **Lista (List)**: Bullets and numbered lists.
-- **Cytat (Quote)**: Standard and pullquote variations.
-- **Przycisk CTA (Button / Buttons)**: Individual and groups of call-to-action buttons.
-- **Separator & Odstęp (Divider & Spacer)**: For visual rhythm and layout.
-- **Tabela (Table)**: Structured data representation.
-- **Kod / HTML (Code / Custom HTML)**: For integrations and custom embeds.
+## Kategorie bloków i przykłady
 
-## 2. Media: Zdjęcia i Wideo
-Visual storytelling assets.
-- **Obraz (Image)**: Responsive settings, alt text, captions, and links.
-- **Galeria (Gallery)**: Multi-image layouts.
-- **Wideo (Video)**: Self-hosted and high-quality embeds.
-- **Audio**: Podcasting and audio clips.
-- **Plik do pobrania (File / Download)**: Document sharing.
-- **Obraz + Tekst (Media & Text)**: Split-screen layouts.
-- **Karuzela / Slider (Carousel)**: Dynamic image cycling.
+| Kategoria | Przykładowe typy bloków | Opis |
+|---|---|---|
+| **Treść (Content)** | `paragraph`, `heading`, `list`, `quote` | Podstawowe bloki tekstowe i typograficzne; mogą zawierać ustawienia stylu (rozmiar, kolor). |
+| **Media** | `image`, `gallery`, `video`, `audio` | Bloki wczytujące obrazy lub multimedia z biblioteki mediów; pola konfiguracji obejmują źródło, opis alternatywny, tryb wyświetlania. |
+| **Układ/sekcje** | `section`, `twoColumns`, `grid`, `accordion`, `tabs` | Bloki kontenerowe umożliwiające organizację treści w sekcje z kolumnami, zakładkami itp.; zawierają tablicę dzieci (`children`). |
+| **Hero i marketing** | `hero`, `ctaBox`, `features`, `pricingTable` | Duże sekcje wprowadzające z nagłówkiem, opisem, przyciskiem i obrazem; wykorzystywane na stronach startowych i landing pages. |
+| **Nawigacja i motyw** | `navigation`, `languageSwitcher`, `breadcrumb` | Bloki do wstawiania menu oraz elementów interfejsu, takich jak przełącznik języka. |
+| **Wpisy i projekty** | `postList`, `postItem`, `projectList`, `projectItem` | Bloki pobierające dane z modułów bloga i portfolio.  `postList` i `projectList` oferują parametry filtrowania (kategoria, liczba elementów) oraz obsługę stronicowania; elementy indywidualne (`postItem`/`projectItem`) są używane wewnętrznie w listach. |
+| **Formularze i interakcje** | `contactForm`, `form`, `newsletterSignup`, `button` | Bloki do umieszczania formularza kontaktowego, formularzy niestandardowych oraz wezwań do działania; konfiguracja obejmuje m.in. wybór formularza z bazy, tekst przycisku, pola zgody itp. |
+| **Integracje/Embed** | `iframe`, `map`, `youtubeEmbed`, `tweet` | Osadzanie treści z zewnętrznych źródeł (mapy, wideo, wpisy z mediów społecznościowych). |
+| **Dane dynamiczne** | `menu`, `languageSwitcher`, `breadcrumbs`, `footerLinks` | Bloki pobierające dane z innych tabel, np. definicje menu lub listę obsługiwanych języków. |
+| **Specjalne** | `html`, `script`, `divider`, `spacer` | Dodatkowe narzędzia do wstawiania niestandardowego HTML/JS, linii oddzielających czy odstępów. |
 
-## 3. Layout / Sekcje: Konstrukcja Strony
-The structural heart of the system.
-- **Sekcja / Kontener (Section / Container)**: Top-level wrappers with background controls.
-- **Kolumny / Siatka (Columns / Grid)**: Responsive multi-column layouts.
-- **Grupa (Group)**: Logical grouping of multiple blocks.
-- **Stack / Flex**: Low-level flexbox-based row/column controls.
-- **Alignment & Widths**: Full-width, Wide, Boxed, and Z-index controls.
+## Ustawienia bloku
 
-## 4. Hero & Sekcje Marketingowe
-High-conversion marketing components.
-- **Cover / Hero**: Background (video/image) + Overlay + Content.
-- **CTA Box**: Title + Description + Button combined.
-- **Card / Box**: Universal containers with shadows, borders, and padding.
-- **Ikona (Icon)**: Individual icons with styling.
-- **Icon Box / Image Box**: Icon/Image with title and description.
-- **Testimonials (Opinie)**: Customer social proof.
-- **FAQ / Accordion**: Collapsible content sections.
-- **Pricing Tables / Plans**: Comparison grids.
-- **Counter / Statystyki**: Animated number counters.
-- **Timeline / Steps**: Process visualization.
+Każdy blok posiada zestaw właściwości:
 
-## 5. Nawigacja i Theme Blocks (Full Site Editing)
-Blocks for building the entire site structure.
-- **Menu / Nawigacja**: Site navigation builder.
-- **Logo / Site Title**: Global brand identity.
-- **Breadcrumbs**: SEO-friendly path navigation.
-- **Template Part**: Reusable Header/Footer logic.
-- **Query / Lista wpisów**: Latest posts grid/list with filtering.
-- **Pagination**: Loading and page controls.
+- **`type`** – nazwa typu bloku.
+- **`settings`** – obiekt z parametrami konfiguracyjnymi (np. wyrównanie, kolor tła, liczbę kolumn).  Struktura ustawień jest definiowana dla każdego typu bloku oddzielnie.
+- **`animation`** – informacje o animacji GSAP (preset, duration, delay, ease, trigger)【653274490132042†L0-L58】.
+- **`timeline`** – identyfikator sekwencji, jeżeli blok jest częścią złożonej animacji.
+- **`children`** – tablica elementów podrzędnych dla bloków kontenerowych.
 
-## 6. Embed / Integracje
-Connecting with external services.
-- **Universal Embed**: YouTube, Vimeo, Instagram, X, TikTok, Spotify.
-- **Mapy (Google Maps)**: Interactive location previews.
-- **Shortcode / HTML Embed**: Legacy and custom connector support.
-- **Form Connector**: Connection to external or internal form builders.
+Dzięki takiemu podejściu możliwe jest dodawanie nowych typów bloków bez zmian w schemacie bazy – wystarczy utworzyć renderer publiczny i komponent edycyjny w panelu admina zgodnie z zasadami określonymi w dokumentacji architektury【923699511808356†L2-L11】.
 
-## 7. Magic Sauce: GSAP Animation Layer 🎬
-The unique advantage of our CMS. Animation is treated as a "Meta-Block" property.
-- **Panel Wspólny**: Shared animation settings for all blocks.
-- **Triggers**: `onEnter` (fade/slide/scale/clip), `onScroll`, `onLoad`, `onHover`.
-- **Parameters**: Delay, Duration, Ease.
-- **Scope**: Element, Group, or entire Section.
-- **Timeline ID**: Assign blocks to specific sequences for complex storytelling.
+---
+
+## Rozszerzenie: Scene Mode + warstwy
+
+Aby obsłużyć strony „bez scrolla” (przełączanie sekcji jak slajdy), wprowadzamy dodatkowe byty/typy bloków i pola:
+
+### Nowe typy (propozycja)
+
+- `scene` – pełnoekranowa sekcja (viewport section). Zawiera `children`.
+- `layerGroup` – grupa warstw (folder) do organizacji.
+- `globalLayer` – warstwa renderowana niezależnie od scen (np. tło/ramka/dekor).
+
+### Pola warstw / layout (propozycja minimalna)
+
+W `settings` (lub w wydzielonym polu `layout`) bloki mogą mieć:
+
+- `position`: `relative | absolute | fixed | sticky`
+- `z_index`: number
+- `z_depth`: number (np. -500..500) – do **podglądu głębi** i opcjonalnego `translateZ`
+- `transform`: `translateX/translateY/scale/rotate` (dla absolutnych layoutów)
+- `anchor`: np. `top-left`, `center`, `bottom-right` (ułatwia UI)
+
+### Tryby strony
+
+W `Page.settings` proponujemy:
+
+- `page_mode`: `document` (domyślnie) / `scenes`
+- `scene_settings`: opcje nawigacji (wheel/keys/url sync), parametry przejść itp.
