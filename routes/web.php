@@ -16,13 +16,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('logout', [\App\Http\Controllers\Admin\AuthController::class , 'logout'])->name('logout');
 
             Route::get('/', function () {
-                    // Standard vue placeholder, will be replaced by actual dashboard
                     return Inertia::render('Admin/Dashboard');
                 }
                 )->name('dashboard');
+
+                Route::resource('pages', \App\Http\Controllers\Admin\PageController::class)->except(['show']);
+                Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->except(['show']);
+                Route::resource('media', \App\Http\Controllers\Admin\MediaController::class)->only(['index', 'store', 'destroy']);
             }
             );        });
 
+// Public Routes
 Route::get('/', function () {
     $homeSlug = \App\Models\Setting::where('key', 'home_page_slug')->value('value') ?? 'home';
     $page = Page::with(['headerOverride', 'footerOverride'])->where('slug', $homeSlug)->first();
@@ -53,6 +57,7 @@ Route::get('/blog/{slug}', function (string $slug) {
     'post' => $post,
     ]);
 });
+
 Route::get('/live-preview', function () {
     return Inertia::render('Preview', [
     'page' => new \App\Models\Page()
@@ -60,13 +65,15 @@ Route::get('/live-preview', function () {
 })->name('live-preview');
 
 Route::get('/{slug}', function ($slug) {
-    // If user tries to visit the slug directly, check if it's the home page
     $homeSlug = \App\Models\Setting::where('key', 'home_page_slug')->value('value') ?? 'home';
     if ($slug === $homeSlug) {
         return redirect('/');
     }
 
-    $page = Page::with(['headerOverride', 'footerOverride'])->where('slug', $slug)->firstOrFail();
+    $page = Page::with(['headerOverride', 'footerOverride'])->where('json_extract(slug, "$.en")', $slug)
+        ->orWhere('json_extract(slug, "$.pl")', $slug)
+        ->orWhere('slug', 'LIKE', '%"' . $slug . '"%')
+        ->firstOrFail();
 
     return Inertia::render('Welcome', [
     'page' => $page

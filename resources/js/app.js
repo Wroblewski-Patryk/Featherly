@@ -4,8 +4,15 @@ import '../css/app.css';
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import { createPinia } from 'pinia';
+import { gsap } from 'gsap';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
+
+// Reduced Motion Handling for GSAP
+if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    gsap.globalTimeline.timeScale(1000); // Instantly finish animations
+}
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -13,6 +20,7 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         return createApp({ render: () => h(App, props) })
             .use(plugin)
+            .use(createPinia())
             .mount(el);
     },
     progress: {
