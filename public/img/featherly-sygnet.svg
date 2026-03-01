@@ -9,6 +9,9 @@
    id="svg1"
    inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
    sodipodi:docname="featherly-sygnet.svg"
+   inkscape:export-filename="featherly-sygnet.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -32,13 +35,7 @@
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1"
-     showguides="true">
-    <sodipodi:guide
-       position="76.113241,96.611465"
-       orientation="1,0"
-       id="guide1"
-       inkscape:locked="false" />
-  </sodipodi:namedview>
+     showguides="true" />
   <defs
      id="defs1" />
   <g
@@ -47,7 +44,7 @@
      id="layer1">
     <path
        id="path2"
-       style="fill:none;stroke:#000000;stroke-width:2.17965;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       style="fill:none;stroke:#000000;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
        d="M 9.1324403,104.92881 C 23.694328,69.774936 38.869558,52.561685 55.544919,33.21832 M 9.1324403,104.92881 c 0.383429,1.08596 -7.518186,15.75712 -7.957596,25.50194 10.7869887,-5.74794 6.134803,-15.94347 12.3403697,-19.4341 7.659359,-3.6366 20.943003,-3.76646 31.282613,-15.460245 -5.61882,1.697012 -10.165842,1.907823 -16.825321,1.845022 C 46.06311,93.413458 62.098951,81.896877 68.373438,58.313248 63.153532,61.197776 58.019796,62.48423 52.679422,62.890092 76.891749,51.3893 78.779009,22.804843 70.771453,1.727862 15.900763,42.102129 -5.6725007,60.830194 9.1324403,104.92878 Z" />
   </g>
 </svg>
