@@ -19,7 +19,7 @@ const submit = () => {
     <div class="min-h-screen bg-base-200 flex items-center justify-center">
         <div class="card w-96 bg-base-100 shadow-xl">
             <div class="card-body">
-                <h2 class="card-title text-2xl font-bold justify-center mb-4">VueCMS Login</h2>
+                <h2 class="card-title text-2xl font-bold justify-center mb-4">Featherly Login</h2>
                 
                 <form @submit.prevent="submit">
                     <div class="form-control mb-4">
