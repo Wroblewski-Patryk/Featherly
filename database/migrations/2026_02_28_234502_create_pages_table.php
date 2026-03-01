@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->string('slug')->unique();
+            $table->json('title');
+            $table->json('slug');
             $table->json('content')->nullable(); // For Filament Builder blocks
             $table->json('settings')->nullable(); // For page-wide GSAP settings (parallax, etc)
             $table->timestamps();

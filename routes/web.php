@@ -4,6 +4,25 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Page;
 use Inertia\Inertia;
 
+// Admin Routes
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('guest')->group(function () {
+            Route::get('login', [\App\Http\Controllers\Admin\AuthController::class , 'showLoginForm'])->name('login');
+            Route::post('login', [\App\Http\Controllers\Admin\AuthController::class , 'login']);
+        }
+        );
+
+        Route::middleware('auth')->group(function () {
+            Route::post('logout', [\App\Http\Controllers\Admin\AuthController::class , 'logout'])->name('logout');
+
+            Route::get('/', function () {
+                    // Standard vue placeholder, will be replaced by actual dashboard
+                    return Inertia::render('Admin/Dashboard');
+                }
+                )->name('dashboard');
+            }
+            );        });
+
 Route::get('/', function () {
     $homeSlug = \App\Models\Setting::where('key', 'home_page_slug')->value('value') ?? 'home';
     $page = Page::with(['headerOverride', 'footerOverride'])->where('slug', $homeSlug)->first();

@@ -12,15 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pages', function (Blueprint $table) {
-            $table->string('meta_title')->nullable();
-            $table->text('meta_description')->nullable();
-            $table->string('og_image')->nullable();
+            $table->json('meta_title')->nullable();
+            $table->json('meta_description')->nullable();
+            $table->json('og_image')->nullable();
         });
 
         Schema::table('posts', function (Blueprint $table) {
-            $table->string('meta_title')->nullable();
-            $table->text('meta_description')->nullable();
-            $table->string('og_image')->nullable();
+            $table->json('meta_title')->nullable();
+            $table->json('meta_description')->nullable();
+            $table->json('og_image')->nullable();
         });
     }
 
