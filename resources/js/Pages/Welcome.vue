@@ -1,6 +1,8 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import SeoHead from '@/Components/SeoHead.vue';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
+import { Head, Link } from '@inertiajs/vue3';
 
 defineProps({
     page: {
@@ -11,8 +13,13 @@ defineProps({
 </script>
 
 <template>
-    <Head :title="page ? page.title : 'Welcome'" />
-    <div class="min-h-screen bg-white text-gray-900 font-sans antialiased overflow-x-hidden">
+    <SeoHead 
+        :title="page?.meta_title || page?.title || 'Welcome'" 
+        :description="page?.meta_description" 
+        :image="page?.og_image" 
+    />
+
+    <AppLayout>
         <template v-if="page && page.content">
             <DynamicBlock 
                 v-for="(block, index) in page.content" 
@@ -21,16 +28,20 @@ defineProps({
             />
         </template>
         
-        <div v-else-if="!page" class="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-8">
-            <h1 class="text-4xl font-bold text-gray-800 mb-4">Page Not Found</h1>
-            <p class="text-gray-600 mb-8">The requested page could not be found or has no content.</p>
-            <a href="/admin" class="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition">Go to Admin Panel</a>
+        <div v-else-if="!page" class="flex flex-col items-center justify-center min-h-screen p-8 text-white relative z-20">
+            <h1 class="text-4xl font-bold mb-4">Strona nie została znaleziona</h1>
+            <p class="text-white/60 mb-8 max-w-lg text-center">Strona nie istnieje lub nie została jeszcze wybrana w Ustawieniach.</p>
+            <a href="/admin" class="px-6 py-3 border border-white hover:bg-white hover:text-black font-bold tracking-widest uppercase transition-colors">
+                Przejdź do Panelu Admina
+            </a>
         </div>
         
-        <div v-else class="flex flex-col items-center justify-center py-32 p-8">
-            <h1 class="text-4xl font-bold text-gray-800 mb-4">{{ page.title }}</h1>
-            <p class="text-gray-600 mb-8">This page has no content blocks yet. Add them in the Admin Panel.</p>
-            <a href="/admin" class="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition">Edit This Page</a>
+        <div v-else class="flex flex-col items-center justify-center min-h-[60vh] py-32 p-8 text-white relative z-20">
+            <h1 class="text-4xl font-bold mb-4 uppercase tracking-wider">{{ page.title }}</h1>
+            <p class="text-white/60 mb-8 max-w-lg text-center">Ta strona nie ma jeszcze żadnych bloków zawartości. Dodaj je w panelu administracyjnym używając Builder'a.</p>
+            <a :href="`/admin/pages/${page.id}/edit`" class="px-6 py-3 border border-white hover:bg-white hover:text-black font-bold tracking-widest uppercase transition-colors">
+                Edytuj tę stronę
+            </a>
         </div>
-    </div>
+    </AppLayout>
 </template>
