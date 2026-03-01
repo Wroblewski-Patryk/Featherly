@@ -11,7 +11,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
             this.blocks = Array.isArray(initialBlocks) ? initialBlocks : [];
             this.isDirty = false;
         },
-        addBlock(type, parentId = null) {
+        createBlockObject(type, parentId = null) {
             const defaults = {
                 heading: { text: 'New Heading', level: 'h2', align: 'left' },
                 text: { text: 'Enter your content here...', align: 'left' },
@@ -20,10 +20,16 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 button: { label: 'Click Me', url: '#', style: 'primary', align: 'left', newTab: false },
                 section: { width: 'boxed', bgColor: 'transparent', align: 'left' },
                 columns: { columns: 2 },
-                contact_form: { title: 'Contact Us', successMessage: 'Message sent successfully!', button_text: 'Send Message' }
+                contact_form: { title: 'Contact Us', successMessage: 'Message sent successfully!', button_text: 'Send Message' },
+                form_input: { label: 'Label', placeholder: 'Enter text...', name: 'field_' + Date.now(), type: 'text', required: false },
+                form_textarea: { label: 'Label', placeholder: 'Enter message...', name: 'field_' + Date.now(), required: false },
+                form_select: { label: 'Label', name: 'field_' + Date.now(), options: 'Option 1\nOption 2', required: false },
+                form_submit: { label: 'Submit', style: 'primary', fullWidth: false },
+                language_switcher: { style: 'pill' },
+                menu: { menu_id: null, layout: 'horizontal' }
             };
 
-            const newBlock = {
+            return {
                 id: 'block_' + Math.random().toString(36).substr(2, 9),
                 type,
                 parent_id: parentId || null,
@@ -39,6 +45,8 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                     borderWidth: '0px',
                     borderColor: 'transparent',
                     boxShadow: 'none',
+                    elementId: '',
+                    elementClass: '',
                     customClasses: '',
                     animations: {
                         enabled: false,
@@ -49,6 +57,9 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                     }
                 }
             };
+        },
+        addBlock(type, parentId = null) {
+            const newBlock = this.createBlockObject(type, parentId);
 
             if (parentId) {
                 const parent = this.blocks.find(b => b.id === parentId);
@@ -62,6 +73,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
             this.activeBlockId = newBlock.id;
             this.isDirty = true;
         },
+
         removeBlock(id) {
             this.blocks = this.blocks.filter(b => b.id !== id);
             if (this.activeBlockId === id) this.activeBlockId = null;

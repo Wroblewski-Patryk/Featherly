@@ -27,8 +27,12 @@ Route::name('admin.')->prefix('admin')->group(function () {
                 Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->except(['show']);
                 Route::resource('media', \App\Http\Controllers\Admin\MediaController::class)->only(['index', 'store', 'destroy']);
                 Route::resource('templates', \App\Http\Controllers\Admin\TemplateController::class)->except(['show']);
+                Route::resource('forms', \App\Http\Controllers\Admin\FormController::class)->except(['show']);
+                Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class)->except(['show']);
+                Route::resource('translations', \App\Http\Controllers\Admin\TranslationController::class)->except(['show']);
 
                 Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class , 'index'])->name('settings.index');
+
                 Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class , 'store'])->name('settings.store');
             }
             );

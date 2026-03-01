@@ -43,61 +43,61 @@
                         <div v-show="leftTab === 'blocks'" class="space-y-6">
                             <section>
                                 <h3 class="text-xs font-bold opacity-40 uppercase tracking-widest mb-3">Layout</h3>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <button @click="store.addBlock('section')" class="btn btn-outline btn-sm h-16 flex flex-col gap-1 border-white/10 hover:bg-white/5">
-                                        <i class="fas fa-layer-group text-lg"></i>
-                                        <span class="text-[10px]">Section</span>
-                                    </button>
-                                    <button @click="store.addBlock('columns')" class="btn btn-outline btn-sm h-16 flex flex-col gap-1 border-white/10 hover:bg-white/5">
-                                        <i class="fas fa-columns text-lg"></i>
-                                        <span class="text-[10px]">Columns</span>
-                                    </button>
-                                </div>
+                                <draggable 
+                                    :list="layoutBlocks" 
+                                    :group="{ name: 'blocks', pull: 'clone', put: false }" 
+                                    :clone="cloneBlock"
+                                    :sort="false"
+                                    item-key="type"
+                                    class="grid grid-cols-2 gap-2">
+                                    <template #item="{ element }">
+                                        <div @click="store.addBlock(element.type)" class="btn btn-outline btn-sm h-16 flex flex-col gap-1 border-white/10 hover:bg-white/5 cursor-grab active:cursor-grabbing">
+                                            <i :class="[element.icon, 'text-lg text-primary']"></i>
+                                            <span class="text-[10px]">{{ element.label }}</span>
+                                        </div>
+                                    </template>
+                                </draggable>
                             </section>
 
                             <section>
                                 <h3 class="text-xs font-bold opacity-40 uppercase tracking-widest mb-3">Content</h3>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <button @click="store.addBlock('heading')" class="btn btn-outline btn-sm h-16 flex flex-col gap-1 border-white/10 hover:bg-white/5">
-                                        <i class="fas fa-heading text-lg"></i>
-                                        <span class="text-[10px]">Heading</span>
-                                    </button>
-                                    <button @click="store.addBlock('text')" class="btn btn-outline btn-sm h-16 flex flex-col gap-1 border-white/10 hover:bg-white/5">
-                                        <i class="fas fa-align-left text-lg"></i>
-                                        <span class="text-[10px]">Text</span>
-                                    </button>
-                                    <button @click="store.addBlock('image')" class="btn btn-outline btn-sm h-16 flex flex-col gap-1 border-white/10 hover:bg-white/5">
-                                        <i class="fas fa-image text-lg"></i>
-                                        <span class="text-[10px]">Image</span>
-                                    </button>
-                                    <button @click="store.addBlock('button')" class="btn btn-outline btn-sm h-16 flex flex-col gap-1 border-white/10 hover:bg-white/5">
-                                        <i class="fas fa-mouse-pointer text-lg"></i>
-                                        <span class="text-[10px]">Button</span>
-                                    </button>
-                                </div>
+                                <draggable 
+                                    :list="contentBlocks" 
+                                    :group="{ name: 'blocks', pull: 'clone', put: false }" 
+                                    :clone="cloneBlock"
+                                    :sort="false"
+                                    item-key="type"
+                                    class="grid grid-cols-2 gap-2">
+                                    <template #item="{ element }">
+                                        <div @click="store.addBlock(element.type)" class="btn btn-outline btn-sm h-16 flex flex-col gap-1 border-white/10 hover:bg-white/5 cursor-grab active:cursor-grabbing">
+                                            <i :class="[element.icon, 'text-lg text-secondary']"></i>
+                                            <span class="text-[10px]">{{ element.label }}</span>
+                                        </div>
+                                    </template>
+                                </draggable>
                             </section>
                         </div>
 
                         <!-- Post Settings -->
                         <div v-show="leftTab === 'settings'" class="space-y-4">
                             <div class="form-control">
-                                <label class="label"><span class="label-text">Post Title</span></label>
+                                <label class="label"><span class="label-text text-xs opacity-60">Post Title</span></label>
                                 <input type="text" v-model="form.title.pl" class="input input-bordered input-sm" placeholder="Title (PL)" />
                             </div>
                             <div class="form-control">
-                                <label class="label"><span class="label-text">Slug</span></label>
+                                <label class="label"><span class="label-text text-xs opacity-60">Slug</span></label>
                                 <input type="text" v-model="form.slug.pl" class="input input-bordered input-sm" placeholder="slug-pl" />
                             </div>
                             <div class="form-control">
-                                <label class="label"><span class="label-text">Excerpt</span></label>
+                                <label class="label"><span class="label-text text-xs opacity-60">Excerpt</span></label>
                                 <textarea v-model="form.excerpt.pl" class="textarea textarea-bordered textarea-sm h-24" placeholder="Short summary..."></textarea>
                             </div>
                             <div class="form-control">
-                                <label class="label"><span class="label-text">Featured Image</span></label>
+                                <label class="label"><span class="label-text text-xs opacity-60">Featured Image</span></label>
                                 <input type="text" v-model="form.featured_image.pl" class="input input-bordered input-sm" placeholder="/storage/media/..." />
                             </div>
                             <div class="form-control">
-                                <label class="label"><span class="label-text">Status</span></label>
+                                <label class="label"><span class="label-text text-xs opacity-60">Status</span></label>
                                 <select v-model="form.is_published" class="select select-bordered select-sm">
                                     <option :value="false">Draft</option>
                                     <option :value="true">Published</option>
@@ -136,25 +136,32 @@
 
                         <!-- Reorderable Block Canvas -->
                         <div class="p-0">
-                            <div v-for="(block, index) in store.blocks" 
-                                 :key="block.id" 
-                                 class="group relative"
-                                 @click="store.activeBlockId = block.id"
-                                 :class="{ 'ring-2 ring-primary ring-inset': store.activeBlockId === block.id }">
-                                
-                                <!-- Block Controls Overlays -->
-                                <div class="absolute right-2 top-2 z-30 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                                    <button @click.stop="store.moveBlock(index, -1)" class="btn btn-square btn-xs btn-ghost bg-white/50 backdrop-blur" title="Move Up"><i class="fas fa-arrow-up"></i></button>
-                                    <button @click.stop="store.moveBlock(index, 1)" class="btn btn-square btn-xs btn-ghost bg-white/50 backdrop-blur" title="Move Down"><i class="fas fa-arrow-down"></i></button>
-                                    <button @click.stop="store.removeBlock(block.id)" class="btn btn-square btn-xs btn-error btn-ghost bg-red-500/50 backdrop-blur" title="Delete"><i class="fas fa-trash"></i></button>
-                                </div>
+                            <draggable 
+                                v-model="blocks" 
+                                :group="'blocks'"
+                                item-key="id"
+                                handle=".drag-handle"
+                                ghost-class="ghost-block"
+                                class="min-h-[600px] bg-base-100/30">
+                                <template #item="{ element, index }">
+                                    <div class="group relative"
+                                         @click="store.activeBlockId = element.id"
+                                         :class="{ 'ring-2 ring-primary ring-inset': store.activeBlockId === element.id }">
+                                        
+                                        <!-- Block Controls Overlays -->
+                                        <div class="absolute right-2 top-2 z-30 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                            <div class="drag-handle btn btn-square btn-xs btn-ghost bg-white/80 border border-black/5 backdrop-blur cursor-move text-black/60 shadow-sm" title="Drag to reorder"><i class="fas fa-grip-vertical"></i></div>
+                                            <button @click.stop="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-error btn-ghost bg-red-500/80 border border-red-500/20 backdrop-blur text-white shadow-sm" title="Delete"><i class="fas fa-trash"></i></button>
+                                        </div>
 
-                                <DynamicBlock :block="block" />
-                            </div>
+                                        <DynamicBlock :block="element" />
+                                    </div>
+                                </template>
+                            </draggable>
 
-                            <div v-if="store.blocks.length === 0" class="h-96 flex flex-col items-center justify-center border-2 border-dashed border-base-content/10 m-10 rounded-2xl">
+                            <div v-if="store.blocks.length === 0" class="h-96 flex flex-col items-center justify-center border-2 border-dashed border-base-content/10 m-10 rounded-2xl bg-base-200/20 pointer-events-none">
                                 <i class="fas fa-feather-alt text-4xl mb-4 opacity-20 text-primary"></i>
-                                <p class="opacity-40">Start writing your post content</p>
+                                <p class="opacity-40">Drag blocks here or click on palette</p>
                             </div>
                         </div>
                     </div>
@@ -162,7 +169,7 @@
 
                 <!-- Right Sidebar: Settings -->
                 <div class="w-80 bg-base-100 border-l border-white/5 overflow-y-auto z-10 shadow-2xl custom-scrollbar">
-                    <BlockEditorSidebar />
+                    <BlockEditorSidebar :menus="menus" />
                 </div>
             </div>
         </div>
@@ -175,15 +182,44 @@ import { useForm } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
 import BlockEditorSidebar from '@/Components/BlockEditorSidebar.vue';
-import { onMounted, watch, ref } from 'vue';
+import { onMounted, watch, ref, computed } from 'vue';
+import draggable from 'vuedraggable';
 
 const props = defineProps({
-    post: Object
+    post: Object,
+    menus: Array
 });
 
 const store = useBlockBuilderStore();
+
+const blocks = computed({
+    get: () => store.blocks,
+    set: (value) => {
+        store.blocks = value;
+        store.isDirty = true;
+    }
+});
 const viewport = ref('desktop');
 const leftTab = ref('blocks');
+
+const layoutBlocks = ref([
+    { type: 'section', label: 'Section', icon: 'fas fa-layer-group' },
+    { type: 'columns', label: 'Columns', icon: 'fas fa-columns' },
+]);
+
+const contentBlocks = ref([
+    { type: 'hero', label: 'Hero', icon: 'fas fa-star' },
+    { type: 'heading', label: 'Heading', icon: 'fas fa-heading' },
+    { type: 'text', label: 'Text', icon: 'fas fa-align-left' },
+    { type: 'image', label: 'Image', icon: 'fas fa-image' },
+    { type: 'button', label: 'Button', icon: 'fas fa-mouse-pointer' },
+    { type: 'language_switcher', label: 'Lang', icon: 'fas fa-globe' },
+    { type: 'menu', label: 'Menu', icon: 'fas fa-bars' },
+]);
+
+const cloneBlock = (block) => {
+    return store.createBlockObject(block.type);
+};
 
 const form = useForm({
     title: props.post?.title || { pl: '', en: '' },
@@ -210,7 +246,7 @@ const generateSlug = (text) => {
 // Auto-slug generation
 watch(() => form.title.pl, (newTitle) => {
     if (!props.post?.id || !form.slug.pl) {
-        form.slug.pl = generateSlug(newTitle);
+        form.slug.pl = generateSlug(newTitle || '');
     }
 });
 
@@ -248,5 +284,11 @@ const save = () => {
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.1);
+}
+
+.ghost-block {
+    opacity: 0.5;
+    background: #c8ebfb;
+    border: 2px dashed #000;
 }
 </style>

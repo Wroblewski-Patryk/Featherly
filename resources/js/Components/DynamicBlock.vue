@@ -1,9 +1,16 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useGsapRuntime } from '@/Composables/useGsapRuntime';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
 
 const props = defineProps(['block']);
+const page = usePage();
+
+const menuItems = computed(() => {
+    if (props.block.type !== 'menu' || !props.block.content.menu_id) return [];
+    const menu = page.props.menus?.find(m => m.id === props.block.content.menu_id);
+    return menu?.items || [];
+});
 
 const blockRef = ref(null);
 const { animateBlock } = useGsapRuntime();
@@ -35,7 +42,10 @@ const styleObj = computed(() => {
 </script>
 
 <template>
-    <div ref="blockRef" :class="[block.appearance?.customClasses]" :style="styleObj">
+    <div ref="blockRef" 
+         :id="block.appearance?.elementId"
+         :class="[block.appearance?.elementClass, block.appearance?.customClasses]" 
+         :style="styleObj">
         <!-- Section Block (Layout Wrapper) -->
         <div v-if="block.type === 'section'" 
              :class="[
@@ -155,6 +165,57 @@ const styleObj = computed(() => {
             </template>
         </div>
         
+        <!-- Form Input Block -->
+        <div v-else-if="block.type === 'form_input'" class="form-control w-full py-2">
+            <label v-if="block.content.label" class="label"><span class="label-text font-semibold opacity-70">{{ block.content.label }}</span></label>
+            <input :type="block.content.type || 'text'" :placeholder="block.content.placeholder" class="input input-bordered w-full" :required="block.content.required" />
+        </div>
+
+        <!-- Form Textarea Block -->
+        <div v-else-if="block.type === 'form_textarea'" class="form-control w-full py-2">
+            <label v-if="block.content.label" class="label"><span class="label-text font-semibold opacity-70">{{ block.content.label }}</span></label>
+            <textarea :placeholder="block.content.placeholder" class="textarea textarea-bordered h-24 w-full" :required="block.content.required"></textarea>
+        </div>
+
+        <!-- Form Select Block -->
+        <div v-else-if="block.type === 'form_select'" class="form-control w-full py-2">
+            <label v-if="block.content.label" class="label"><span class="label-text font-semibold opacity-70">{{ block.content.label }}</span></label>
+            <select class="select select-bordered w-full" :required="block.content.required">
+                <option disabled selected>{{ block.content.placeholder || 'Select option...' }}</option>
+                <option v-for="opt in (block.content.options || '').split('\n')" :key="opt" :value="opt">{{ opt }}</option>
+            </select>
+        </div>
+
+        <!-- Form Submit Block -->
+        <div v-else-if="block.type === 'form_submit'" class="py-4">
+            <button type="submit" :class="['btn', block.content.style === 'secondary' ? 'btn-secondary' : 'btn-primary', block.content.fullWidth ? 'w-full' : '']">
+                {{ block.content.label || 'Submit' }}
+            </button>
+        </div>
+
+        <!-- Language Switcher Block -->
+        <div v-else-if="block.type === 'language_switcher'" class="flex items-center gap-2 py-2">
+            <div class="join border border-base-300 rounded-full overflow-hidden bg-base-100">
+                <button class="join-item btn btn-xs px-3 hover:bg-primary hover:text-white transition-colors">PL</button>
+                <button class="join-item btn btn-xs px-3 hover:bg-primary hover:text-white transition-colors opacity-50">EN</button>
+            </div>
+        </div>
+
+        <!-- Menu Block -->
+        <div v-else-if="block.type === 'menu'" class="py-2">
+            <ul :class="[
+                'flex flex-wrap gap-6 items-center',
+                block.content.layout === 'vertical' ? 'flex-col items-start' : 'flex-row'
+            ]">
+                <li v-for="item in menuItems" :key="item.id" class="text-sm font-medium opacity-70 hover:opacity-100 hover:text-primary transition-all cursor-pointer">
+                    <a :href="item.url" :target="item.target">{{ item.label }}</a>
+                </li>
+                <li v-if="menuItems.length === 0" class="text-xs opacity-30 italic">
+                    {{ block.content.menu_id ? 'Menu is empty' : 'No menu selected' }}
+                </li>
+            </ul>
+        </div>
+
         <!-- Fallback Block -->
         <div v-else class="p-8 text-center text-error border border-error bg-error/10 m-4 rounded">
             Unknown block type: {{ block.type }}
