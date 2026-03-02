@@ -58,18 +58,7 @@
                 </div>
             </template>
 
-            <!-- Canvas Decorators -->
-            <template #canvas-header>
-                <div class="h-16 bg-base-200/10 border-b border-black/5 flex items-center px-8 opacity-40 italic text-xs">
-                    Header Area (Dynamic)
-                </div>
-            </template>
 
-            <template #canvas-footer>
-                <div class="h-16 bg-base-200/10 border-t border-black/5 flex items-center px-8 opacity-40 italic text-xs mt-auto">
-                    Footer Area (Dynamic)
-                </div>
-            </template>
         </BlockBuilder>
     </AdminLayout>
 </template>

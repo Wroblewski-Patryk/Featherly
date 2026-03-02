@@ -8,35 +8,6 @@
                         <i class="fas fa-chevron-left mr-2"></i> {{ backLabel }}
                     </button>
                 </slot>
-                
-                <div class="h-6 w-[1px] bg-white/10 mx-2"></div>
-                
-                <div class="join bg-base-200 p-1 rounded-xl shadow-inner">
-                    <button @click="viewport = 'desktop'" class="btn btn-xs join-item" :class="{ 'btn-primary': viewport === 'desktop' }">
-                        <i class="fas fa-desktop"></i>
-                    </button>
-                    <button @click="viewport = 'tablet'" class="btn btn-xs join-item" :class="{ 'btn-primary': viewport === 'tablet' }">
-                        <i class="fas fa-tablet-alt"></i>
-                    </button>
-                    <button @click="viewport = 'mobile'" class="btn btn-xs join-item" :class="{ 'btn-primary': viewport === 'mobile' }">
-                        <i class="fas fa-mobile-alt"></i>
-                    </button>
-                </div>
-
-                <div class="h-6 w-[1px] bg-white/10 mx-2"></div>
-
-                <!-- Zoom Controls -->
-                <div class="join bg-base-200 p-1 rounded-xl shadow-inner flex items-center">
-                    <button @click="zoomOut" class="btn btn-xs join-item hover:btn-primary" title="Zoom Out"><i class="fas fa-minus"></i></button>
-                    <div class="px-2 text-[10px] font-mono opacity-70 w-12 text-center">{{ Math.round(zoomLevel * 100) }}%</div>
-                    <button @click="zoomIn" class="btn btn-xs join-item hover:btn-primary" title="Zoom In"><i class="fas fa-plus"></i></button>
-                    <button @click="resetZoom" class="btn btn-xs join-item hover:btn-primary" title="Reset Zoom"><i class="fas fa-undo"></i></button>
-                    <div class="h-4 w-[1px] bg-white/10 mx-1"></div>
-                    <button @click="toggleTimeline" class="btn btn-xs join-item hover:btn-primary" :class="{'btn-primary': showTimeline}" title="Layers & Animations">
-                        <i class="fas fa-layer-group mr-1"></i> Pro
-                    </button>
-                </div>
-                
                 <slot name="top-bar-start"></slot>
             </div>
             
@@ -101,12 +72,67 @@
 
             <!-- Center: Wrapper -->
             <div class="flex-1 flex flex-col relative overflow-hidden bg-base-300">
+                <!-- Floating Island for Viewport/Zoom Controls -->
+                <div class="absolute top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 bg-base-100/90 backdrop-blur border border-base-content/10 shadow-xl px-2 py-1 rounded-full transition-all">
+                    <!-- Viewport Controls -->
+                    <div class="flex items-center gap-1">
+                        <button @click="viewport = 'desktop'" class="btn btn-circle btn-xs" :class="viewport === 'desktop' ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Desktop (1280px)">
+                            <i class="fas fa-desktop"></i>
+                        </button>
+                        <button @click="viewport = 'tablet'" class="btn btn-circle btn-xs" :class="viewport === 'tablet' ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Tablet (768px)">
+                            <i class="fas fa-tablet-alt"></i>
+                        </button>
+                        <button @click="viewport = 'mobile'" class="btn btn-circle btn-xs" :class="viewport === 'mobile' ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Mobile (375px)">
+                            <i class="fas fa-mobile-alt"></i>
+                        </button>
+                        <button @click="viewport = 'custom'" class="btn btn-circle btn-xs" :class="viewport === 'custom' ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Custom Width">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+
+                    <div v-if="viewport === 'custom'" class="flex items-center gap-1 px-2 border-l border-base-content/10 ml-1">
+                        <input type="number" v-model="customWidth" class="input input-xs input-bordered w-16 px-1 text-center font-mono" title="Width" />
+                        <span class="text-[10px] opacity-40 text-base-content font-bold">x</span>
+                        <input type="number" v-model="customHeight" class="input input-xs input-bordered w-16 px-1 text-center font-mono" title="Height" />
+                        <span class="text-[10px] opacity-40 text-base-content font-bold">px</span>
+                    </div>
+
+                    <div class="h-4 w-[1px] bg-base-content/20 mx-1"></div>
+
+                    <!-- Zoom Controls -->
+                    <div class="flex items-center gap-0">
+                        <button @click="zoomOut" class="btn btn-circle btn-xs btn-ghost text-base-content/60" title="Zoom Out"><i class="fas fa-minus"></i></button>
+                        <div class="px-1 text-[10px] font-mono font-bold opacity-70 w-12 text-center text-base-content">{{ Math.round(zoomLevel * 100) }}%</div>
+                        <button @click="zoomIn" class="btn btn-circle btn-xs btn-ghost text-base-content/60" title="Zoom In"><i class="fas fa-plus"></i></button>
+                        <button @click="resetZoom" class="btn btn-circle btn-xs btn-ghost text-base-content/60" title="Reset Zoom"><i class="fas fa-undo"></i></button>
+                    </div>
+
+                    <div class="h-4 w-[1px] bg-base-content/20 mx-1"></div>
+                    
+                    <button @click="toggleTimeline" class="btn btn-sm rounded-full px-4" :class="showTimeline ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Layers & Animations">
+                        <i class="fas fa-layer-group mr-2"></i> Timeline
+                    </button>
+                </div>
+
                 <!-- Center: Canvas Area -->
-                <div class="flex-1 overflow-y-auto p-4 md:p-8 flex justify-center custom-scrollbar">
-                    <div :class="[
-                        'bg-white shadow-2xl transition-all duration-300 rounded-sm overflow-x-hidden min-h-screen relative mx-auto',
-                        viewport === 'desktop' ? 'w-full' : (viewport === 'tablet' ? 'w-[768px]' : 'w-[375px]')
-                    ]" :style="{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center', marginBottom: `${(zoomLevel - 1) * 100}%` }">
+                <div class="flex-1 overflow-auto custom-scrollbar text-center whitespace-nowrap pt-24 pb-32 px-4 md:px-8">
+                    <div class="inline-block text-left align-top transition-all duration-300" 
+                         :style="{ width: `${(viewport === 'custom' ? customWidth : (viewport === 'desktop' ? 1280 : (viewport === 'tablet' ? 768 : 375))) * zoomLevel}px` }">
+                        <div :class="[
+                            'bg-base-100 shadow-2xl transition-all duration-300 overflow-x-hidden relative flex flex-col whitespace-normal',
+                            viewport === 'desktop' ? 'min-sh-screen' : '',
+                            viewport === 'tablet' ? 'min-sh-screen' : '',
+                            viewport === 'mobile' ? 'min-sh-screen' : ''
+                        ]" 
+                        :style="[
+                            { 
+                                transform: `scale(${zoomLevel})`, 
+                                transformOrigin: 'top left',
+                                width: viewport === 'custom' ? `${customWidth}px` : (viewport === 'desktop' ? '1280px' : (viewport === 'tablet' ? '768px' : '375px'))
+                            },
+                            viewport === 'custom' ? { minHeight: `${customHeight}px` } : {}
+                        ]"
+                        data-theme="light">
                         <slot name="canvas-header"></slot>
 
                         <draggable 
@@ -115,9 +141,9 @@
                             item-key="id"
                             handle=".drag-handle"
                             ghost-class="ghost-block"
-                            class="min-h-[600px] bg-base-100/30">
+                            class="flex-1 w-full min-h-[600px] flex flex-col">
                             <template #item="{ element }">
-                                <div class="group/block relative"
+                                <div class="group/block relative w-full"
                                      @click="store.activeBlockId = element.id"
                                      :class="{ 'ring-2 ring-primary ring-inset': store.activeBlockId === element.id }">
                                     
@@ -131,12 +157,13 @@
                             </template>
                         </draggable>
 
-                        <div v-if="store.blocks.length === 0" class="h-96 flex flex-col items-center justify-center border-2 border-dashed border-base-content/10 m-10 rounded-2xl bg-base-200/20 pointer-events-none">
-                            <i class="fas fa-plus-circle text-4xl mb-4 opacity-20 text-primary"></i>
-                            <p class="text-xs font-black uppercase tracking-widest opacity-40">Assemble Content Architecture</p>
+                        <div v-if="store.blocks.length === 0" class="absolute inset-x-0 top-32 flex flex-col items-center justify-center pointer-events-none">
+                            <i class="fas fa-layer-group text-4xl mb-4 opacity-10 text-base-content"></i>
+                            <p class="text-[10px] font-black uppercase tracking-widest opacity-30">Drag blocks here</p>
                         </div>
 
                         <slot name="canvas-footer"></slot>
+                    </div>
                     </div>
                 </div>
 
@@ -199,6 +226,8 @@ const emit = defineEmits(['save']);
 
 const store = useBlockBuilderStore();
 const viewport = ref('desktop');
+const customWidth = ref(1920);
+const customHeight = ref(1080);
 const leftTab = ref('blocks');
 
 const blocks = computed({

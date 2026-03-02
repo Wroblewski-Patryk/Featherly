@@ -1,14 +1,5 @@
 <template>
-  <div class="relative min-h-screen" :style="cssVariables">
-    <!-- Legacy background structure -->
-    <div id="color" class="fixed inset-0 z-[-3]"></div>
-    <div id="image" class="fixed inset-0 z-[-2]">
-        <div id="image-1" class="absolute inset-0"></div>
-        <div id="image-2" class="absolute inset-0"></div>
-        <div id="image-3" class="absolute inset-0"></div>
-    </div>
-    <div id="border" class="fixed inset-0 pointer-events-none z-50 transition-all duration-300"></div>
-
+  <div class="relative bg-base-100 min-h-screen flex flex-col mx-auto w-full overflow-x-hidden shadow-2xl" :style="cssVariables">
     <!-- Header Wrapper -->
     <header v-if="activeHeader" class="relative">
       <div class="fixed top-6 right-6 z-[60]">
@@ -38,10 +29,17 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import DynamicBlock from '@/Components/DynamicBlock.vue'
 import LanguageSwitcher from '@/Components/LanguageSwitcher.vue'
+
+const props = defineProps({
+  settings: {
+    type: Object,
+    default: () => ({})
+  }
+});
 
 const pageProps = usePage().props;
 
@@ -66,23 +64,10 @@ const cssVariables = computed(() => {
     '--font-body': fonts.body ? `"${fonts.body}", sans-serif` : 'inherit',
   };
 });
+
+onMounted(() => {
+  // Reset the theme to light for the public frontend 
+  // so that the admin panel theme (if any) doesn't bleed through
+  document.documentElement.setAttribute('data-theme', 'light');
+});
 </script>
-
-<style>
-/* Base port of !oldCode animated background styles */
-#color {
-  background-color: var(--color-primary); /* Uses Global Brand Setting */
-}
-#border {
-  border: 4px solid rgba(255,255,255,0.1);
-  margin: 10px;
-  /* Adjust based on screen size, matching legacy */
-}
-
-@media (min-width: 768px) {
-  #border {
-    border-width: 8px;
-    margin: 20px;
-  }
-}
-</style>

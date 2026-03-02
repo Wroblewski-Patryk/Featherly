@@ -43,7 +43,8 @@ Route::name('admin.')->prefix('admin')->group(function () {
                 Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class , 'index'])->name('settings.index');
                 Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class , 'store'])->name('settings.store');
             }
-            );        });
+            );
+        });
 
 // Public Routes
 Route::get('/', function () {
@@ -63,7 +64,9 @@ Route::get('/', function () {
 
     return Inertia::render('Public/Page', [
     'page' => $page,
-    'settings' => $settings
+    'settings' => $settings,
+    'menus' => \App\Models\Menu::all(),
+    'all_projects' => \App\Models\Project::all()
     ]);
 });
 
@@ -108,6 +111,8 @@ Route::get('/{slug}', function ($slug) {
 
     return Inertia::render('Public/Page', [
     'page' => $page,
-    'settings' => $settings
+    'settings' => $settings,
+    'menus' => \App\Models\Menu::all(),
+    'all_projects' => \App\Models\Project::all()
     ]);
 })->where('slug', '^(?!admin|livewire|storage|_debugbar|build|api).*$');
