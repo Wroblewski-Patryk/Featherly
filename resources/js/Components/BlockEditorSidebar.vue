@@ -2,6 +2,8 @@
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import { computed, ref, watch } from 'vue';
 import UnitInput from '@/Components/UnitInput.vue';
+import LinkedUnitInput from '@/Components/LinkedUnitInput.vue';
+import LayerTreeItem from '@/Components/LayerTreeItem.vue';
 import { ColorPicker } from 'vue3-colorpicker';
 import 'vue3-colorpicker/style.css';
 
@@ -9,6 +11,7 @@ const props = defineProps(['menus']);
 
 const store = useBlockBuilderStore();
 const activeSidebarTab = ref('content');
+const activeInspectorTab = ref('layers'); // For Document Inspector State
 
 const getBlockStyleColor = (prop) => computed({
     get: () => {
@@ -46,7 +49,7 @@ watch(() => store.activeBlock, (newBlock) => {
             newBlock.settings.layout = {
                 fullHeight: false,
                 fixedBg: false,
-                padding: 'py-20',
+                padding: 'py-0',
                 zIndex: 1
             };
         }
@@ -180,12 +183,24 @@ const removeProject = (idx) => {
 
                 <!-- Table -->
                 <div v-if="store.activeBlock.type === 'table'" class="space-y-4">
-                    <label class="text-[10px] opacity-40 uppercase font-black">Table Rows</label>
-                    <div v-for="(row, rIdx) in store.activeBlock.content.rows" :key="rIdx" class="grid grid-cols-2 gap-2">
-                        <input v-for="(cell, cIdx) in row" :key="cIdx" type="text" v-model="store.activeBlock.content.rows[rIdx][cIdx]" class="input input-xs input-bordered" />
-                        <button @click="store.activeBlock.content.rows.splice(rIdx, 1)" class="btn btn-xs btn-error btn-ghost col-span-2">Remove Row</button>
+                    <div class="flex items-center justify-between">
+                        <label class="text-[10px] opacity-40 uppercase font-black">Table Layout</label>
+                        <div class="join">
+                            <button @click="store.activeBlock.content.rows.forEach(r => r.push(''))" class="btn btn-xs join-item btn-ghost bg-base-200 hover:bg-base-300 px-3" title="Add Column">+ Col</button>
+                            <button @click="store.activeBlock.content.rows.forEach(r => { if(r.length > 1) r.pop() })" class="btn btn-xs join-item btn-ghost bg-base-200 hover:bg-base-300 px-3" title="Remove Last Column">- Col</button>
+                        </div>
                     </div>
-                    <button @click="store.activeBlock.content.rows.push(['New Cell', 'New Cell'])" class="btn btn-xs btn-outline btn-block">Add Row</button>
+
+                    <div class="flex flex-col gap-2">
+                        <div v-for="(row, rIdx) in store.activeBlock.content.rows" :key="rIdx" class="flex gap-2 items-center bg-base-200/50 p-2 rounded-xl border border-white/5 overflow-hidden">
+                            <div class="flex gap-2 flex-1 overflow-x-auto custom-scrollbar pb-1">
+                                <input v-for="(cell, cIdx) in row" :key="cIdx" type="text" v-model="store.activeBlock.content.rows[rIdx][cIdx]" class="input input-xs input-bordered min-w-[80px] flex-1" />
+                            </div>
+                            <button @click="store.activeBlock.content.rows.splice(rIdx, 1)" class="btn btn-square btn-xs btn-ghost text-error shrink-0" :disabled="store.activeBlock.content.rows.length <= 1" title="Remove Row"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    
+                    <button @click="store.activeBlock.content.rows.push(new Array(store.activeBlock.content.rows[0].length).fill(''))" class="btn btn-xs btn-outline btn-block border-dashed border-white/20"><i class="fas fa-plus mr-2"></i>Add Row</button>
                 </div>
 
                 <!-- Media Blocks -->
@@ -453,148 +468,162 @@ const removeProject = (idx) => {
             <div v-if="activeSidebarTab === 'style'" class="space-y-6 animate-in fade-in">
                 
                 <!-- Colors -->
-                <div class="space-y-4">
-                    <h4 class="text-[10px] uppercase font-black tracking-widest opacity-50 border-b border-white/5 pb-2">Colors</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="form-control items-center">
-                            <label class="label self-start"><span class="label-text text-[10px] uppercase">Background</span></label>
-                            <ColorPicker v-model:pureColor="bgColor" format="rgb" shape="square" useType="pure" />
-                        </div>
-                        <div class="form-control items-center">
-                            <label class="label self-start"><span class="label-text text-[10px] uppercase">Text Color</span></label>
-                            <ColorPicker v-model:pureColor="textColor" format="rgb" shape="square" useType="pure" />
+                <div class="collapse collapse-arrow bg-base-200/50 border border-white/5 rounded-2xl">
+                    <input type="checkbox" /> 
+                    <div class="collapse-title text-[10px] uppercase font-black tracking-widest opacity-50">Colors</div>
+                    <div class="collapse-content space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="form-control items-center">
+                                <label class="label self-start"><span class="label-text text-[10px] uppercase">Background</span></label>
+                                <ColorPicker v-model:pureColor="bgColor" format="rgb" shape="square" useType="pure" />
+                            </div>
+                            <div class="form-control items-center">
+                                <label class="label self-start"><span class="label-text text-[10px] uppercase">Text Color</span></label>
+                                <ColorPicker v-model:pureColor="textColor" format="rgb" shape="square" useType="pure" />
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Spacing (Margin) -->
-                <div class="space-y-4">
-                    <h4 class="text-[10px] uppercase font-black tracking-widest opacity-50 border-b border-white/5 pb-2">Margin</h4>
-                    <div class="grid grid-cols-2 gap-2">
-                        <UnitInput v-model="store.activeBlock.settings.style.marginTop" placeholder="Top" />
-                        <UnitInput v-model="store.activeBlock.settings.style.marginBottom" placeholder="Bottom" />
-                        <UnitInput v-model="store.activeBlock.settings.style.marginLeft" placeholder="Left" />
-                        <UnitInput v-model="store.activeBlock.settings.style.marginRight" placeholder="Right" />
-                    </div>
-                </div>
-
-                <!-- Spacing (Padding) -->
-                <div class="space-y-4">
-                    <h4 class="text-[10px] uppercase font-black tracking-widest opacity-50 border-b border-white/5 pb-2">Padding</h4>
-                    <div class="grid grid-cols-2 gap-2">
-                        <UnitInput v-model="store.activeBlock.settings.style.paddingTop" placeholder="Top" />
-                        <UnitInput v-model="store.activeBlock.settings.style.paddingBottom" placeholder="Bottom" />
-                        <UnitInput v-model="store.activeBlock.settings.style.paddingLeft" placeholder="Left" />
-                        <UnitInput v-model="store.activeBlock.settings.style.paddingRight" placeholder="Right" />
+                <!-- Spacing (Margin & Padding) -->
+                <div class="collapse collapse-arrow bg-base-200/50 border border-white/5 rounded-2xl">
+                    <input type="checkbox" /> 
+                    <div class="collapse-title text-[10px] uppercase font-black tracking-widest opacity-50">Spacing</div>
+                    <div class="collapse-content space-y-6">
+                        <LinkedUnitInput 
+                            v-model="store.activeBlock.settings.style.margin" 
+                            label="Margin" 
+                            :mapping="{ top: 'marginTop', right: 'marginRight', bottom: 'marginBottom', left: 'marginLeft' }"
+                        />
+                        <div class="divider my-0 opacity-10"></div>
+                        <LinkedUnitInput 
+                            v-model="store.activeBlock.settings.style.padding" 
+                            label="Padding" 
+                            :mapping="{ top: 'paddingTop', right: 'paddingRight', bottom: 'paddingBottom', left: 'paddingLeft' }"
+                        />
                     </div>
                 </div>
 
                 <!-- Typography -->
-                <div class="space-y-4">
-                    <h4 class="text-[10px] uppercase font-black tracking-widest opacity-50 border-b border-white/5 pb-2">Typography</h4>
-                    
-                    <div class="form-control">
-                        <label class="label"><span class="label-text text-[10px] uppercase">Font Family</span></label>
-                        <select v-model="store.activeBlock.settings.style.fontFamily" class="select select-bordered select-sm w-full">
-                            <option :value="undefined">Default</option>
-                            <option value="sans-serif">Sans Serif</option>
-                            <option value="serif">Serif</option>
-                            <option value="monospace">Monospace</option>
-                            <option value="'Inter', sans-serif">Inter</option>
-                            <option value="'Titillium Web', sans-serif">Titillium Web</option>
-                        </select>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
+                <div class="collapse collapse-arrow bg-base-200/50 border border-white/5 rounded-2xl">
+                    <input type="checkbox" checked /> 
+                    <div class="collapse-title text-[10px] uppercase font-black tracking-widest opacity-50">Typography</div>
+                    <div class="collapse-content space-y-4">
                         <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] uppercase">Font Size</span></label>
-                            <UnitInput v-model="store.activeBlock.settings.style.fontSize" placeholder="Size" />
-                        </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] uppercase">Letter Spacing</span></label>
-                            <UnitInput v-model="store.activeBlock.settings.style.letterSpacing" placeholder="Spacing" />
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] uppercase">Alignment</span></label>
-                            <select v-model="store.activeBlock.settings.style.textAlign" class="select select-bordered select-sm w-full">
+                            <label class="label"><span class="label-text text-[10px] uppercase">Font Family</span></label>
+                            <select v-model="store.activeBlock.settings.style.fontFamily" class="select select-bordered select-sm w-full">
                                 <option :value="undefined">Default</option>
-                                <option value="left">Left</option>
-                                <option value="center">Center</option>
-                                <option value="right">Right</option>
-                                <option value="justify">Justify</option>
+                                <option value="sans-serif">Sans Serif</option>
+                                <option value="serif">Serif</option>
+                                <option value="monospace">Monospace</option>
+                                <option value="'Inter', sans-serif">Inter</option>
+                                <option value="'Titillium Web', sans-serif">Titillium Web</option>
                             </select>
                         </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] uppercase">Weight</span></label>
-                            <select v-model="store.activeBlock.settings.style.fontWeight" class="select select-bordered select-sm w-full">
-                                <option :value="undefined">Default</option>
-                                <option value="300">Light</option>
-                                <option value="normal">Normal</option>
-                                <option value="500">Medium</option>
-                                <option value="bold">Bold</option>
-                                <option value="900">Black/Heavy</option>
-                            </select>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label"><span class="label-text text-[10px] uppercase">Font Size</span></label>
+                                <UnitInput v-model="store.activeBlock.settings.style.fontSize" placeholder="Size" />
+                            </div>
+                            <div class="form-control">
+                                <label class="label"><span class="label-text text-[10px] uppercase">Letter Spacing</span></label>
+                                <UnitInput v-model="store.activeBlock.settings.style.letterSpacing" placeholder="Spacing" />
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="form-control col-span-2">
+                                <label class="label"><span class="label-text text-[10px] uppercase">Alignment</span></label>
+                                <div class="join w-full">
+                                    <button @click="store.activeBlock.settings.style.textAlign = 'left'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'left' ? 'btn-primary' : 'bg-base-300'"><i class="fas fa-align-left"></i></button>
+                                    <button @click="store.activeBlock.settings.style.textAlign = 'center'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'center' ? 'btn-primary' : 'bg-base-300'"><i class="fas fa-align-center"></i></button>
+                                    <button @click="store.activeBlock.settings.style.textAlign = 'right'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'right' ? 'btn-primary' : 'bg-base-300'"><i class="fas fa-align-right"></i></button>
+                                    <button @click="store.activeBlock.settings.style.textAlign = 'justify'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'justify' ? 'btn-primary' : 'bg-base-300'"><i class="fas fa-align-justify"></i></button>
+                                </div>
+                            </div>
+                            <div class="form-control col-span-2">
+                                <label class="label"><span class="label-text text-[10px] uppercase">Weight</span></label>
+                                <div class="join w-full">
+                                    <button @click="store.activeBlock.settings.style.fontWeight = '300'" class="btn btn-sm join-item flex-1 font-light" :class="store.activeBlock.settings.style.fontWeight === '300' ? 'btn-primary' : 'bg-base-300'">L</button>
+                                    <button @click="store.activeBlock.settings.style.fontWeight = 'normal'" class="btn btn-sm join-item flex-1 font-normal" :class="(!store.activeBlock.settings.style.fontWeight || store.activeBlock.settings.style.fontWeight === 'normal') ? 'btn-primary' : 'bg-base-300'">R</button>
+                                    <button @click="store.activeBlock.settings.style.fontWeight = '500'" class="btn btn-sm join-item flex-1 font-medium" :class="store.activeBlock.settings.style.fontWeight === '500' ? 'btn-primary' : 'bg-base-300'">M</button>
+                                    <button @click="store.activeBlock.settings.style.fontWeight = 'bold'" class="btn btn-sm join-item flex-1 font-bold" :class="store.activeBlock.settings.style.fontWeight === 'bold' ? 'btn-primary' : 'bg-base-300'">B</button>
+                                    <button @click="store.activeBlock.settings.style.fontWeight = '900'" class="btn btn-sm join-item flex-1 font-black" :class="store.activeBlock.settings.style.fontWeight === '900' ? 'btn-primary' : 'bg-base-300'">H</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Borders -->
-                <div class="space-y-4">
-                    <h4 class="text-[10px] uppercase font-black tracking-widest opacity-50 border-b border-white/5 pb-2">Border & Appearance</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] uppercase">Radius</span></label>
-                            <UnitInput v-model="store.activeBlock.settings.style.borderRadius" placeholder="Radius" />
-                        </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] uppercase">Width</span></label>
-                            <UnitInput v-model="store.activeBlock.settings.style.borderWidth" placeholder="Width" />
-                        </div>
-                        <div class="form-control col-span-2 items-center">
-                            <label class="label self-start"><span class="label-text text-[10px] uppercase">Border Color</span></label>
-                            <ColorPicker v-model:pureColor="borderColor" format="rgb" shape="square" useType="pure" />
+                <div class="collapse collapse-arrow bg-base-200/50 border border-white/5 rounded-2xl">
+                    <input type="checkbox" /> 
+                    <div class="collapse-title text-[10px] uppercase font-black tracking-widest opacity-50">Border & Appearance</div>
+                    <div class="collapse-content space-y-6">
+                        <!-- Border Radius Linked Input -->
+                        <LinkedUnitInput 
+                            v-model="store.activeBlock.settings.style.border" 
+                            label="Radius" 
+                            :mapping="{ top: 'borderTopLeftRadius', right: 'borderTopRightRadius', bottom: 'borderBottomRightRadius', left: 'borderBottomLeftRadius' }"
+                        />
+
+                        <div class="divider my-0 opacity-10"></div>
+
+                        <!-- Border Width Linked Input -->
+                        <LinkedUnitInput 
+                            v-model="store.activeBlock.settings.style.border" 
+                            label="Width" 
+                            :mapping="{ top: 'borderTopWidth', right: 'borderRightWidth', bottom: 'borderBottomWidth', left: 'borderLeftWidth' }"
+                        />
+
+                        <div class="divider my-0 opacity-10"></div>
+
+                        <div class="grid grid-cols-1">
+                            <div class="form-control items-center">
+                                <label class="label self-start"><span class="label-text text-[10px] uppercase">Border Color</span></label>
+                                <ColorPicker v-model:pureColor="borderColor" format="rgb" shape="square" useType="pure" />
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Layout & Position -->
-                <div class="space-y-4">
-                    <h4 class="text-[10px] uppercase font-black tracking-widest opacity-50 border-b border-white/5 pb-2">Layout & Position</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] uppercase">Position</span></label>
-                            <select v-model="store.activeBlock.settings.style.position" class="select select-bordered select-sm w-full">
-                                <option :value="undefined">Static</option>
-                                <option value="relative">Relative</option>
-                                <option value="absolute">Absolute</option>
-                                <option value="fixed">Fixed</option>
-                                <option value="sticky">Sticky</option>
-                            </select>
+                <div class="collapse collapse-arrow bg-base-200/50 border border-white/5 rounded-2xl">
+                    <input type="checkbox" /> 
+                    <div class="collapse-title text-[10px] uppercase font-black tracking-widest opacity-50">Layout & Position</div>
+                    <div class="collapse-content space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label"><span class="label-text text-[10px] uppercase">Position</span></label>
+                                <select v-model="store.activeBlock.settings.style.position" class="select select-bordered select-sm w-full">
+                                    <option :value="undefined">Static</option>
+                                    <option value="relative">Relative</option>
+                                    <option value="absolute">Absolute</option>
+                                    <option value="fixed">Fixed</option>
+                                    <option value="sticky">Sticky</option>
+                                </select>
+                            </div>
+                            <div class="form-control">
+                                <label class="label"><span class="label-text text-[10px] uppercase">Z-Index</span></label>
+                                <input type="number" v-model="store.activeBlock.settings.style.zIndex" class="input input-sm input-bordered w-full" />
+                            </div>
                         </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] uppercase">Z-Index</span></label>
-                            <input type="number" v-model="store.activeBlock.settings.style.zIndex" class="input input-sm input-bordered w-full" />
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-2 mt-2">
-                        <UnitInput v-model="store.activeBlock.settings.style.top" placeholder="Top" />
-                        <UnitInput v-model="store.activeBlock.settings.style.bottom" placeholder="Bottom" />
-                        <UnitInput v-model="store.activeBlock.settings.style.left" placeholder="Left" />
-                        <UnitInput v-model="store.activeBlock.settings.style.right" placeholder="Right" />
-                    </div>
+                        
+                        <LinkedUnitInput 
+                            v-if="['absolute', 'fixed', 'sticky', 'relative'].includes(store.activeBlock.settings.style.position)"
+                            v-model="store.activeBlock.settings.style.positionOffset" 
+                            label="Offsets" 
+                            class="mt-4"
+                        />
 
-                    <div class="grid grid-cols-2 gap-4 mt-2">
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] uppercase">Width</span></label>
-                            <UnitInput v-model="store.activeBlock.settings.style.width" placeholder="Width" />
-                        </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] uppercase">Height</span></label>
-                            <UnitInput v-model="store.activeBlock.settings.style.height" placeholder="Height" />
+                        <div class="grid grid-cols-2 gap-4 mt-2">
+                            <div class="form-control">
+                                <label class="label"><span class="label-text text-[10px] uppercase">Width</span></label>
+                                <UnitInput v-model="store.activeBlock.settings.style.width" placeholder="Width" />
+                            </div>
+                            <div class="form-control">
+                                <label class="label"><span class="label-text text-[10px] uppercase">Height</span></label>
+                                <UnitInput v-model="store.activeBlock.settings.style.height" placeholder="Height" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -617,11 +646,61 @@ const removeProject = (idx) => {
         </div>
     </div>
     
-    <!-- Empty State -->
-    <div v-else class="h-full flex flex-col items-center justify-center p-8 text-center opacity-20">
-        <i class="fas fa-mouse-pointer text-4xl mb-4"></i>
-        <p class="text-sm font-bold uppercase tracking-widest leading-tight">Artisan Editor</p>
-        <p class="text-[10px] mt-2">Select a block to refine its aesthetic.</p>
+    <!-- Empty State: Document Inspector -->
+    <div v-else class="h-full flex flex-col bg-base-100 animate-in fade-in duration-300">
+        <!-- Inspector Header -->
+        <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-base-100/80 backdrop-blur-xl z-20">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-base-content/5 flex items-center justify-center text-base-content/70 flex-shrink-0">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold capitalize">Document Inspector</h3>
+                    <p class="text-[10px] opacity-40 uppercase tracking-widest leading-none">Global Settings</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inspector Tabs -->
+        <div class="flex border-b border-white/5 bg-base-200/30">
+            <button v-for="tab in ['layers', 'info', 'history']" :key="tab"
+                    @click="activeInspectorTab = tab"
+                    class="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-all relative"
+                    :class="activeInspectorTab === tab ? 'text-primary' : 'opacity-40 hover:opacity-100'">
+                {{ tab }}
+                <div v-if="activeInspectorTab === tab" class="absolute bottom-0 left-4 right-4 h-0.5 bg-primary rounded-full"></div>
+            </button>
+        </div>
+
+        <!-- Inspector Content -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
+            
+            <!-- Layers -->
+            <div v-if="activeInspectorTab === 'layers'" class="space-y-4 animate-in fade-in">
+                <p class="text-[10px] font-bold uppercase tracking-widest opacity-30 mb-2">Canvas Graph</p>
+                
+                <LayerTreeItem 
+                    :blocks="store.blocks" 
+                    @change="store.isDirty = true" 
+                />
+                
+                <div v-if="store.blocks.length === 0" class="text-xs opacity-40 italic mt-2 text-center py-8">
+                    <i class="fas fa-cubes text-2xl mb-2 opacity-20 block"></i>
+                    No blocks on canvas.
+                </div>
+            </div>
+
+            <!-- Global Info Slot -->
+            <div v-if="activeInspectorTab === 'info'" class="space-y-4 animate-in fade-in">
+                <slot name="info"></slot>
+            </div>
+
+            <!-- History Slot -->
+            <div v-if="activeInspectorTab === 'history'" class="space-y-4 animate-in fade-in">
+                <slot name="history"></slot>
+            </div>
+
+        </div>
     </div>
 </template>
 

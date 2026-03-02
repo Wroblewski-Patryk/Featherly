@@ -165,7 +165,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                     layout: {
                         fullHeight: false,
                         fixedBg: false,
-                        padding: 'py-20',
+                        padding: 'py-0',
                         zIndex: 1
                     },
                     style: {

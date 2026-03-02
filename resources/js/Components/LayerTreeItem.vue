@@ -12,23 +12,35 @@
             <div>
                 <!-- Item Row -->
                 <div 
-                    class="text-xs py-2 px-3 border border-white/5 rounded-lg flex items-center gap-3 bg-base-200/30 hover:bg-base-200 transition-colors"
-                    :class="{ 'ring-1 ring-primary bg-primary/10': store.activeBlockId === element.id }"
+                    class="group relative text-xs py-1.5 px-2 flex items-center gap-2 cursor-pointer transition-colors border-y border-transparent hover:bg-base-content/5"
+                    :class="{ 'bg-primary/10 text-primary border-primary/20': store.activeBlockId === element.id }"
+                    @click="store.activeBlockId = element.id"
                 >
-                    <!-- Indentation Visuals -->
-                    <div v-if="depth > 0" class="flex items-center" :style="{ paddingLeft: (depth - 1) * 1 + 'rem' }">
-                        <div class="h-px border-t border-dashed border-white/20 w-3 -ml-1 mr-2"></div>
+                    <!-- Indentation Visuals (Left Border Guides) -->
+                    <div v-if="depth > 0" class="flex h-full items-center pl-1" :style="{ width: (depth * 1) + 'rem' }">
+                        <div class="h-6 w-px bg-base-content/10 mr-auto"></div>
                     </div>
 
-                    <i class="fas fa-grip-vertical opacity-20 cursor-move drag-handle"></i>
-                    <i :class="element.icon || 'fas fa-cube'" class="opacity-50"></i>
-                    <span class="font-semibold cursor-pointer flex-1" @click="store.activeBlockId = element.id">
+                    <!-- Drag Handle -->
+                    <i class="fas fa-grip-vertical opacity-0 group-hover:opacity-30 cursor-move drag-handle transition-opacity px-1"></i>
+                    
+                    <!-- Icon & Name -->
+                    <i :class="element.icon || 'fas fa-cube'" class="opacity-70 text-[10px] w-4 text-center"></i>
+                    <span class="font-medium flex-1 truncate">
                         {{ element.type.charAt(0).toUpperCase() + element.type.slice(1).replace('_', ' ') }}
                     </span>
-                    <span class="opacity-30 text-[10px] font-mono">{{ element.id.split('-')[0] }}</span>
-                    <button @click.stop="store.removeBlock(element.id)" class="btn btn-ghost btn-xs btn-circle text-error ml-2">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    
+                    <!-- ID (Dimmed) -->
+                    <span class="opacity-30 text-[9px] font-mono select-none" :class="{ 'text-primary': store.activeBlockId === element.id }">
+                        {{ element.id.split('-')[0] }}
+                    </span>
+
+                    <!-- Quick Actions (Hidden until hover) -->
+                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <!-- Pseudo 'Eye' toggle for aesthetics (no logic yet, just UI feeling) -->
+                        <button class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/50 hover:text-base-content"><i class="fas fa-eye"></i></button>
+                        <button @click.stop="store.removeBlock(element.id)" class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-error/70 hover:text-error"><i class="fas fa-trash"></i></button>
+                    </div>
                 </div>
                 
                 <!-- Recursive Children Rendering -->
