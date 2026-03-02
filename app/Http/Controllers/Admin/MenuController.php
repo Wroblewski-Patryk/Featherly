@@ -44,9 +44,9 @@ class MenuController extends Controller
             'items' => 'nullable|array',
         ]);
 
-        Menu::create($validated);
+        $newMenu = Menu::create($validated);
 
-        return redirect()->route('admin.menus.index')->with('success', 'Menu created successfully.');
+        return redirect()->route('admin.menus.edit', $newMenu->id)->with('success', 'Menu created successfully.');
     }
 
     public function edit(Menu $menu)
@@ -66,7 +66,7 @@ class MenuController extends Controller
 
         $menu->update($validated);
 
-        return redirect()->route('admin.menus.index')->with('success', 'Menu updated successfully.');
+        return redirect()->back()->with('success', 'Menu updated successfully.');
     }
 
     public function destroy(Menu $menu)

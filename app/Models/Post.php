@@ -16,11 +16,12 @@ class Post extends Model
         return $this->morphMany(Revision::class , 'revisionable')->latest();
     }
 
-    public $translatable = ['title', 'slug', 'excerpt', 'content', 'featured_image', 'meta_title', 'meta_description', 'og_image'];
+    public $translatable = ['title', 'slug', 'excerpt', 'featured_image', 'meta_title', 'meta_description', 'og_image'];
 
     protected $guarded = [];
 
     protected $casts = [
+        'content' => 'array',
         'is_published' => 'boolean',
         'published_at' => 'datetime',
     ];

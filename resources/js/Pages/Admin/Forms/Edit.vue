@@ -16,11 +16,11 @@
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text">Success Message</span></label>
-                    <textarea v-model="form.success_message" class="textarea textarea-bordered textarea-sm h-20" placeholder="Thank you for your message!"></textarea>
+                    <textarea v-model="form.settings.success_message" class="textarea textarea-bordered textarea-sm h-20" placeholder="Thank you for your message!"></textarea>
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text">Notification Email</span></label>
-                    <input type="email" v-model="form.notification_email" class="input input-bordered input-sm" placeholder="admin@example.com" />
+                    <input type="email" v-model="form.settings.notification_email" class="input input-bordered input-sm" placeholder="admin@example.com" />
                 </div>
             </template>
 
@@ -100,7 +100,7 @@ const cloneBlock = (block) => {
 const form = useForm({
     name: props.form_data?.name || '',
     content: props.form_data?.content || [],
-    settings: props.form_data?.settings || { success_message: 'Message sent!', submit_url: '' },
+    settings: props.form_data?.settings || { success_message: 'Message sent!', notification_email: '', submit_url: '' },
 });
 
 onMounted(() => {

@@ -16,7 +16,7 @@
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text">Slug</span></label>
-                    <input type="text" v-model="form.slug" class="input input-bordered input-sm" placeholder="post-slug" />
+                    <input type="text" v-model="form.slug.pl" class="input input-bordered input-sm" placeholder="post-slug" />
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text">Status</span></label>
@@ -27,13 +27,12 @@
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text">Featured Image</span></label>
-                    <input type="text" v-model="form.featured_image" class="input input-bordered input-sm" placeholder="Image URL" />
+                    <input type="text" v-model="form.featured_image.pl" class="input input-bordered input-sm" placeholder="Image URL" />
                 </div>
             </template>
 
-            <!-- Optional Top Bar Actions -->
             <template #top-bar-end>
-                <a :href="'/blog/' + form.slug" target="_blank" class="btn btn-ghost btn-xs">
+                <a :href="'/blog/' + (form.slug.pl || form.slug)" target="_blank" class="btn btn-ghost btn-xs">
                     <i class="fas fa-external-link-alt mr-1"></i> Preview
                 </a>
             </template>

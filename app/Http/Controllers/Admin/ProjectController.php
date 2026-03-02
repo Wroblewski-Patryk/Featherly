@@ -41,8 +41,12 @@ class ProjectController extends Controller
 
     public function create()
     {
+        $project = new Project();
+        $project->setAttribute('title', ['pl' => '', 'en' => '']);
+        $project->setAttribute('description', ['pl' => '', 'en' => '']);
+
         return Inertia::render('Admin/Projects/Edit', [
-            'project' => null
+            'project' => $project
         ]);
     }
 
@@ -57,15 +61,16 @@ class ProjectController extends Controller
             'mobile_image' => 'nullable|string',
             'url' => 'nullable|string',
             'category' => 'nullable|string',
-            'order' => 'integer'
+            'order' => 'integer',
+            'content' => 'nullable|array'
         ]);
 
         if (empty($validated['slug'])) {
             $validated['slug'] = Str::slug($validated['title']['pl']);
         }
 
-        Project::create($validated);
-        return redirect()->route('admin.projects.index')->with('message', 'Project created');
+        $project = Project::create($validated);
+        return redirect()->route('admin.projects.edit', $project->id)->with('message', 'Project created');
     }
 
     public function edit(Project $project)
@@ -85,11 +90,12 @@ class ProjectController extends Controller
             'mobile_image' => 'nullable|string',
             'url' => 'nullable|string',
             'category' => 'nullable|string',
-            'order' => 'integer'
+            'order' => 'integer',
+            'content' => 'nullable|array'
         ]);
 
         $project->update($validated);
-        return redirect()->route('admin.projects.index')->with('message', 'Project updated');
+        return redirect()->back()->with('message', 'Project updated');
     }
 
     public function destroy(Project $project)

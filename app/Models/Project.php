@@ -10,15 +10,10 @@ class Project extends Model
 {
     use HasFactory, HasTranslations;
 
-    protected $fillable = [
-        'title',
-        'slug',
-        'description',
-        'desktop_image',
-        'mobile_image',
-        'url',
-        'category',
-        'order'
+    protected $guarded = [];
+
+    protected $casts = [
+        'content' => 'array',
     ];
 
     public $translatable = ['title', 'description'];
