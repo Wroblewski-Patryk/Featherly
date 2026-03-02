@@ -1,5 +1,5 @@
 <template>
-    <AdminLayout>
+    <AdminLayout :full-width="true">
         <BlockBuilder 
             title="Form" 
             save-label="Save Form"
