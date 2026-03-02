@@ -46,9 +46,9 @@ class FormController extends Controller
             'is_published' => 'boolean',
         ]);
 
-        Form::create($validated);
+        $formModel = Form::create($validated);
 
-        return redirect()->route('admin.forms.index')->with('success', 'Form created successfully.');
+        return redirect()->route('admin.forms.edit', $formModel->id)->with('success', 'Form created successfully.');
     }
 
     public function edit(Form $form)
@@ -70,7 +70,7 @@ class FormController extends Controller
 
         $form->update($validated);
 
-        return redirect()->route('admin.forms.index')->with('success', 'Form updated successfully.');
+        return redirect()->back()->with('success', 'Form updated successfully.');
     }
 
     public function destroy(Form $form)

@@ -62,9 +62,9 @@ class PageController extends Controller
             'footer_override_id' => 'nullable|exists:templates,id',
         ]);
 
-        Page::create($validated);
+        $page = Page::create($validated);
 
-        return redirect()->route('admin.pages.index')->with('success', 'Page created successfully.');
+        return redirect()->route('admin.pages.edit', $page->id)->with('success', 'Page created successfully.');
     }
 
     public function edit(Page $page)
@@ -100,7 +100,7 @@ class PageController extends Controller
 
         $page->update($validated);
 
-        return redirect()->route('admin.pages.index')->with('success', 'Page updated successfully.');
+        return redirect()->back()->with('success', 'Page updated successfully.');
     }
 
     public function destroy(Page $page)

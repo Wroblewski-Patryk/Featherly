@@ -41,8 +41,15 @@ class PostController extends Controller
 
     public function create()
     {
+        $post = new Post();
+        $post->setAttribute('title', ['pl' => '', 'en' => '']);
+        $post->setAttribute('slug', ['pl' => '', 'en' => '']);
+        $post->setAttribute('excerpt', ['pl' => '', 'en' => '']);
+        $post->setAttribute('content', []);
+        $post->setAttribute('revisions', []);
+
         return Inertia::render('Admin/Posts/Edit', [
-            'post' => (new Post())->setAttribute('revisions', []),
+            'post' => $post,
             'templates' => [
                 'header' => \App\Models\Template::where('type', 'header')->get(),
                 'footer' => \App\Models\Template::where('type', 'footer')->get(),
@@ -63,9 +70,9 @@ class PostController extends Controller
             'featured_image' => 'nullable|array',
         ]);
 
-        Post::create($validated);
+        $post = Post::create($validated);
 
-        return redirect()->route('admin.posts.index')->with('success', 'Post created successfully.');
+        return redirect()->route('admin.posts.edit', $post->id)->with('success', 'Post created successfully.');
     }
 
     public function edit(Post $post)
@@ -102,7 +109,7 @@ class PostController extends Controller
 
         $post->update($validated);
 
-        return redirect()->route('admin.posts.index')->with('success', 'Post updated successfully.');
+        return redirect()->back()->with('success', 'Post updated successfully.');
     }
 
     public function destroy(Post $post)
