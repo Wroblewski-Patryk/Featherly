@@ -4,7 +4,7 @@
             type="number" 
             :value="numericValue" 
             @input="updateValue($event.target.value, unit)"
-            class="input input-sm input-bordered join-item w-full bg-base-100" 
+            class="input input-sm input-bordered join-item w-full bg-base-100 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
             :placeholder="placeholder" 
         />
         <select 

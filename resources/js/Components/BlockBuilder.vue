@@ -21,51 +21,55 @@
         </div>
 
         <div class="flex-1 flex overflow-hidden">
-            <!-- Left Sidebar -->
-            <div class="w-80 bg-base-100 border-r border-white/5 flex flex-col z-10 shadow-xl">
-                <div class="tabs tabs-boxed bg-transparent p-2 m-2">
-                    <button @click="leftTab = 'blocks'" class="tab tab-sm flex-1" :class="{ 'tab-active': leftTab === 'blocks' }">Blocks</button>
-                    <button @click="leftTab = 'settings'" class="tab tab-sm flex-1" :class="{ 'tab-active': leftTab === 'settings' }">Info</button>
-                    <button v-if="$slots.history" @click="leftTab = 'history'" class="tab tab-sm flex-1" :class="{ 'tab-active': leftTab === 'history' }">History</button>
+            <!-- Left Sidebar: Block Palette -->
+            <div 
+                class="bg-base-100 border-r border-white/5 flex flex-col z-10 shadow-xl transition-all duration-300"
+                :class="showLeftSidebar ? 'w-80' : 'w-0 overflow-hidden border-r-0'"
+            >
+                <!-- Header -->
+                <div class="px-6 py-4 border-b border-white/5 bg-base-100/80 backdrop-blur-xl flex items-center justify-between sticky top-0 z-20">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-base-content/5 flex items-center justify-center text-base-content/70 flex-shrink-0">
+                            <i class="fas fa-cubes"></i>
+                        </div>
+                        <div class="whitespace-nowrap">
+                            <h3 class="text-sm font-bold capitalize">Block Palette</h3>
+                            <p class="text-[10px] opacity-40 uppercase tracking-widest leading-none">Modules</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex-1 overflow-y-auto p-4 custom-scrollbar">
-                    <!-- Block Palette -->
-                    <div v-show="leftTab === 'blocks'" class="space-y-6">
-                        <div v-for="cat in categories" :key="cat.id" class="collapse collapse-arrow bg-base-200/50 border border-white/5 rounded-2xl overflow-hidden mb-2">
+                    <!-- Categories -->
+                    <div class="space-y-4">
+                        <div v-for="cat in categories" :key="cat.id" class="collapse collapse-arrow bg-base-200 border border-base-content/10 rounded-box overflow-hidden">
                             <input type="checkbox" :checked="cat.id === 'content' || cat.id === 'forms'" /> 
-                            <div class="collapse-title text-[10px] font-black uppercase tracking-widest opacity-40 flex items-center gap-2">
-                                <i :class="cat.icon"></i>
+                            <div class="collapse-title text-xs font-bold uppercase tracking-widest flex items-center gap-3 bg-base-300/50">
+                                <div class="w-8 h-8 rounded-lg bg-base-100 flex items-center justify-center text-primary shadow-sm">
+                                    <i :class="cat.icon"></i>
+                                </div>
                                 {{ cat.label || cat.name }}
                             </div>
-                            <div class="collapse-content px-2 pb-2">
-                                <draggable 
-                                    :list="cat.blocks" 
-                                    :group="{ name: 'blocks', pull: 'clone', put: false }" 
-                                    :clone="cloneBlock"
-                                    :sort="false"
-                                    item-key="type"
-                                    class="grid grid-cols-2 gap-2">
-                                    <template #item="{ element }">
-                                        <div @click="store.addBlock(element.type)" 
-                                             class="btn btn-outline btn-sm h-16 flex flex-col gap-1 border-white/5 bg-base-200/50 hover:bg-primary/10 hover:border-primary/30 transition-all cursor-grab active:cursor-grabbing group">
-                                            <i :class="[element.icon, 'text-lg opacity-40 group-hover:opacity-100 transition-opacity text-primary']"></i>
-                                            <span class="text-[9px] font-bold leading-tight opacity-60 group-hover:opacity-100">{{ element.label }}</span>
-                                        </div>
-                                    </template>
-                                </draggable>
+                            <div class="collapse-content p-0">
+                                <div class="bg-base-200 p-3 mt-1 rounded-b-box">
+                                    <draggable 
+                                        :list="cat.blocks" 
+                                        :group="{ name: 'blocks', pull: 'clone', put: false }" 
+                                        :clone="cloneBlock"
+                                        :sort="false"
+                                        item-key="type"
+                                        class="grid grid-cols-2 gap-3">
+                                        <template #item="{ element }">
+                                            <div @click="store.addBlock(element.type)" 
+                                                 class="flex flex-col items-center justify-center gap-2 p-3 bg-base-100 border border-base-content/5 rounded-box hover:border-primary hover:shadow-md hover:text-primary transition-all cursor-grab active:cursor-grabbing group">
+                                                <i :class="[element.icon, 'text-2xl text-base-content/50 group-hover:text-primary transition-colors']"></i>
+                                                <span class="text-[10px] font-bold leading-tight text-center">{{ element.label }}</span>
+                                            </div>
+                                        </template>
+                                    </draggable>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Module Specific Settings -->
-                    <div v-show="leftTab === 'settings'" class="space-y-4">
-                        <slot name="info"></slot>
-                    </div>
-
-                    <!-- Revision History -->
-                    <div v-show="leftTab === 'history'" class="space-y-4">
-                        <slot name="history"></slot>
                     </div>
                 </div>
             </div>
@@ -74,6 +78,21 @@
             <div class="flex-1 flex flex-col relative overflow-hidden bg-base-300">
                 <!-- Floating Island for Viewport/Zoom Controls -->
                 <div class="absolute top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 bg-base-100/90 backdrop-blur border border-base-content/10 shadow-xl px-2 py-1 rounded-full transition-all">
+                    <!-- Toggles -->
+                    <div class="flex items-center gap-1">
+                        <button @click="showLeftSidebar = !showLeftSidebar" class="btn btn-circle btn-xs" :class="showLeftSidebar ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Toggle Block Palette">
+                            <i class="fas fa-cubes"></i>
+                        </button>
+                        <button @click="showRightSidebar = !showRightSidebar" class="btn btn-circle btn-xs" :class="showRightSidebar ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Toggle Document Inspector">
+                            <i class="fas fa-sliders-h"></i>
+                        </button>
+                        <button @click="toggleTimeline" class="btn btn-circle btn-xs" :class="showTimeline ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Toggle Timeline">
+                            <i class="fas fa-stopwatch"></i>
+                        </button>
+                    </div>
+
+                    <div class="h-4 w-[1px] bg-base-content/20 mx-1"></div>
+
                     <!-- Viewport Controls -->
                     <div class="flex items-center gap-1">
                         <button @click="viewport = 'desktop'" class="btn btn-circle btn-xs" :class="viewport === 'desktop' ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Desktop (1280px)">
@@ -106,16 +125,10 @@
                         <button @click="zoomIn" class="btn btn-circle btn-xs btn-ghost text-base-content/60" title="Zoom In"><i class="fas fa-plus"></i></button>
                         <button @click="resetZoom" class="btn btn-circle btn-xs btn-ghost text-base-content/60" title="Reset Zoom"><i class="fas fa-undo"></i></button>
                     </div>
-
-                    <div class="h-4 w-[1px] bg-base-content/20 mx-1"></div>
-                    
-                    <button @click="toggleTimeline" class="btn btn-sm rounded-full px-4" :class="showTimeline ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Layers & Animations">
-                        <i class="fas fa-layer-group mr-2"></i> Timeline
-                    </button>
                 </div>
 
                 <!-- Center: Canvas Area -->
-                <div class="flex-1 overflow-auto custom-scrollbar text-center whitespace-nowrap pt-24 pb-32 px-4 md:px-8">
+                <div class="flex-1 overflow-auto custom-scrollbar text-center whitespace-nowrap pt-18 pb-32 px-4 md:px-8">
                     <div class="inline-block text-left align-top transition-all duration-300" 
                          :style="{ width: `${(viewport === 'custom' ? customWidth : (viewport === 'desktop' ? 1280 : (viewport === 'tablet' ? 768 : 375))) * zoomLevel}px` }">
                         <div :class="[
@@ -167,37 +180,36 @@
                     </div>
                 </div>
 
-                <!-- Bottom Timeline & Layers Panel -->
-                <div ref="timelinePanel" class="absolute bottom-0 left-0 right-0 h-64 bg-base-100 border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] flex flex-col z-[60] translate-y-full">
+                <!-- Bottom Timeline Panel -->
+                <div ref="timelinePanel" class="absolute bottom-0 left-0 right-0 h-48 bg-base-100 border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] flex flex-col z-[60] translate-y-full">
                     <div class="flex items-center justify-between px-4 py-2 bg-base-200/50 border-b border-white/5 backdrop-blur shadow-sm">
-                        <div class="tabs tabs-boxed bg-transparent p-0 gap-2">
-                            <button @click="timelineTab = 'layers'" class="tab tab-sm" :class="{ 'tab-active': timelineTab === 'layers' }"><i class="fas fa-layer-group mr-2"></i> Layers</button>
-                            <button @click="timelineTab = 'timeline'" class="tab tab-sm" :class="{ 'tab-active': timelineTab === 'timeline' }"><i class="fas fa-stopwatch mr-2"></i> GSAP Timeline</button>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-stopwatch text-primary"></i>
+                            <span class="text-xs font-bold uppercase tracking-widest">GSAP Timeline sequence</span>
                         </div>
                         <button @click="toggleTimeline" class="btn btn-ghost btn-xs btn-circle"><i class="fas fa-times opacity-50"></i></button>
                     </div>
-                    <div class="flex-1 overflow-y-auto p-4 custom-scrollbar flex gap-4">
-                        <div v-show="timelineTab === 'layers'" class="flex-1">
-                            <p class="text-[10px] font-bold uppercase tracking-widest opacity-30 mb-4">Canvas Graph</p>
-                            
-                            <LayerTreeItem 
-                                :blocks="blocks" 
-                                @change="store.isDirty = true" 
-                            />
-                            
-                            <div v-if="blocks.length === 0" class="text-xs opacity-40 italic mt-2">No blocks on canvas.</div>
-                        </div>
-                        <div v-show="timelineTab === 'timeline'" class="flex-1 flex flex-col">
-                            <p class="text-[10px] font-bold uppercase tracking-widest opacity-30 mb-2 px-2">GSAP Animation Sequence</p>
-                            <GsapTimelineEditor :blocks="timelineBlocks" class="flex-1" />
-                        </div>
+                    <div class="flex-1 overflow-y-auto p-4 custom-scrollbar flex flex-col">
+                        <GsapTimelineEditor :blocks="timelineBlocks" class="flex-1" />
                     </div>
                 </div>
             </div>
 
-            <!-- Right Sidebar: Block Settings -->
-            <div class="w-80 bg-base-100 border-l border-white/5 overflow-y-auto z-10 shadow-2xl custom-scrollbar">
-                <BlockEditorSidebar :menus="menus" />
+            <!-- Right Sidebar: Document Inspector / Block Settings -->
+            <div 
+                class="bg-base-100 border-l border-white/5 overflow-hidden z-10 shadow-2xl flex flex-col transition-all duration-300"
+                :class="showRightSidebar ? 'w-80' : 'w-0 border-l-0'"
+            >
+                <div class="w-80 h-full flex flex-col">
+                    <BlockEditorSidebar :menus="menus">
+                        <template #info>
+                            <slot name="info"></slot>
+                        </template>
+                        <template #history>
+                            <slot name="history"></slot>
+                        </template>
+                    </BlockEditorSidebar>
+                </div>
             </div>
         </div>
     </div>
@@ -228,7 +240,6 @@ const store = useBlockBuilderStore();
 const viewport = ref('desktop');
 const customWidth = ref(1920);
 const customHeight = ref(1080);
-const leftTab = ref('blocks');
 
 const blocks = computed({
     get: () => store.blocks,
@@ -256,8 +267,9 @@ const resetZoom = () => {
     zoomLevel.value = 1;
 };
 
+const showLeftSidebar = ref(true);
+const showRightSidebar = ref(true);
 const showTimeline = ref(false);
-const timelineTab = ref('layers');
 const timelinePanel = ref(null);
 
 const toggleTimeline = () => {
