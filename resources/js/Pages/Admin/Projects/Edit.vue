@@ -54,7 +54,7 @@ function submit() {
 
 <template>
     <Head :title="project ? 'Edit Project' : 'Add Project'" />
-    <AdminLayout>
+    <AdminLayout :full-width="true">
         <BlockBuilder 
             title="Project" 
             save-label="Save Project"

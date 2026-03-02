@@ -2,6 +2,13 @@
 import { ref, onMounted, watch } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 
+defineProps({
+    fullWidth: {
+        type: Boolean,
+        default: false
+    }
+});
+
 // Themes supported in our DaisyUI configuration
 const themes = ['light', 'dark', 'luxury', 'cyberpunk'];
 const currentTheme = ref('light');
@@ -160,22 +167,22 @@ function applyTheme(themeName) {
             </div>
 
             <!-- Main Content Area -->
-            <main class="flex-1 overflow-y-auto bg-base-200 p-6">
+            <main class="flex-1 overflow-y-auto bg-base-200" :class="{ 'p-6': !fullWidth }">
                 <!-- Mobile drawer toggle -->
-                <div class="lg:hidden mb-4">
+                <div class="lg:hidden" :class="{ 'mb-4': !fullWidth, 'p-4 border-b border-base-300': fullWidth }">
                     <label for="admin-drawer" class="btn btn-primary drawer-button">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                         Menu
                     </label>
                 </div>
 
-                <div class="max-w-7xl mx-auto">
+                <div :class="{ 'max-w-7xl mx-auto': !fullWidth, 'h-full flex flex-col': fullWidth }">
                     <!-- Header Section if provided -->
-                    <div v-if="$slots.header" class="mb-6 p-6 bg-base-100 rounded-box shadow-sm border border-base-300">
+                    <div v-if="$slots.header" :class="[fullWidth ? 'm-4' : 'mb-6', 'p-6 bg-base-100 rounded-box shadow-sm border border-base-300']">
                         <slot name="header"></slot>
                     </div>
 
-                    <div>
+                    <div :class="{ 'h-full flex-1': fullWidth }">
                         <slot></slot>
                     </div>
                 </div>

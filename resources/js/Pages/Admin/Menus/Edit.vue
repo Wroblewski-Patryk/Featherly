@@ -49,7 +49,7 @@ function setPageUrl(item, pageId) {
 <template>
     <Head :title="menu?.id ? 'Edit Menu' : 'Create Menu'" />
 
-    <AdminLayout>
+    <AdminLayout :full-width="true">
         <template #header>
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-4">
