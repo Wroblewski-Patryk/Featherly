@@ -38,8 +38,9 @@
                     <!-- Quick Actions (Hidden until hover) -->
                     <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <!-- Pseudo 'Eye' toggle for aesthetics (no logic yet, just UI feeling) -->
-                        <button class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/50 hover:text-base-content"><i class="fas fa-eye"></i></button>
-                        <button @click.stop="store.removeBlock(element.id)" class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-error/70 hover:text-error"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/50 hover:text-base-content" title="Toggle Visibility"><i class="fas fa-eye"></i></button>
+                        <button @click.stop="store.duplicateBlock(element.id)" class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-primary/70 hover:text-primary" title="Duplicate Block"><i class="fas fa-copy"></i></button>
+                        <button @click.stop="store.removeBlock(element.id)" class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-error/70 hover:text-error" title="Delete Block"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
                 
