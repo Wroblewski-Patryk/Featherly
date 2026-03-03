@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full flex flex-col overflow-hidden bg-base-300">
+    <div class="h-full flex flex-col overflow-hidden bg-base-300" style="--admin-p: var(--color-primary, #38bdf8); --admin-radius: var(--radius-box, var(--rounded-box, 1rem));">
         <!-- Top Bar -->
         <div class="flex items-center justify-between px-6 py-2 bg-base-100 border-b border-white/5 shadow-md z-20">
             <div class="flex items-center gap-4">
@@ -133,9 +133,9 @@
                          :style="{ width: `${(viewport === 'custom' ? customWidth : (viewport === 'desktop' ? 1280 : (viewport === 'tablet' ? 768 : 375))) * zoomLevel}px` }">
                         <div :class="[
                             'bg-base-100 shadow-2xl transition-all duration-300 overflow-x-hidden relative flex flex-col whitespace-normal',
-                            viewport === 'desktop' ? 'min-sh-screen' : '',
-                            viewport === 'tablet' ? 'min-sh-screen' : '',
-                            viewport === 'mobile' ? 'min-sh-screen' : ''
+                            viewport === 'desktop' ? 'min-h-screen' : '',
+                            viewport === 'tablet' ? 'min-h-screen' : '',
+                            viewport === 'mobile' ? 'min-h-screen' : ''
                         ]" 
                         :style="[
                             { 
@@ -234,6 +234,9 @@ const props = defineProps({
     menus: { type: Array, default: () => [] }
 });
 
+import { provide } from 'vue';
+provide('isEditor', true);
+
 const emit = defineEmits(['save']);
 
 const store = useBlockBuilderStore();
@@ -300,10 +303,60 @@ const cloneBlock = (block) => {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.1);
 }
+</style>
 
+<style>
+/* Editor UI dynamic theme styles (bypasses canvas data-theme="light") */
+.editor-ring {
+    box-shadow: inset 0 0 0 2px var(--admin-p) !important;
+}
+
+.editor-dashed-frame {
+    border-color: color-mix(in srgb, var(--admin-p) 30%, transparent) !important;
+    transition: border-color 0.2s;
+}
+.editor-dashed-frame:hover {
+    border-color: color-mix(in srgb, var(--admin-p) 80%, transparent) !important;
+}
+
+.editor-dashed-frame-sub {
+    border-color: color-mix(in srgb, var(--admin-p) 15%, transparent) !important;
+}
+
+.group\/block:hover > .editor-label,
+.group:hover > .editor-label {
+    color: var(--admin-p) !important;
+    opacity: 1 !important;
+}
+
+/* Global styles for drag-and-drop placeholders */
 .ghost-block {
-    opacity: 0.5;
-    background: #c8ebfb;
-    border: 2px dashed #000;
+    position: relative !important;
+    border-radius: var(--admin-radius) !important;
+    min-height: 60px !important;
+}
+
+.ghost-block::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background-color: color-mix(in srgb, var(--admin-p) 10%, transparent) !important;
+    border-radius: inherit !important;
+    z-index: 10 !important;
+    pointer-events: none !important;
+}
+
+.ghost-block::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    border: 2px dashed color-mix(in srgb, var(--admin-p) 50%, transparent) !important;
+    border-radius: inherit !important;
+    z-index: 11 !important;
+    pointer-events: none !important;
+}
+
+.ghost-block > * {
+    opacity: 0 !important; /* Visually empty out the ghost block to make it a clear target */
 }
 </style>

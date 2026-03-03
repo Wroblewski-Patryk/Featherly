@@ -180,11 +180,18 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
             const newBlock = this.createBlockObject(type, parentId);
 
             if (parentId) {
-                const parent = this.blocks.find(b => b.id === parentId);
-                if (parent) {
-                    if (!parent.children) parent.children = [];
-                    parent.children.push(newBlock);
-                }
+                const findAndAdd = (list) => {
+                    for (let i = 0; i < list.length; i++) {
+                        if (list[i].id === parentId) {
+                            if (!list[i].children) list[i].children = [];
+                            list[i].children.push(newBlock);
+                            return true;
+                        }
+                        if (list[i].children && findAndAdd(list[i].children)) return true;
+                    }
+                    return false;
+                };
+                findAndAdd(this.blocks);
             } else {
                 this.blocks.push(newBlock);
             }
@@ -193,7 +200,18 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         },
 
         removeBlock(id) {
-            this.blocks = this.blocks.filter(b => b.id !== id);
+            const findAndRemove = (list) => {
+                for (let i = 0; i < list.length; i++) {
+                    if (list[i].id === id) {
+                        list.splice(i, 1);
+                        return true;
+                    }
+                    if (list[i].children && findAndRemove(list[i].children)) return true;
+                }
+                return false;
+            };
+            findAndRemove(this.blocks);
+
             if (this.activeBlockId === id) this.activeBlockId = null;
             this.isDirty = true;
         },
@@ -224,6 +242,19 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         }
     },
     getters: {
-        activeBlock: (state) => state.blocks.find(b => b.id === state.activeBlockId),
+        activeBlock: (state) => {
+            let found = null;
+            const findBlock = (list) => {
+                for (const b of list) {
+                    if (b.id === state.activeBlockId) {
+                        found = b;
+                        return;
+                    }
+                    if (!found && b.children) findBlock(b.children);
+                }
+            };
+            findBlock(state.blocks);
+            return found;
+        },
     }
 });
