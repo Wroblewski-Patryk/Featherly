@@ -1,11 +1,15 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, inject } from 'vue';
 import { useGsapRuntime } from '@/Composables/useGsapRuntime';
 import { useForm, usePage } from '@inertiajs/vue3';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
+import draggable from 'vuedraggable';
+import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 
 const props = defineProps(['block']);
 const page = usePage();
+const store = useBlockBuilderStore();
+const isEditor = inject('isEditor', false);
 
 const menuItems = computed(() => {
     if (props.block.type !== 'menu' || !props.block.content.menu_id) return [];
@@ -191,10 +195,35 @@ const contactForm = useForm({
          class="transition-all duration-500">
         
         <!-- Section Block -->
-        <div v-if="block.type === 'section'" class="w-full">
-            <div>
-                <DynamicBlock v-for="child in block.children" :key="child.id" :block="child" />
-            </div>
+        <div v-if="block.type === 'section'" class="w-full relative transition-colors p-4"
+             :class="{'min-h-[50px] border border-dashed editor-dashed-frame': isEditor}">
+            <template v-if="isEditor">
+                <draggable 
+                    v-model="block.children" 
+                    :group="'blocks'"
+                    item-key="id"
+                    handle=".drag-handle"
+                    ghost-class="ghost-block"
+                    class="min-h-[50px] flex flex-col gap-2 w-full">
+                    <template #item="{ element }">
+                        <div class="group/block relative w-full"
+                             @click.stop="store.activeBlockId = element.id"
+                             :class="{ 'editor-ring': store.activeBlockId === element.id }">
+                            <div class="absolute right-2 top-2 z-40 opacity-0 group-hover/block:opacity-100 transition-opacity flex gap-1">
+                                <div class="drag-handle btn btn-square btn-xs btn-ghost bg-white/90 border border-black/10 backdrop-blur cursor-move text-black/60 shadow-lg rounded-full"><i class="fas fa-grip-vertical"></i></div>
+                                <button @click.stop="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-error btn-ghost bg-red-500/90 border border-red-500/20 backdrop-blur text-white shadow-lg rounded-full"><i class="fas fa-trash"></i></button>
+                            </div>
+                            <DynamicBlock :block="element" />
+                        </div>
+                    </template>
+                </draggable>
+                <div v-if="!block.children?.length" class="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none text-xs font-bold uppercase tracking-widest border border-dashed border-base-content/10 m-2 rounded-lg bg-base-100/30 backdrop-blur-sm">Drop blocks here</div>
+            </template>
+            <template v-else>
+                <div class="flex flex-col gap-2 w-full">
+                    <DynamicBlock v-for="child in block.children" :key="child.id" :block="child" />
+                </div>
+            </template>
         </div>
 
         <!-- Content Blocks -->
@@ -485,14 +514,70 @@ const contactForm = useForm({
         </div>
 
         <!-- Layout Blocks -->
-        <div v-else-if="block.type === 'columns'" class="max-w-7xl mx-auto px-6 grid gap-8" :class="[`grid-cols-1 md:grid-cols-${block.content.count || 2}`]">
-             <div v-for="i in (block.content.count || 2)" :key="i" class="space-y-4">
-                 <DynamicBlock v-for="child in block.children?.filter(c => c.column === i)" :key="child.id" :block="child" />
-             </div>
+        <div v-else-if="block.type === 'columns'" class="max-w-7xl mx-auto px-6 grid gap-8" :class="[`grid-cols-1 md:grid-cols-${block.content.count || 2}`, {'border border-dashed editor-dashed-frame p-4 rounded-xl group relative': isEditor}]">
+             <template v-if="isEditor">
+                 <div class="absolute -top-3 left-4 text-[10px] font-black uppercase tracking-widest bg-base-100 px-2 opacity-50 z-10 transition-opacity group-hover:opacity-100 editor-label">Columns Layout</div>
+                 <div v-for="i in (block.content.count || 2)" :key="i" class="space-y-4 border border-dashed editor-dashed-frame-sub p-2 rounded-lg relative min-h-[50px]">
+                     <div class="absolute -top-2 left-2 text-[8px] font-black uppercase tracking-widest bg-base-100 px-2 opacity-30 z-10">Col {{ i }}</div>
+                     <draggable 
+                        v-model="block.children" 
+                        :group="'blocks'"
+                        item-key="id"
+                        handle=".drag-handle"
+                        ghost-class="ghost-block"
+                        class="min-h-[50px] w-full flex flex-col gap-2">
+                        <template #item="{ element }">
+                            <div v-if="element.column === i" class="group/block relative w-full"
+                                 @click.stop="store.activeBlockId = element.id"
+                                 :class="{ 'editor-ring': store.activeBlockId === element.id }">
+                                <div class="absolute right-2 top-2 z-40 opacity-0 group-hover/block:opacity-100 transition-opacity flex gap-1">
+                                    <div class="drag-handle btn btn-square btn-xs btn-ghost bg-white/90 border border-black/10 backdrop-blur cursor-move text-black/60 shadow-lg rounded-full"><i class="fas fa-grip-vertical"></i></div>
+                                    <button @click.stop="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-error btn-ghost bg-red-500/90 border border-red-500/20 backdrop-blur text-white shadow-lg rounded-full"><i class="fas fa-trash"></i></button>
+                                </div>
+                                <DynamicBlock :block="element" />
+                            </div>
+                        </template>
+                    </draggable>
+                 </div>
+             </template>
+             <template v-else>
+                 <div v-for="i in (block.content.count || 2)" :key="i" class="space-y-4">
+                     <DynamicBlock v-for="child in block.children?.filter(c => c.column === i)" :key="child.id" :block="child" />
+                 </div>
+             </template>
         </div>
 
-        <div v-else-if="block.type === 'group' || block.type === 'stack'" class="w-full" :class="block.type === 'stack' ? 'flex flex-col gap-4' : ''">
-            <DynamicBlock v-for="child in block.children" :key="child.id" :block="child" />
+        <div v-else-if="block.type === 'group' || block.type === 'stack'" class="w-full relative transition-colors p-4" 
+             :class="[block.type === 'stack' && !isEditor ? 'flex flex-col gap-4' : '', {'min-h-[50px] border border-dashed editor-dashed-frame': isEditor}]">
+            <template v-if="isEditor">
+                <div class="absolute -top-3 left-4 text-[10px] font-black uppercase tracking-widest bg-base-100 px-2 opacity-50 z-10 transition-opacity editor-label">{{ block.type }}</div>
+                <draggable 
+                    v-model="block.children" 
+                    :group="'blocks'"
+                    item-key="id"
+                    handle=".drag-handle"
+                    ghost-class="ghost-block"
+                    class="min-h-[50px] w-full"
+                    :class="block.type === 'stack' ? 'flex flex-col gap-4' : ''">
+                    <template #item="{ element }">
+                        <div class="group/block relative w-full"
+                             @click.stop="store.activeBlockId = element.id"
+                             :class="{ 'editor-ring': store.activeBlockId === element.id }">
+                            <div class="absolute right-2 top-2 z-40 opacity-0 group-hover/block:opacity-100 transition-opacity flex gap-1">
+                                <div class="drag-handle btn btn-square btn-xs btn-ghost bg-white/90 border border-black/10 backdrop-blur cursor-move text-black/60 shadow-lg rounded-full"><i class="fas fa-grip-vertical"></i></div>
+                                <button @click.stop="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-error btn-ghost bg-red-500/90 border border-red-500/20 backdrop-blur text-white shadow-lg rounded-full"><i class="fas fa-trash"></i></button>
+                            </div>
+                            <DynamicBlock :block="element" />
+                        </div>
+                    </template>
+                </draggable>
+                <div v-if="!block.children?.length" class="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none text-xs font-bold uppercase tracking-widest border border-dashed border-base-content/10 m-2 rounded-lg bg-base-100/30 backdrop-blur-sm">Drop here</div>
+            </template>
+            <template v-else>
+                <div class="w-full" :class="block.type === 'stack' ? 'flex flex-col gap-4' : ''">
+                    <DynamicBlock v-for="child in block.children" :key="child.id" :block="child" />
+                </div>
+            </template>
         </div>
     </div>
 </template>
