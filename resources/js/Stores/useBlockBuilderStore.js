@@ -8,78 +8,117 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         isDirty: false,
         categories: [
             {
-                id: 'content',
-                label: 'Content',
+                id: 'typography',
+                label: 'Typography',
                 icon: 'fas fa-font',
                 blocks: [
                     { type: 'paragraph', label: 'Paragraph', icon: 'fas fa-paragraph' },
                     { type: 'heading', label: 'Heading', icon: 'fas fa-heading' },
                     { type: 'list', label: 'List', icon: 'fas fa-list-ul' },
                     { type: 'quote', label: 'Quote', icon: 'fas fa-quote-left' },
-                    { type: 'button', label: 'Button', icon: 'fas fa-mouse-pointer' },
-                    { type: 'divider', label: 'Divider', icon: 'fas fa-minus' },
-                    { type: 'spacer', label: 'Spacer', icon: 'fas fa-arrows-alt-v' },
-                    { type: 'table', label: 'Table', icon: 'fas fa-table' },
-                    { type: 'custom_code', label: 'HTML/Code', icon: 'fas fa-code' },
+                    { type: 'custom_code', label: 'Code / HTML', icon: 'fas fa-code' },
                 ]
             },
             {
-                id: 'media',
-                label: 'Media',
-                icon: 'fas fa-images',
+                id: 'actions',
+                label: 'Actions',
+                icon: 'fas fa-mouse-pointer',
                 blocks: [
-                    { type: 'image', label: 'Image', icon: 'fas fa-image' },
-                    { type: 'gallery', label: 'Gallery', icon: 'fas fa-th' },
-                    { type: 'video', label: 'Video', icon: 'fas fa-video' },
-                    { type: 'audio', label: 'Audio', icon: 'fas fa-volume-up' },
-                    { type: 'file', label: 'File', icon: 'fas fa-file-download' },
-                    { type: 'media_text', label: 'Media & Text', icon: 'fas fa-columns' },
-                    { type: 'carousel', label: 'Carousel', icon: 'fas fa-sliders-h' },
+                    { type: 'button', label: 'Button', icon: 'fas fa-hand-pointer' },
+                    { type: 'dropdown', label: 'Dropdown', icon: 'fas fa-caret-square-down' },
+                    { type: 'modal', label: 'Modal', icon: 'fas fa-window-maximize' },
+                    { type: 'swap', label: 'Swap', icon: 'fas fa-exchange-alt' },
                 ]
             },
             {
-                id: 'layout',
-                label: 'Layout',
+                id: 'data_display',
+                label: 'Data Display',
+                icon: 'fas fa-tv',
+                blocks: [
+                    { type: 'accordion', label: 'Accordion', icon: 'fas fa-stream' },
+                    { type: 'avatar', label: 'Avatar', icon: 'fas fa-user-circle' },
+                    { type: 'badge', label: 'Badge', icon: 'fas fa-certificate' },
+                    { type: 'card', label: 'Card', icon: 'fas fa-id-card' },
+                    { type: 'carousel', label: 'Carousel', icon: 'fas fa-sliders-h' },
+                    { type: 'chat', label: 'Chat', icon: 'fas fa-comments' },
+                    { type: 'countdown', label: 'Countdown', icon: 'fas fa-stopwatch' },
+                    { type: 'diff', label: 'Diff', icon: 'fas fa-adjust' },
+                    { type: 'stat', label: 'Stat', icon: 'fas fa-chart-line' },
+                    { type: 'table', label: 'Table', icon: 'fas fa-table' },
+                    { type: 'timeline', label: 'Timeline', icon: 'fas fa-stream' },
+                ]
+            },
+            {
+                id: 'feedback',
+                label: 'Feedback',
+                icon: 'fas fa-exclamation-circle',
+                blocks: [
+                    { type: 'alert', label: 'Alert', icon: 'fas fa-exclamation-triangle' },
+                    { type: 'progress', label: 'Progress', icon: 'fas fa-tasks' },
+                    { type: 'radial_progress', label: 'Radial', icon: 'fas fa-circle-notch' },
+                ]
+            },
+            {
+                id: 'data_input',
+                label: 'Data Input',
+                icon: 'fas fa-edit',
+                blocks: [
+                    { type: 'text_input', label: 'Text Input', icon: 'fas fa-i-cursor' },
+                    { type: 'textarea', label: 'Textarea', icon: 'fas fa-align-left' },
+                    { type: 'select', label: 'Select', icon: 'fas fa-list-ol' },
+                    { type: 'checkbox', label: 'Checkbox', icon: 'fas fa-check-square' },
+                    { type: 'radio', label: 'Radio', icon: 'fas fa-dot-circle' },
+                    { type: 'toggle', label: 'Toggle', icon: 'fas fa-toggle-on' },
+                    { type: 'range', label: 'Range', icon: 'fas fa-sliders-h' },
+                    { type: 'rating', label: 'Rating', icon: 'fas fa-star-half-alt' },
+                    { type: 'file_input', label: 'File Input', icon: 'fas fa-file-upload' },
+                ]
+            },
+            {
+                id: 'layout_media',
+                label: 'Layout & Media',
                 icon: 'fas fa-layer-group',
                 blocks: [
                     { type: 'section', label: 'Section', icon: 'fas fa-vector-square' },
                     { type: 'columns', label: 'Columns', icon: 'fas fa-columns' },
-                    { type: 'group', label: 'Group', icon: 'fas fa-object-group' },
-                    { type: 'stack', label: 'Stack/Flex', icon: 'fas fa-layer-group' },
-                ]
-            },
-            {
-                id: 'marketing',
-                label: 'Marketing',
-                icon: 'fas fa-bullhorn',
-                blocks: [
+                    { type: 'stack', label: 'Stack', icon: 'fas fa-bars' },
+                    { type: 'divider', label: 'Divider', icon: 'fas fa-minus' },
                     { type: 'hero', label: 'Hero', icon: 'fas fa-star' },
-                    { type: 'cta_box', label: 'CTA Box', icon: 'fas fa-comment-alt' },
-                    { type: 'card', label: 'Card', icon: 'fas fa-id-card' },
-                    { type: 'testimonial', label: 'Testimonial', icon: 'fas fa-user-check' },
-                    { type: 'faq', label: 'FAQ', icon: 'fas fa-question-circle' },
-                    { type: 'pricing', label: 'Pricing', icon: 'fas fa-tags' },
-                    { type: 'counter', label: 'Counter', icon: 'fas fa-sort-numeric-up' },
+                    { type: 'image', label: 'Image', icon: 'fas fa-image' },
+                    { type: 'video', label: 'Video', icon: 'fas fa-video' },
                 ]
             },
             {
-                id: 'theme',
-                label: 'Theme (FSE)',
-                icon: 'fas fa-palette',
+                id: 'navigation',
+                label: 'Navigation',
+                icon: 'fas fa-compass',
                 blocks: [
-                    { type: 'site_logo', label: 'Site Logo', icon: 'fas fa-fingerprint' },
-                    { type: 'navigation', label: 'Navigation', icon: 'fas fa-bars' },
                     { type: 'breadcrumbs', label: 'Breadcrumbs', icon: 'fas fa-ellipsis-h' },
-                    { type: 'posts_list', label: 'Post List', icon: 'fas fa-th-list' },
+                    { type: 'menu', label: 'Menu', icon: 'fas fa-bars' },
+                    { type: 'navbar', label: 'Navbar', icon: 'fas fa-window-maximize' },
+                    { type: 'steps', label: 'Steps', icon: 'fas fa-shoe-prints' },
+                    { type: 'tabs', label: 'Tabs', icon: 'fas fa-folder' },
                 ]
             },
             {
-                id: 'embed',
-                label: 'Embeds',
-                icon: 'fas fa-external-link-alt',
+                id: 'mockup',
+                label: 'Mockup',
+                icon: 'fas fa-desktop',
                 blocks: [
-                    { type: 'google_maps', label: 'Maps', icon: 'fas fa-map-marked-alt' },
-                    { type: 'language_switcher', label: 'Lang', icon: 'fas fa-globe' },
+                    { type: 'mockup_browser', label: 'Browser', icon: 'fab fa-chrome' },
+                    { type: 'mockup_code', label: 'Code', icon: 'fas fa-terminal' },
+                    { type: 'mockup_phone', label: 'Phone', icon: 'fas fa-mobile-alt' },
+                    { type: 'mockup_window', label: 'Window', icon: 'fas fa-window-restore' },
+                ]
+            },
+            {
+                id: 'extended',
+                label: 'Extended',
+                icon: 'fas fa-plus-circle',
+                blocks: [
+                    { type: 'posts_list', label: 'Posts', icon: 'fas fa-blog' },
+                    { type: 'projects_list', label: 'Projects', icon: 'fas fa-briefcase' },
+                    { type: 'text_rotate', label: 'Text Rotate', icon: 'fas fa-sync' },
                 ]
             }
         ],
@@ -91,57 +130,76 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         },
         createBlockObject(type, parentId = null) {
             const defaults = {
-                // 1. Content
+                // 1. Typography
                 paragraph: { text: 'This is a paragraph block. You can edit this text in the sidebar.' },
                 heading: { text: 'New Heading', level: 2, align: 'left' },
                 list: { items: ['Item 1', 'Item 2'], type: 'bullets' },
-                quote: { text: 'Quote text', author: '', type: 'standard' },
-                button: { label: 'Click Me', url: '#', style: 'primary', align: 'left', newTab: false },
-                divider: { style: 'solid', weight: '1px' },
-                spacer: { height: 'py-10' },
-                table: { rows: [['Cell 1', 'Cell 2']] },
+                quote: { text: 'Quote text', author: '' },
                 custom_code: { html: '<div>Custom HTML</div>', js: '' },
 
-                // 2. Media
-                image: { url: '', alt: '', caption: '', link: '' },
-                gallery: { images: [] },
-                video: { source: 'youtube', url: '', autoplay: false },
-                audio: { url: '' },
-                file: { url: '', label: 'Download File' },
-                media_text: { media_url: '', text: '', media_position: 'left' },
-                carousel: { items: [] },
+                // 2. Actions
+                button: { label: 'Click Me', url: '#', style: 'primary', align: 'left' },
+                dropdown: { label: 'Dropdown', items: ['Item 1', 'Item 2'] },
+                modal: { id: 'modal-1', buttonLabel: 'Open Modal', title: 'Hello', text: 'Modal content here.' },
+                swap: { onIcon: 'fas fa-sun', offIcon: 'fas fa-moon', active: false },
 
-                // 3. Layout
+                // 3. Data Display
+                accordion: { items: [{ title: 'Click to open', content: 'hello' }] },
+                avatar: { url: 'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp', online: true },
+                badge: { text: 'New', style: 'primary' },
+                card: { title: 'Card Title', description: 'A sophisticated card component.', image: 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp', buttonText: 'Buy Now' },
+                carousel: { images: ['https://img.daisyui.com/images/stock/photo-1559703248-dcaaec9fab78.webp'] },
+                chat: { messages: [{ side: 'start', text: 'Hi!' }, { side: 'end', text: 'Hello!' }] },
+                countdown: { value: 60, unit: 'min' },
+                diff: { img1: 'https://img.daisyui.com/images/stock/photo-1560717789-0ac7c58acfa6.webp', img2: 'https://img.daisyui.com/images/stock/photo-1560717789-0ac7c58acfa6-blur.webp' },
+                stat: { title: 'Total Views', value: '89,400', desc: '21% more than last month', icon: 'fas fa-bolt' },
+                table: { rows: [['Cell 1', 'Cell 2']] },
+                timeline: { items: [{ year: '1984', title: 'First Macintosh computer', content: 'bla bla' }] },
+
+                // 3.5 Feedback
+                alert: { type: 'alert-info', text: 'Important information here.' },
+                progress: { value: 50, max: 100, color: 'progress-primary' },
+                radial_progress: { value: 70 },
+
+
+                // 4. Data Input
+                text_input: { label: 'Name', placeholder: 'Enter name', required: false },
+                textarea: { label: 'Message', placeholder: 'Enter message...', required: false },
+                select: { label: 'Option', options: 'Option 1\nOption 2' },
+                checkbox: { label: 'Remember me', checked: false },
+                radio: { label: 'Option 1', group: 'group1' },
+                toggle: { label: 'Enable notifications', checked: true },
+                range: { min: 0, max: 100, val: 50 },
+                rating: { max: 5, val: 3 },
+                file_input: { label: 'Upload document', placeholder: 'Choose file' },
+
+                // 5. Layout & Media
                 section: { width: 'boxed', bgColor: 'transparent', align: 'left' },
                 columns: { count: 2, stackOnMobile: true },
-                group: {},
                 stack: { direction: 'col', gap: '4' },
+                divider: { text: 'OR' },
+                hero: { headline: 'Provident cupiditate voluptatem et in.', subheadline: 'Provident cupiditate voluptatem et in.', primaryLabel: 'Get Started', bg_image: 'https://img.daisyui.com/images/stock/photo-1507358522600-9f71e620c44e.webp' },
+                image: { url: 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp', alt: '', caption: '' },
+                video: { url: '', autoplay: false, controls: true },
 
-                // 4. Marketing
-                hero: { headline: 'Premium Headline', subheadline: 'Elegant subtext.', primaryLabel: 'Get Started', secondaryLabel: 'Learn More', bg_image: '' },
-                cta_box: { title: 'Ready to start?', button_label: 'Contact' },
-                card: { title: 'Feature', description: '', icon: 'fas fa-star' },
-                testimonial: { text: '', author: '', company: '' },
-                faq: { items: [{ q: 'Question?', a: 'Answer.' }] },
-                pricing: { plans: [] },
-                counter: { number: 100, suffix: '+', label: 'Clients' },
+                // 6. Navigation
+                breadcrumbs: { items: ['Home', 'Documents', 'Add Document'] },
+                menu: { items: ['Home', 'About', 'Contact'] },
+                navbar: { title: 'daisyUI', links: ['Home', 'About'], actionButton: 'Get Started' },
+                steps: { items: ['Register', 'Choose plan', 'Purchase', 'Receive Product'] },
+                tabs: { tabs: [{ title: 'Tab 1', content: 'Tab 1 content' }, { title: 'Tab 2', content: 'Tab 2 content' }] },
 
-                // 5. Theme
-                site_logo: { width: '150px' },
-                navigation: { menu_id: null },
-                breadcrumbs: {},
+                // 7. Mockup
+                mockup_browser: { url: 'https://daisyui.com', content: 'Hello!' },
+                mockup_code: { code: 'npm i daisyui' },
+                mockup_phone: { url: 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp' },
+                mockup_window: { content: 'Window content...' },
+
+                // 8. Extended
                 posts_list: { count: 3, layout: 'grid' },
+                projects_list: { count: 3, layout: 'grid' },
+                text_rotate: { prefix: 'We are ', words: 'Creative\nAwesome\nInnovators', suffix: '!', interval: 2000 },
 
-                // 6. Embed & Forms
-                google_maps: { address: '', zoom: 14 },
-                form_input: { label: 'Name', name: 'name', type: 'text', placeholder: 'Enter your name', required: true },
-                form_textarea: { label: 'Message', name: 'message', placeholder: 'How can we help?', required: true },
-                form_select: { label: 'Select Option', name: 'category', options: 'Option 1\nOption 2', required: false },
-
-                // Legacy / Compatibility
-                portfolio: { projects: [] },
-                language_switcher: { style: 'dropdown' },
-                menu: { menu_id: null },
             };
 
             const block = {
