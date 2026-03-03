@@ -215,9 +215,10 @@ const contactForm = useForm({
                                  :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
                                 <div class="drag-handle btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur cursor-move text-base-content/60 hover:text-primary hover:bg-base-200 shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-arrows-alt"></i></div>
                             </div>
-                            <div class="absolute right-2 top-1/2 -translate-y-1/2 z-50 transition-opacity"
+                            <div class="absolute right-2 top-1/2 -translate-y-1/2 z-50 transition-opacity flex items-center gap-1"
                                  :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
-                                <button type="button" @click.stop.prevent="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur text-error/80 hover:bg-error hover:text-error-content shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-trash"></i></button>
+                                <button type="button" @click.stop.prevent="store.duplicateBlock(element.id)" class="btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur text-primary/80 hover:bg-primary hover:text-primary-content shadow-sm rounded-box relative z-50 pointer-events-auto" title="Duplicate Block"><i class="fas fa-copy"></i></button>
+                                <button type="button" @click.stop.prevent="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur text-error/80 hover:bg-error hover:text-error-content shadow-sm rounded-box relative z-50 pointer-events-auto" title="Delete Block"><i class="fas fa-trash"></i></button>
                             </div>
                             <DynamicBlock :block="element" />
                         </div>
@@ -615,9 +616,10 @@ const contactForm = useForm({
                                      :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
                                     <div class="drag-handle btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur cursor-move text-base-content/60 hover:text-primary hover:bg-base-200 shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-arrows-alt"></i></div>
                                 </div>
-                                <div class="absolute right-2 top-1/2 -translate-y-1/2 z-50 transition-opacity"
+                                <div class="absolute right-2 top-1/2 -translate-y-1/2 z-50 transition-opacity flex items-center gap-1"
                                      :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
-                                    <button type="button" @click.stop.prevent="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur text-error/80 hover:bg-error hover:text-error-content shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-trash"></i></button>
+                                    <button type="button" @click.stop.prevent="store.duplicateBlock(element.id)" class="btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur text-primary/80 hover:bg-primary hover:text-primary-content shadow-sm rounded-box relative z-50 pointer-events-auto" title="Duplicate Block"><i class="fas fa-copy"></i></button>
+                                    <button type="button" @click.stop.prevent="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur text-error/80 hover:bg-error hover:text-error-content shadow-sm rounded-box relative z-50 pointer-events-auto" title="Delete Block"><i class="fas fa-trash"></i></button>
                                 </div>
                                 <DynamicBlock :block="element" />
                             </div>
@@ -656,9 +658,10 @@ const contactForm = useForm({
                                  :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
                                 <div class="drag-handle btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur cursor-move text-base-content/60 hover:text-primary hover:bg-base-200 shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-arrows-alt"></i></div>
                             </div>
-                            <div class="absolute right-2 top-1/2 -translate-y-1/2 z-50 transition-opacity"
+                            <div class="absolute right-2 top-1/2 -translate-y-1/2 z-50 transition-opacity flex items-center gap-1"
                                  :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === element.id || store.activeBlockId === element.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== element.id && store.activeBlockId !== element.id}">
-                                <button type="button" @click.stop.prevent="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur text-error/80 hover:bg-error hover:text-error-content shadow-sm rounded-box relative z-50 pointer-events-auto"><i class="fas fa-trash"></i></button>
+                                <button type="button" @click.stop.prevent="store.duplicateBlock(element.id)" class="btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur text-primary/80 hover:bg-primary hover:text-primary-content shadow-sm rounded-box relative z-50 pointer-events-auto" title="Duplicate Block"><i class="fas fa-copy"></i></button>
+                                <button type="button" @click.stop.prevent="store.removeBlock(element.id)" class="btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur text-error/80 hover:bg-error hover:text-error-content shadow-sm rounded-box relative z-50 pointer-events-auto" title="Delete Block"><i class="fas fa-trash"></i></button>
                             </div>
                             <DynamicBlock :block="element" />
                         </div>

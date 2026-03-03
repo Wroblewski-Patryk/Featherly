@@ -274,6 +274,35 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
             if (this.activeBlockId === id) this.activeBlockId = null;
             this.isDirty = true;
         },
+        duplicateBlock(id) {
+            const findAndDuplicate = (list) => {
+                for (let i = 0; i < list.length; i++) {
+                    if (list[i].id === id) {
+                        // Deep clone the block, but keep a new ID
+                        const clone = JSON.parse(JSON.stringify(list[i]));
+
+                        // Recursive function to assign new IDs to the cloned block and its children
+                        const assignNewIds = (block) => {
+                            block.id = crypto.randomUUID();
+                            if (block.children && block.children.length > 0) {
+                                block.children.forEach(assignNewIds);
+                            }
+                        };
+
+                        assignNewIds(clone);
+
+                        // Insert the clone right after the original item
+                        list.splice(i + 1, 0, clone);
+                        this.activeBlockId = clone.id; // Optional: select the new block
+                        return true;
+                    }
+                    if (list[i].children && findAndDuplicate(list[i].children)) return true;
+                }
+                return false;
+            };
+            findAndDuplicate(this.blocks);
+            this.isDirty = true;
+        },
         updateBlock(id, payload) {
             const findAndUpdate = (list) => {
                 for (let i = 0; i < list.length; i++) {
