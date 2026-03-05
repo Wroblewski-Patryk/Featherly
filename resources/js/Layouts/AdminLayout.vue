@@ -88,9 +88,9 @@ function applyTheme(themeName) {
 
                 <!-- Admin Profile/Logout Dropdown -->
                 <div class="dropdown dropdown-end">
-                    <label tabindex="0" class="btn btn-ghost btn-circle avatar placeholder transition-transform hover:scale-105 ml-1">
-                        <div class="bg-primary text-primary-content w-9 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                            <span class="font-bold text-sm leading-none mt-1 items-center justify-center flex h-full">AD</span>
+                    <label tabindex="0" class="btn btn-ghost btn-circle avatar placeholder transition-transform hover:scale-105 ml-1 ring ring-primary ring-offset-base-100 ring-offset-2">
+                        <div class="bg-primary text-primary-content rounded-full w-9">
+                            <span class="text-sm font-bold">AD</span>
                         </div>
                     </label>
                     <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-56 border border-base-200 gap-1">
