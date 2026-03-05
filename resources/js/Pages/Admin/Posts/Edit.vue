@@ -33,7 +33,7 @@
 
             <template #top-bar-end>
                 <a :href="'/blog/' + (form.slug.pl || form.slug)" target="_blank" class="btn btn-ghost btn-xs">
-                    <i class="fas fa-external-link-alt mr-1"></i> Preview
+                    <PhArrowSquareOut weight="bold" class="w-3 h-3 mr-1" /> Preview
                 </a>
             </template>
         </BlockBuilder>
@@ -45,6 +45,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
 import { useForm } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { PhArrowSquareOut, PhFeather } from '@phosphor-icons/vue';
 import { onMounted, watch } from 'vue';
 
 const props = defineProps({

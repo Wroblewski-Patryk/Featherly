@@ -1,14 +1,15 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
+import { PhPencilSimple, PhTrash, PhHouse, PhList } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ResourceTable from '@/Components/ResourceTable.vue';
 
-import { ref } from 'vue';
+import { ref, markRaw } from 'vue';
 defineProps(['menus']);
 const tableRef = ref(null);
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
     { label: 'Menus' }
 ];
 
@@ -31,7 +32,7 @@ function deleteMenu(item) {
         <ResourceTable
             title="Menus"
             description="Build and organize your site's navigation structures."
-            icon="fas fa-bars"
+            :icon="markRaw(PhList)"
             :breadcrumbs="breadcrumbs"
             :resources="menus"
             :columns="columns"
@@ -50,10 +51,10 @@ function deleteMenu(item) {
             <template #cell-actions="{ item }">
                 <div class="flex justify-end gap-2">
                     <Link :href="`/admin/menus/${item.id}/edit`" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all">
-                        <i class="fas fa-edit text-xs"></i>
+                        <PhPencilSimple weight="regular" class="w-4 h-4" />
                     </Link>
                     <button @click="tableRef?.openDeleteModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all">
-                        <i class="fas fa-trash text-xs"></i>
+                        <PhTrash weight="regular" class="w-4 h-4" />
                     </button>
                 </div>
             </template>

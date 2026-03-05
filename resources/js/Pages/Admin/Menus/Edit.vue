@@ -1,6 +1,7 @@
 <script setup>
 import { Head, useForm, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { PhArrowLeft, PhPlus, PhInfo, PhList, PhX, PhLinkSimple } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import draggable from 'vuedraggable';
 
@@ -54,7 +55,7 @@ function setPageUrl(item, pageId) {
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-4">
                     <Link href="/admin/menus" class="btn btn-ghost btn-circle btn-sm">
-                        <i class="fas fa-arrow-left"></i>
+                        <PhArrowLeft weight="regular" class="w-4 h-4" />
                     </Link>
                     <h2 class="text-xl font-semibold leading-tight">{{ menu?.id ? 'Edit' : 'Create' }} Menu</h2>
                 </div>
@@ -79,13 +80,13 @@ function setPageUrl(item, pageId) {
                             </div>
 
                             <button @click="addItem" class="btn btn-outline btn-block rounded-2xl gap-2 border-opacity-20 hover:bg-base-200 hover:text-base-content hover:border-transparent">
-                                <i class="fas fa-plus text-xs"></i> Add Item
+                                <PhPlus weight="bold" class="w-3 h-3" /> Add Item
                             </button>
                         </div>
 
                         <div class="bg-primary/5 p-6 rounded-[2rem] border border-primary/10">
                             <h4 class="text-xs font-bold text-primary mb-2 flex items-center gap-2">
-                                <i class="fas fa-info-circle"></i> Tip
+                                <PhInfo weight="fill" class="w-4 h-4" /> Tip
                             </h4>
                             <p class="text-[10px] leading-relaxed opacity-60">
                                 Drag and drop items on the right to reorder them. You can link to existing pages or custom URLs.
@@ -111,13 +112,13 @@ function setPageUrl(item, pageId) {
                                         <div class="group border border-base-200 rounded-3xl p-4 bg-base-50/50 hover:bg-white transition-all hover:shadow-lg hover:shadow-base-300/50">
                                             <div class="flex items-center gap-4 mb-4">
                                                 <div class="drag-handle cursor-move opacity-20 group-hover:opacity-100 transition-opacity">
-                                                    <i class="fas fa-grip-vertical"></i>
+                                                    <PhList weight="bold" class="w-4 h-4 cursor-grab active:cursor-grabbing" />
                                                 </div>
                                                 <div class="flex-1">
                                                     <input type="text" v-model="element.label" class="bg-transparent border-none p-0 text-sm font-bold focus:ring-0 w-full" placeholder="Link Label" />
                                                 </div>
                                                 <button @click="removeItem(index)" class="btn btn-ghost btn-circle btn-xs text-error opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <i class="fas fa-times"></i>
+                                                    <PhX weight="bold" class="w-3 h-3" />
                                                 </button>
                                             </div>
 
@@ -148,7 +149,7 @@ function setPageUrl(item, pageId) {
                                 </draggable>
 
                                 <div v-if="form.items.length === 0" class="py-20 text-center opacity-20 italic">
-                                    <i class="fas fa-link text-4xl mb-4 block"></i>
+                                    <PhLinkSimple weight="regular" class="w-10 h-10 mb-4 mx-auto block" />
                                     No items added yet. Click "Add Item" to start.
                                 </div>
                             </div>

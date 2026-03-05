@@ -1,8 +1,10 @@
 <script setup>
+import { markRaw } from 'vue';
 import ConfiguratorLayout from './ConfiguratorLayout.vue';
+import { PhRuler, PhShapes, PhHouse, PhPaintRoller } from '@phosphor-icons/vue';
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
     { label: 'Theme', url: '/admin/theme/colors' },
     { label: 'Sizes & Metrics' }
 ];
@@ -20,7 +22,7 @@ const breadcrumbs = [
                 <div v-if="form.globals.advanced" class="card bg-base-100 shadow-sm border border-base-200">
                     <div class="card-body">
                         <h2 class="card-title text-xl mb-4 border-b border-base-200 pb-2">
-                            <i class="fas fa-ruler-combined text-primary"></i> Base Spacing Scale
+                            <PhRuler weight="regular" class="w-6 h-6 text-primary inline-block align-text-bottom" /> Base Spacing Scale
                         </h2>
                         
                         <div class="form-control max-w-md">
@@ -35,7 +37,7 @@ const breadcrumbs = [
 
                 <div class="card bg-base-100 shadow-sm border border-base-200">
                 <div class="card-body">
-                    <h2 class="card-title text-xl mb-6 border-b border-base-200 pb-2"><i class="fas fa-shapes text-secondary"></i> Global Shapes & Layout</h2>
+                    <h2 class="card-title text-xl mb-6 border-b border-base-200 pb-2"><PhShapes weight="regular" class="w-6 h-6 text-secondary inline-block align-text-bottom" /> Global Shapes & Layout</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="form-control">

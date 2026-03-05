@@ -1,10 +1,12 @@
 <script setup>
+import { markRaw } from 'vue';
+import { PhHouse, PhCube } from '@phosphor-icons/vue';
 import { Head, Link } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
     { label: 'Blocks' }
 ];
 
@@ -18,7 +20,7 @@ const breadcrumbs = [
                 title="Blocks" 
                 description="Manage global block defaults and structures." 
                 :breadcrumbs="breadcrumbs"
-                icon="fas fa-cubes">
+                :icon="markRaw(PhCube)">
                 <template #actions>
                     <button class="btn btn-primary shadow-lg shadow-primary/20">
                         Create Block

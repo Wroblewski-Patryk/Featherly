@@ -1,9 +1,11 @@
 <script setup>
+import { markRaw } from 'vue';
 import ConfiguratorLayout from './ConfiguratorLayout.vue';
 import FontSelect from '@/Components/ThemeConfigurator/FontSelect.vue';
+import { PhStack, PhTextT, PhHouse, PhPaintRoller } from '@phosphor-icons/vue';
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
     { label: 'Theme', url: '/admin/theme/colors' },
     { label: 'Fonts' }
 ];
@@ -50,7 +52,7 @@ const allGoogleFonts = [
 
             <div class="card bg-base-100 shadow-sm border border-base-200">
                 <div class="card-body">
-                    <h2 class="card-title text-xl mb-6 border-b border-base-200 pb-2"><i class="fas fa-font text-accent"></i> Google Fonts Configuration</h2>
+                    <h2 class="card-title text-xl mb-6 border-b border-base-200 pb-2"><PhTextT weight="regular" class="w-6 h-6 text-accent inline-block align-text-bottom" /> Google Fonts Configuration</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div class="form-control">
@@ -112,7 +114,7 @@ const allGoogleFonts = [
             <div class="card bg-base-100 shadow-sm border border-base-200 mt-8">
                 <div class="card-body">
                     <h2 class="card-title text-xl mb-4 border-b border-base-200 pb-2">
-                        <i class="fas fa-layer-group text-info"></i> Tailwind Fallback Stacks
+                        <PhStack weight="regular" class="w-6 h-6 text-info inline-block align-text-bottom" /> Tailwind Fallback Stacks
                     </h2>
                     
                     <div class="grid grid-cols-1 gap-6">

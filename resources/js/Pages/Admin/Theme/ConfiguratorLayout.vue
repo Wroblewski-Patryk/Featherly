@@ -1,8 +1,9 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, markRaw } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
+import { PhCheckCircle, PhFloppyDisk, PhPaintRoller } from '@phosphor-icons/vue';
 
 const props = defineProps({
     title: String,
@@ -58,11 +59,11 @@ const saveConfig = () => {
                 :title="title" 
                 :description="description" 
                 :breadcrumbs="breadcrumbs"
-                icon="fas fa-paint-roller">
+                :icon="markRaw(PhPaintRoller)">
                 <template #actions>
-                    <span v-if="savedMessage" class="text-success text-sm font-semibold flex items-center gap-1 mr-4"><i class="fas fa-check-circle"></i> Saved</span>
+                    <span v-if="savedMessage" class="text-success text-sm font-semibold flex items-center gap-1 mr-4"><PhCheckCircle weight="regular" class="w-4 h-4" /> Saved</span>
                     <button @click="saveConfig" class="btn btn-primary shadow-lg shadow-primary/20" :class="{'loading': isSaving}">
-                        <i class="fas fa-save" v-if="!isSaving"></i> 
+                        <PhFloppyDisk weight="regular" class="w-4 h-4" v-if="!isSaving" /> 
                         Save
                     </button>
                 </template>

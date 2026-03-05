@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, markRaw } from 'vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
+import { PhPencilSimple, PhTrash, PhHouse, PhFileText } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ResourceTable from '@/Components/ResourceTable.vue';
 
@@ -9,7 +10,7 @@ const tableRef = ref(null);
 const deleteForm = useForm({});
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
     { label: 'Pages' }
 ];
 
@@ -32,7 +33,7 @@ function deletePage(item) {
         <ResourceTable
             title="Pages"
             description="Manage your website pages and visual content."
-            icon="fas fa-file-alt"
+            :icon="markRaw(PhFileText)"
             :breadcrumbs="breadcrumbs"
             :resources="pages"
             :columns="columns"
@@ -51,10 +52,10 @@ function deletePage(item) {
             <template #cell-actions="{ item }">
                 <div class="flex justify-end gap-2">
                     <Link :href="`/admin/pages/${item.id}/edit`" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all">
-                        <i class="fas fa-edit text-xs"></i>
+                        <PhPencilSimple weight="regular" class="w-4 h-4" />
                     </Link>
                     <button @click="tableRef?.openDeleteModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all">
-                        <i class="fas fa-trash text-xs"></i>
+                        <PhTrash weight="regular" class="w-4 h-4" />
                     </button>
                 </div>
             </template>

@@ -35,6 +35,7 @@
 </template>
 
 <script setup>
+import { PhTextbox } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
 import { useForm } from '@inertiajs/vue3';
@@ -62,33 +63,33 @@ const categories = ref([
     {
         id: 'forms',
         name: 'Form Fields',
-        icon: 'fas fa-wpforms',
+        icon: 'Textbox',
         blocks: [
-            { type: 'form_input', label: 'Text Input', icon: 'fas fa-font' },
-            { type: 'form_textarea', label: 'Long Text', icon: 'fas fa-align-justify' },
-            { type: 'form_select', label: 'Dropdown', icon: 'fas fa-list' },
-            { type: 'button', label: 'Submit Button', icon: 'fas fa-mouse-pointer' },
+            { type: 'form_input', label: 'Text Input', icon: 'TextT' },
+            { type: 'form_textarea', label: 'Long Text', icon: 'TextAlignLeft' },
+            { type: 'form_select', label: 'Dropdown', icon: 'ListBullets' },
+            { type: 'button', label: 'Submit Button', icon: 'CursorClick' },
         ]
     },
     {
         id: 'content',
         name: 'Design Elements',
-        icon: 'fas fa-align-left',
+        icon: 'PaintBrush',
         blocks: [
-            { type: 'heading', label: 'Heading', icon: 'fas fa-heading' },
-            { type: 'paragraph', label: 'Instruction', icon: 'fas fa-paragraph' },
-            { type: 'image', label: 'Illustration', icon: 'fas fa-image' },
-            { type: 'divider', label: 'Divider', icon: 'fas fa-minus' },
-            { type: 'spacer', label: 'Spacer', icon: 'fas fa-arrows-alt-v' },
+            { type: 'heading', label: 'Heading', icon: 'TextHOne' },
+            { type: 'paragraph', label: 'Instruction', icon: 'Paragraph' },
+            { type: 'image', label: 'Illustration', icon: 'Image' },
+            { type: 'divider', label: 'Divider', icon: 'Minus' },
+            { type: 'spacer', label: 'Spacer', icon: 'ArrowsVertical' },
         ]
     },
     {
         id: 'layout',
         name: 'Structure',
-        icon: 'fas fa-th-large',
+        icon: 'SquaresFour',
         blocks: [
-            { type: 'columns', label: 'Side by Side', icon: 'fas fa-columns' },
-            { type: 'group', label: 'Field Group', icon: 'fas fa-object-group' },
+            { type: 'columns', label: 'Side by Side', icon: 'Columns' },
+            { type: 'group', label: 'Field Group', icon: 'ObjectGroup' },
         ]
     }
 ]);

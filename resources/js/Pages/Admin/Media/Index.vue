@@ -1,13 +1,14 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, markRaw } from 'vue';
+import { PhUpload, PhHouse, PhImageSquare } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
 
 const props = defineProps(['media']);
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
     { label: 'Media Library' }
 ];
 
@@ -51,7 +52,7 @@ function copyUrl(path) {
             <ModuleHeader
                 title="Media Library"
                 description="Manage your high-resolution assets."
-                icon="fas fa-photo-video"
+                :icon="markRaw(PhImageSquare)"
                 :breadcrumbs="breadcrumbs"
             >
                 <template #actions>
@@ -61,7 +62,7 @@ function copyUrl(path) {
         </template>
 
         <div class="mb-6 bg-base-100 p-4 rounded-box shadow-sm border border-base-300 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <h2 class="font-bold text-lg flex items-center gap-2"><i class="fas fa-cloud-upload-alt text-primary"></i> Upload New Media</h2>
+            <h2 class="font-bold text-lg flex items-center gap-2"><PhUpload weight="regular" class="w-6 h-6 text-primary" /> Upload New Media</h2>
             <form @submit.prevent="submitUpload" class="flex flex-wrap items-center gap-3">
                 <input type="file" @change="handleFileChange" class="file-input file-input-primary file-input-bordered file-input-sm w-full max-w-xs" accept="image/*" required ref="fileInput" />
                 <input type="text" v-model="uploadForm.alt_text" placeholder="Alt Text" class="input input-bordered input-sm focus:input-primary" />

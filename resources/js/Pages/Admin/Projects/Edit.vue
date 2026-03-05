@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
+import { PhCamera, PhCards } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
@@ -96,7 +97,7 @@ function submit() {
                 <div class="h-80 bg-base-200/20 flex flex-col items-center justify-center border-b border-black/5">
                     <div class="text-center group cursor-pointer">
                         <div class="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-camera text-2xl opacity-20"></i>
+                            <PhCamera weight="regular" class="w-8 h-8 opacity-20" />
                         </div>
                         <p class="text-[10px] font-black uppercase tracking-widest opacity-30">Upload Showcase Visual</p>
                     </div>
