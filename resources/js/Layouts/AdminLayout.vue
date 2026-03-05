@@ -90,7 +90,7 @@ function applyTheme(themeName) {
                 <div class="dropdown dropdown-end">
                     <label tabindex="0" class="btn btn-ghost btn-circle avatar placeholder transition-transform hover:scale-105 ml-1 ring ring-primary ring-offset-base-100 ring-offset-1">
                         <div class="bg-primary text-primary-content rounded-full w-9">
-                            <PhUser weight="regular" class="w-5 h-5" />
+                            <span class="text-sm">AD</span>
                         </div>
                     </label>
                     <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-56 border border-base-200 gap-1">
@@ -101,7 +101,7 @@ function applyTheme(themeName) {
                         <li><Link href="#"><PhUser weight="regular" class="w-4 h-4 text-base-content/70" /> Mój Profil</Link></li>
                         <li><Link href="/admin/settings"><PhGear weight="regular" class="w-4 h-4 text-base-content/70" /> Ustawienia konta</Link></li>
                         <li><Link href="#"><PhLifebuoy weight="regular" class="w-4 h-4 text-base-content/70" /> Pomoc techniczna</Link></li>
-                        <div class="divider my-0 mb-1"></div>
+                        <div class="h-[1px] bg-base-200 my-1 mx-2"></div>
                         <li><Link href="#" class="text-error hover:bg-error/10 hover:text-error"><PhSignOut weight="regular" class="w-4 h-4" /> Wyloguj się</Link></li>
                     </ul>
                 </div>
