@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
+import { PhCaretDown, PhMagnifyingGlass, PhCheck } from '@phosphor-icons/vue';
 
 const props = defineProps({
     modelValue: String,
@@ -70,7 +71,7 @@ onUnmounted(() => {
             @click="toggleDropdown"
         >
             <span :style="{ fontFamily: modelValue + ', sans-serif' }">{{ modelValue || 'Select a font' }}</span>
-            <i class="fas fa-chevron-down opacity-50 text-sm transition-transform duration-200" :class="{'rotate-180': isOpen}"></i>
+            <PhCaretDown weight="bold" class="opacity-50 w-4 h-4 transition-transform duration-200" :class="{'rotate-180': isOpen}" />
         </button>
 
         <!-- Dropdown Menu -->
@@ -78,7 +79,7 @@ onUnmounted(() => {
             <!-- Search Bar -->
             <div class="p-3 border-b border-base-200 bg-base-100 relative z-10">
                 <label class="input input-sm input-bordered flex items-center gap-2 w-full">
-                    <i class="fas fa-search opacity-50"></i>
+                    <PhMagnifyingGlass weight="bold" class="opacity-50 w-4 h-4" />
                     <input 
                         type="text" 
                         class="grow" 
@@ -102,7 +103,7 @@ onUnmounted(() => {
                             @click.stop="selectFont(font)"
                         >
                             <span :style="{ fontFamily: font + ', sans-serif' }">{{ font }}</span>
-                            <i v-if="modelValue === font" class="fas fa-check"></i>
+                            <PhCheck weight="bold" v-if="modelValue === font" class="w-4 h-4" />
                         </button>
                     </li>
                 </template>
@@ -118,7 +119,7 @@ onUnmounted(() => {
                             @click.stop="selectFont(font)"
                         >
                             <span :style="{ fontFamily: font + ', sans-serif' }">{{ font }}</span>
-                            <i v-if="modelValue === font" class="fas fa-check"></i>
+                            <PhCheck weight="bold" v-if="modelValue === font" class="w-4 h-4" />
                         </button>
                     </li>
                 </template>
