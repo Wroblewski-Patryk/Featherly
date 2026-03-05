@@ -30,7 +30,7 @@
                 <div class="px-6 py-4 border-b border-white/5 bg-base-100/80 backdrop-blur-xl flex items-center justify-between sticky top-0 z-20">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-base-content/5 flex items-center justify-center text-base-content/70 flex-shrink-0">
-                            <i class="fas fa-cubes"></i>
+                            <PhCube weight="regular" class="w-5 h-5" />
                         </div>
                         <div class="whitespace-nowrap">
                             <h3 class="text-sm font-bold capitalize">Block Palette</h3>
@@ -81,7 +81,7 @@
                     <!-- Toggles -->
                     <div class="flex items-center gap-1">
                         <button @click="showLeftSidebar = !showLeftSidebar" class="btn btn-circle btn-xs" :class="showLeftSidebar ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Toggle Block Palette">
-                            <i class="fas fa-cubes"></i>
+                            <PhCube weight="regular" class="w-4 h-4" />
                         </button>
                         <button @click="showRightSidebar = !showRightSidebar" class="btn btn-circle btn-xs" :class="showRightSidebar ? 'btn-primary' : 'btn-ghost text-base-content/60'" title="Toggle Document Inspector">
                             <i class="fas fa-sliders-h"></i>
@@ -224,6 +224,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { PhCube } from '@phosphor-icons/vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
 import BlockEditorSidebar from '@/Components/BlockEditorSidebar.vue';

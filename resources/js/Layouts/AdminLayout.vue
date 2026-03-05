@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue';
+import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGear, PhBell } from '@phosphor-icons/vue';
 
 defineProps({
     fullWidth: {
@@ -92,99 +93,98 @@ function applyTheme(themeName) {
             <!-- Sidebar Navigation -->
             <div class="drawer lg:drawer-open w-auto z-40 relative">
                 <input id="admin-drawer" type="checkbox" class="drawer-toggle" />
-                <div class="drawer-side h-full absolute lg:static">
+                <div class="drawer-side h-full absolute lg:static shadow-xl lg:shadow-none">
                     <label for="admin-drawer" class="drawer-overlay"></label> 
-                    <ul class="menu p-4 w-64 h-full bg-base-100 text-base-content border-r border-base-300 gap-0.5">
+                    <ul class="menu p-4 w-64 h-full bg-base-100/80 backdrop-blur-md text-base-content border-r border-base-200 gap-1">
                         <!-- Sidebar content here -->
-                        <li class="menu-title"><span>Content</span></li>
+                        <li class="menu-title mt-2 mb-2 border-b border-base-200/50 pb-1"><span class="text-[10px] uppercase font-bold tracking-widest text-primary/60">Content</span></li>
                         <li>
-                            <Link href="/admin/pages" :class="{ 'active': $page.url.startsWith('/admin/pages') }">
-                                <i class="fas fa-file-alt w-5"></i>
+                            <Link href="/admin/pages" class="group hover:bg-primary/5 hover:text-primary transition-all bg-transparent" :class="{ 'text-primary font-medium border-r-2 border-primary rounded-r-none': $page.url.startsWith('/admin/pages') }">
+                                <PhFileText weight="regular" class="w-5 h-5 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/pages'), 'text-base-content/50 group-hover:text-primary': !$page.url.startsWith('/admin/pages')}" />
                                 Pages
                             </Link>
                         </li>
                         <li>
                             <details :open="['/admin/posts'].some(p => $page.url.startsWith(p))">
-                                <summary><i class="fas fa-feather w-5"></i> Posts</summary>
+                                <summary class="group hover:bg-primary/5 hover:text-primary transition-all font-medium bg-transparent"><PhFeather weight="regular" class="w-5 h-5 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories'), 'text-base-content/50 group-hover:text-primary': !($page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories'))}" /> Posts</summary>
                                 <ul>
-                                    <li><Link href="/admin/posts" :class="{ 'active': $page.url === '/admin/posts' || $page.url.startsWith('/admin/posts/') }">All Posts</Link></li>
-                                    <li><Link href="#" :class="{ 'active': $page.url.startsWith('/admin/categories') }">Categories</Link></li>
+                                    <li><Link href="/admin/posts" class="group hover:bg-primary/5 hover:text-primary transition-all bg-transparent" :class="{ 'text-primary font-medium border-r-2 border-primary rounded-r-none': $page.url === '/admin/posts' || $page.url.startsWith('/admin/posts/') }">All Posts</Link></li>
+                                    <li><Link href="#" class="group hover:bg-primary/5 hover:text-primary transition-all bg-transparent" :class="{ 'text-primary font-medium border-r-2 border-primary rounded-r-none': $page.url.startsWith('/admin/categories') }">Categories</Link></li>
                                 </ul>
                             </details>
                         </li>
                         <li>
-                            <Link href="/admin/projects" :class="{ 'active': $page.url.startsWith('/admin/projects') }">
-                                <i class="fas fa-project-diagram w-5"></i>
+                            <Link href="/admin/projects" class="group hover:bg-primary/5 hover:text-primary transition-all bg-transparent" :class="{ 'text-primary font-medium border-r-2 border-primary rounded-r-none': $page.url.startsWith('/admin/projects') }">
+                                <PhCards weight="regular" class="w-5 h-5 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/projects'), 'text-base-content/50 group-hover:text-primary': !$page.url.startsWith('/admin/projects')}" />
                                 Projects
                             </Link>
                         </li>
                         <li>
-                            <Link href="/admin/forms" :class="{ 'active': $page.url === '/admin/forms' || $page.url.startsWith('/admin/forms/') }">
-                                <i class="fas fa-envelope-open-text w-5"></i>
+                            <Link href="/admin/forms" class="group hover:bg-primary/5 hover:text-primary transition-all bg-transparent" :class="{ 'text-primary font-medium border-r-2 border-primary rounded-r-none': $page.url === '/admin/forms' || $page.url.startsWith('/admin/forms/') }">
+                                <PhTextbox weight="regular" class="w-5 h-5 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/forms'), 'text-base-content/50 group-hover:text-primary': !$page.url.startsWith('/admin/forms')}" />
                                 Forms
                             </Link>
                         </li>
                         
-                        <li class="menu-title mt-4"><span>Design</span></li>
+                        <li class="menu-title mt-6 mb-2 border-b border-base-200/50 pb-1"><span class="text-[10px] uppercase font-bold tracking-widest text-secondary/60">Design</span></li>
                         <li>
                             <details :open="['/admin/theme/colors', '/admin/theme/fonts', '/admin/theme/typography', '/admin/theme/sizes', '/admin/theme/effects'].includes($page.url)">
-                                <summary><i class="fas fa-paint-roller w-5"></i> Theme</summary>
+                                <summary class="group hover:bg-secondary/5 hover:text-secondary transition-all font-medium bg-transparent"><PhPaintRoller weight="regular" class="w-5 h-5 transition-colors" :class="{'text-secondary': ['/admin/theme/colors', '/admin/theme/fonts', '/admin/theme/typography', '/admin/theme/sizes', '/admin/theme/effects'].includes($page.url), 'text-base-content/50 group-hover:text-secondary': !['/admin/theme/colors', '/admin/theme/fonts', '/admin/theme/typography', '/admin/theme/sizes', '/admin/theme/effects'].includes($page.url)}" /> Theme</summary>
                                 <ul>
-                                    <li><Link href="/admin/theme/colors" :class="{ 'active': $page.url === '/admin/theme/colors' }">Colors</Link></li>
-                                    <li><Link href="/admin/theme/fonts" :class="{ 'active': $page.url === '/admin/theme/fonts' }">Fonts</Link></li>
-                                    <li><Link href="/admin/theme/typography" :class="{ 'active': $page.url === '/admin/theme/typography' }">Typography</Link></li>
-                                    <li><Link href="/admin/theme/sizes" :class="{ 'active': $page.url === '/admin/theme/sizes' }">Sizes / Metrics</Link></li>
-                                    <li><Link href="/admin/theme/effects" :class="{ 'active': $page.url === '/admin/theme/effects' }">Effects</Link></li>
+                                    <li><Link href="/admin/theme/colors" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent" :class="{ 'text-secondary font-medium border-r-2 border-secondary rounded-r-none': $page.url === '/admin/theme/colors' }">Colors</Link></li>
+                                    <li><Link href="/admin/theme/fonts" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent" :class="{ 'text-secondary font-medium border-r-2 border-secondary rounded-r-none': $page.url === '/admin/theme/fonts' }">Fonts</Link></li>
+                                    <li><Link href="/admin/theme/typography" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent" :class="{ 'text-secondary font-medium border-r-2 border-secondary rounded-r-none': $page.url === '/admin/theme/typography' }">Typography</Link></li>
+                                    <li><Link href="/admin/theme/sizes" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent" :class="{ 'text-secondary font-medium border-r-2 border-secondary rounded-r-none': $page.url === '/admin/theme/sizes' }">Sizes / Metrics</Link></li>
+                                    <li><Link href="/admin/theme/effects" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent" :class="{ 'text-secondary font-medium border-r-2 border-secondary rounded-r-none': $page.url === '/admin/theme/effects' }">Effects</Link></li>
                                 </ul>
                             </details>
                         </li>
                         <li>
-                            <Link href="/admin/blocks" :class="{ 'active': $page.url === '/admin/blocks' }">
-                                <i class="fas fa-cubes w-5"></i>
+                            <Link href="/admin/blocks" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent" :class="{ 'text-secondary font-medium border-r-2 border-secondary rounded-r-none': $page.url === '/admin/blocks' }">
+                                <PhCube weight="regular" class="w-5 h-5 transition-colors" :class="{'text-secondary': $page.url === '/admin/blocks', 'text-base-content/50 group-hover:text-secondary': $page.url !== '/admin/blocks'}" />
                                 Blocks
                             </Link>
                         </li>
                         <li>
-                            <Link href="/admin/templates" :class="{ 'active': $page.url.startsWith('/admin/templates') }">
-                                <i class="fas fa-layer-group w-5"></i>
+                            <Link href="/admin/templates" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent" :class="{ 'text-secondary font-medium border-r-2 border-secondary rounded-r-none': $page.url.startsWith('/admin/templates') }">
+                                <PhLayout weight="regular" class="w-5 h-5 transition-colors" :class="{'text-secondary': $page.url.startsWith('/admin/templates'), 'text-base-content/50 group-hover:text-secondary': !($page.url.startsWith('/admin/templates'))}" />
                                 Templates
                             </Link>
                         </li>
                         <li>
-                            <Link href="/admin/menus" :class="{ 'active': $page.url.startsWith('/admin/menus') }">
-                                <i class="fas fa-bars w-5"></i>
+                            <Link href="/admin/menus" class="group hover:bg-secondary/5 hover:text-secondary transition-all bg-transparent" :class="{ 'text-secondary font-medium border-r-2 border-secondary rounded-r-none': $page.url.startsWith('/admin/menus') }">
+                                <PhList weight="regular" class="w-5 h-5 transition-colors" :class="{'text-secondary': $page.url.startsWith('/admin/menus'), 'text-base-content/50 group-hover:text-secondary': !($page.url.startsWith('/admin/menus'))}" />
                                 Menus
                             </Link>
                         </li>
-
-                        <li class="menu-title mt-4"><span>Library</span></li>
+                        
+                        <li class="menu-title mt-6 mb-2 border-b border-base-200/50 pb-1"><span class="text-[10px] uppercase font-bold tracking-widest text-accent/60">Library</span></li>
                         <li>
-                            <Link href="/admin/media" :class="{ 'active': $page.url.startsWith('/admin/media') }">
-                                <i class="fas fa-photo-video w-5"></i>
+                            <Link href="/admin/media" class="group hover:bg-accent/5 hover:text-accent transition-all bg-transparent" :class="{ 'text-accent font-medium border-r-2 border-accent rounded-r-none': $page.url.startsWith('/admin/media') }">
+                                <PhImageSquare weight="regular" class="w-5 h-5 transition-colors" :class="{'text-accent': $page.url.startsWith('/admin/media'), 'text-base-content/50 group-hover:text-accent': !($page.url.startsWith('/admin/media'))}" />
                                 Media
                             </Link>
                         </li>
-
-                        <li class="menu-title mt-4"><span>System</span></li>
+                        
+                        <li class="menu-title mt-6 mb-2 border-b border-base-200/50 pb-1"><span class="text-[10px] uppercase font-bold tracking-widest text-base-content/50">System</span></li>
                         <li>
-                            <Link href="/admin/languages" :class="{ 'active': $page.url.startsWith('/admin/languages') }">
-                                <i class="fas fa-globe w-5"></i>
+                            <Link href="/admin/languages" class="group hover:bg-base-content/5 hover:text-base-content transition-all bg-transparent" :class="{ 'text-base-content font-medium border-r-2 border-base-content rounded-r-none': $page.url.startsWith('/admin/languages') }">
+                                <PhGlobe weight="regular" class="w-5 h-5 transition-colors" :class="{'text-base-content': $page.url.startsWith('/admin/languages'), 'text-base-content/50 group-hover:text-base-content': !($page.url.startsWith('/admin/languages'))}" />
                                 Languages
                             </Link>
                         </li>
                         <li>
-                            <Link href="/admin/translations" :class="{ 'active': $page.url.startsWith('/admin/translations') }">
-                                <i class="fas fa-language w-5"></i>
+                            <Link href="/admin/translations" class="group hover:bg-base-content/5 hover:text-base-content transition-all bg-transparent" :class="{ 'text-base-content font-medium border-r-2 border-base-content rounded-r-none': $page.url.startsWith('/admin/translations') }">
+                                <PhTranslate weight="regular" class="w-5 h-5 transition-colors" :class="{'text-base-content': $page.url.startsWith('/admin/translations'), 'text-base-content/50 group-hover:text-base-content': !($page.url.startsWith('/admin/translations'))}" />
                                 Translations
                             </Link>
                         </li>
                         <li>
-                            <Link href="/admin/settings" :class="{ 'active': $page.url.startsWith('/admin/settings') }">
-                                <i class="fas fa-cog w-5"></i>
+                            <Link href="/admin/settings" class="group hover:bg-base-content/5 hover:text-base-content transition-all bg-transparent" :class="{ 'text-base-content font-medium border-r-2 border-base-content rounded-r-none': $page.url.startsWith('/admin/settings') }">
+                                <PhGear weight="regular" class="w-5 h-5 transition-colors" :class="{'text-base-content': $page.url.startsWith('/admin/settings'), 'text-base-content/50 group-hover:text-base-content': !($page.url.startsWith('/admin/settings'))}" />
                                 Settings
                             </Link>
                         </li>
-
                     </ul>
                 </div>
             </div>

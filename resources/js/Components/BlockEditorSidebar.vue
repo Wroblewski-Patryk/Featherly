@@ -1,6 +1,7 @@
 <script setup>
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import { computed, ref, watch } from 'vue';
+import { PhTextHOne, PhBriefcase, PhCode, PhBoundingBox, PhCube, PhX, PhTrash, PhPlus, PhTextAlignLeft, PhTextAlignCenter, PhTextAlignRight, PhTextAlignJustify, PhArrowUp, PhArrowDown, PhArrowLeft, PhArrowRight, PhFileText } from '@phosphor-icons/vue';
 import UnitInput from '@/Components/UnitInput.vue';
 import LinkedUnitInput from '@/Components/LinkedUnitInput.vue';
 import LayerTreeItem from '@/Components/LayerTreeItem.vue';
@@ -106,11 +107,11 @@ const toggleOffset = (direction) => {
         <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-base-100/80 backdrop-blur-xl z-20">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                    <i v-if="store.activeBlock.type === 'heading'" class="fas fa-heading"></i>
-                    <i v-else-if="store.activeBlock.type === 'portfolio'" class="fas fa-briefcase"></i>
-                    <i v-else-if="store.activeBlock.type === 'custom_code'" class="fas fa-code"></i>
-                    <i v-else-if="store.activeBlock.type === 'section'" class="fas fa-layer-group"></i>
-                    <i v-else class="fas fa-cube"></i>
+                    <PhTextHOne v-if="store.activeBlock.type === 'heading'" weight="bold" class="w-4 h-4" />
+                    <PhBriefcase v-else-if="store.activeBlock.type === 'portfolio'" weight="bold" class="w-4 h-4" />
+                    <PhCode v-else-if="store.activeBlock.type === 'custom_code'" weight="bold" class="w-4 h-4" />
+                    <PhBoundingBox v-else-if="store.activeBlock.type === 'section'" weight="bold" class="w-4 h-4" />
+                    <PhCube v-else weight="bold" class="w-4 h-4" />
                 </div>
                 <div>
                     <h3 class="text-sm font-bold capitalize">{{ store.activeBlock.type.replace('_', ' ') }}</h3>
@@ -118,7 +119,7 @@ const toggleOffset = (direction) => {
                 </div>
             </div>
             <button @click="store.activeBlockId = null" class="btn btn-ghost btn-xs btn-circle">
-                <i class="fas fa-times"></i>
+                <PhX weight="bold" class="w-4 h-4" />
             </button>
         </div>
 
@@ -169,7 +170,7 @@ const toggleOffset = (direction) => {
                         <label class="label"><span class="label-text text-xs opacity-50">Items</span></label>
                         <div v-for="(item, i) in store.activeBlock.content.items" :key="i" class="flex gap-2 mb-2">
                             <input type="text" v-model="store.activeBlock.content.items[i]" class="input input-sm input-bordered flex-1" />
-                            <button @click="store.activeBlock.content.items.splice(i, 1)" class="btn btn-square btn-xs btn-ghost text-error"><i class="fas fa-times"></i></button>
+                            <button @click="store.activeBlock.content.items.splice(i, 1)" class="btn btn-square btn-xs btn-ghost text-error"><PhX weight="bold" class="w-3 h-3" /></button>
                         </div>
                         <button @click="store.activeBlock.content.items.push('New item')" class="btn btn-sm btn-outline btn-block mt-2">Add Item</button>
                     </div>
@@ -224,11 +225,11 @@ const toggleOffset = (direction) => {
                             <div class="flex gap-2 flex-1 overflow-x-auto custom-scrollbar pb-1">
                                 <input v-for="(cell, cIdx) in row" :key="cIdx" type="text" v-model="store.activeBlock.content.rows[rIdx][cIdx]" class="input input-xs input-bordered min-w-[80px] flex-1" />
                             </div>
-                            <button @click="store.activeBlock.content.rows.splice(rIdx, 1)" class="btn btn-square btn-xs btn-ghost text-error shrink-0" :disabled="store.activeBlock.content.rows.length <= 1" title="Remove Row"><i class="fas fa-trash"></i></button>
+                            <button @click="store.activeBlock.content.rows.splice(rIdx, 1)" class="btn btn-square btn-xs btn-ghost text-error shrink-0" :disabled="store.activeBlock.content.rows.length <= 1" title="Remove Row"><PhTrash weight="bold" class="w-3 h-3" /></button>
                         </div>
                     </div>
                     
-                    <button @click="store.activeBlock.content.rows.push(new Array(store.activeBlock.content.rows[0].length).fill(''))" class="btn btn-xs btn-outline btn-block border-dashed border-white/20"><i class="fas fa-plus mr-2"></i>Add Row</button>
+                    <button @click="store.activeBlock.content.rows.push(new Array(store.activeBlock.content.rows[0].length).fill(''))" class="btn btn-xs btn-outline btn-block border-dashed border-white/20"><PhPlus weight="bold" class="w-3 h-3 mr-2" />Add Row</button>
                 </div>
 
                 <!-- Media Blocks -->
@@ -252,7 +253,7 @@ const toggleOffset = (direction) => {
                          <label class="text-[10px] opacity-40 uppercase font-black">Images</label>
                          <div v-for="(img, idx) in store.activeBlock.content.images || store.activeBlock.content.items" :key="idx" class="flex gap-2">
                              <input type="text" v-model="(store.activeBlock.content.images || store.activeBlock.content.items)[idx]" class="input input-xs input-bordered flex-1" />
-                             <button @click="(store.activeBlock.content.images || store.activeBlock.content.items).splice(idx, 1)" class="btn btn-xs btn-error btn-ghost"><i class="fas fa-times"></i></button>
+                             <button @click="(store.activeBlock.content.images || store.activeBlock.content.items).splice(idx, 1)" class="btn btn-xs btn-error btn-ghost"><PhX weight="bold" class="w-3 h-3" /></button>
                          </div>
                          <button @click="(store.activeBlock.content.images || store.activeBlock.content.items).push('')" class="btn btn-xs btn-outline btn-block">Add Image</button>
                     </div>
@@ -373,7 +374,7 @@ const toggleOffset = (direction) => {
                         <label class="text-[10px] opacity-40 uppercase font-black">List Items</label>
                         <div v-for="(item, idx) in store.activeBlock.content.items" :key="idx" class="flex gap-2">
                              <input type="text" v-model="store.activeBlock.content.items[idx]" class="input input-xs input-bordered flex-1" />
-                             <button @click="store.activeBlock.content.items.splice(idx, 1)" class="btn btn-xs btn-error btn-ghost"><i class="fas fa-times"></i></button>
+                             <button @click="store.activeBlock.content.items.splice(idx, 1)" class="btn btn-xs btn-error btn-ghost"><PhX weight="bold" class="w-3 h-3" /></button>
                         </div>
                         <button @click="store.activeBlock.content.items.push('New Item')" class="btn btn-xs btn-outline btn-block">Add Item</button>
                     </div>
@@ -384,7 +385,7 @@ const toggleOffset = (direction) => {
                         <label class="text-[10px] opacity-40 uppercase font-black mt-2 block">Links</label>
                         <div v-for="(link, idx) in store.activeBlock.content.links" :key="idx" class="flex gap-2">
                              <input type="text" v-model="store.activeBlock.content.links[idx]" class="input input-xs input-bordered flex-1" />
-                             <button @click="store.activeBlock.content.links.splice(idx, 1)" class="btn btn-xs btn-error btn-ghost"><i class="fas fa-times"></i></button>
+                             <button @click="store.activeBlock.content.links.splice(idx, 1)" class="btn btn-xs btn-error btn-ghost"><PhX weight="bold" class="w-3 h-3" /></button>
                         </div>
                         <button @click="store.activeBlock.content.links.push('New Link')" class="btn btn-xs btn-outline btn-block">Add Link</button>
                     </div>
@@ -621,10 +622,10 @@ const toggleOffset = (direction) => {
                             <div class="form-control col-span-2">
                                 <label class="label"><span class="label-text text-[10px] uppercase">Alignment</span></label>
                                 <div class="join w-full">
-                                    <button @click="store.activeBlock.settings.style.textAlign = 'left'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'left' ? 'btn-primary' : 'bg-base-300'"><i class="fas fa-align-left"></i></button>
-                                    <button @click="store.activeBlock.settings.style.textAlign = 'center'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'center' ? 'btn-primary' : 'bg-base-300'"><i class="fas fa-align-center"></i></button>
-                                    <button @click="store.activeBlock.settings.style.textAlign = 'right'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'right' ? 'btn-primary' : 'bg-base-300'"><i class="fas fa-align-right"></i></button>
-                                    <button @click="store.activeBlock.settings.style.textAlign = 'justify'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'justify' ? 'btn-primary' : 'bg-base-300'"><i class="fas fa-align-justify"></i></button>
+                                    <button @click="store.activeBlock.settings.style.textAlign = 'left'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'left' ? 'btn-primary' : 'bg-base-300'"><PhTextAlignLeft weight="bold" class="w-4 h-4" /></button>
+                                    <button @click="store.activeBlock.settings.style.textAlign = 'center'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'center' ? 'btn-primary' : 'bg-base-300'"><PhTextAlignCenter weight="bold" class="w-4 h-4" /></button>
+                                    <button @click="store.activeBlock.settings.style.textAlign = 'right'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'right' ? 'btn-primary' : 'bg-base-300'"><PhTextAlignRight weight="bold" class="w-4 h-4" /></button>
+                                    <button @click="store.activeBlock.settings.style.textAlign = 'justify'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'justify' ? 'btn-primary' : 'bg-base-300'"><PhTextAlignJustify weight="bold" class="w-4 h-4" /></button>
                                 </div>
                             </div>
                             <div class="form-control col-span-2">
@@ -705,8 +706,8 @@ const toggleOffset = (direction) => {
 
                             <div class="flex items-center gap-4">
                                 <div class="join">
-                                    <button @click="toggleOffset('top')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.top !== undefined || store.activeBlock.settings.style.bottom === undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Top Offset"><i class="fas fa-arrow-up"></i></button>
-                                    <button @click="toggleOffset('bottom')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.bottom !== undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Bottom Offset"><i class="fas fa-arrow-down"></i></button>
+                                    <button @click="toggleOffset('top')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.top !== undefined || store.activeBlock.settings.style.bottom === undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Top Offset"><PhArrowUp weight="bold" class="w-3 h-3" /></button>
+                                    <button @click="toggleOffset('bottom')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.bottom !== undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Bottom Offset"><PhArrowDown weight="bold" class="w-3 h-3" /></button>
                                 </div>
                                 <UnitInput v-if="store.activeBlock.settings.style.bottom !== undefined" v-model="store.activeBlock.settings.style.bottom" placeholder="Bottom value" class="flex-1" />
                                 <UnitInput v-else v-model="store.activeBlock.settings.style.top" placeholder="Top value" class="flex-1" />
@@ -714,8 +715,8 @@ const toggleOffset = (direction) => {
                             
                             <div class="flex items-center gap-4">
                                 <div class="join">
-                                    <button @click="toggleOffset('left')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.left !== undefined || store.activeBlock.settings.style.right === undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Left Offset"><i class="fas fa-arrow-left"></i></button>
-                                    <button @click="toggleOffset('right')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.right !== undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Right Offset"><i class="fas fa-arrow-right"></i></button>
+                                    <button @click="toggleOffset('left')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.left !== undefined || store.activeBlock.settings.style.right === undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Left Offset"><PhArrowLeft weight="bold" class="w-3 h-3" /></button>
+                                    <button @click="toggleOffset('right')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.right !== undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Right Offset"><PhArrowRight weight="bold" class="w-3 h-3" /></button>
                                 </div>
                                 <UnitInput v-if="store.activeBlock.settings.style.right !== undefined" v-model="store.activeBlock.settings.style.right" placeholder="Right value" class="flex-1" />
                                 <UnitInput v-else v-model="store.activeBlock.settings.style.left" placeholder="Left value" class="flex-1" />
@@ -777,7 +778,7 @@ const toggleOffset = (direction) => {
         <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-base-100/80 backdrop-blur-xl z-20">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-base-content/5 flex items-center justify-center text-base-content/70 flex-shrink-0">
-                    <i class="fas fa-file-alt"></i>
+                    <PhFileText weight="bold" class="w-4 h-4" />
                 </div>
                 <div>
                     <h3 class="text-sm font-bold capitalize">Document Inspector</h3>
