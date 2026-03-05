@@ -181,7 +181,7 @@ function debounce(fn, delay) {
 const props = defineProps({
     title: String,
     description: String,
-    icon: String,
+    icon: [String, Object, Function],
     resources: Object,
     columns: Array,
     createRoute: String,

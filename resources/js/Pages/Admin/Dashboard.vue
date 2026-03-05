@@ -1,6 +1,7 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { PhChartLineUp, PhFileText, PhArrowRight, PhFeather } from '@phosphor-icons/vue';
 </script>
 
 <template>
@@ -8,7 +9,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
     <AdminLayout>
         <template #header>
             <h1 class="text-3xl font-black tracking-tight flex items-center gap-3">
-                <i class="fas fa-chart-line text-primary"></i>
+                <PhChartLineUp weight="regular" class="w-8 h-8 text-primary" />
                 Dashboard
             </h1>
         </template>
@@ -24,13 +25,13 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
                     <div class="card-body">
                         <div class="flex items-center gap-3 mb-2">
                             <div class="p-2 bg-primary/10 text-primary rounded-lg group-hover:bg-primary group-hover:text-primary-content transition-colors">
-                                <i class="fas fa-file-alt"></i>
+                                <PhFileText weight="regular" class="w-6 h-6" />
                             </div>
                             <h2 class="card-title text-lg">Pages</h2>
                         </div>
                         <p class="text-sm opacity-60">Manage your website pages and utilize the Visual Block Builder.</p>
                         <div class="card-actions justify-end mt-4">
-                            <Link href="/admin/pages" class="btn btn-ghost btn-sm group-hover:btn-primary">Manage Pages <i class="fas fa-arrow-right ml-1"></i></Link>
+                            <Link href="/admin/pages" class="btn btn-ghost btn-sm group-hover:btn-primary flex items-center gap-1">Manage Pages <PhArrowRight weight="regular" class="w-4 h-4 ml-1" /></Link>
                         </div>
                     </div>
                 </div>
@@ -39,13 +40,13 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
                     <div class="card-body">
                         <div class="flex items-center gap-3 mb-2">
                             <div class="p-2 bg-secondary/10 text-secondary rounded-lg group-hover:bg-secondary group-hover:text-secondary-content transition-colors">
-                                <i class="fas fa-blog"></i>
+                                <PhFeather weight="regular" class="w-6 h-6" />
                             </div>
                             <h2 class="card-title text-lg">Blog Posts</h2>
                         </div>
                         <p class="text-sm opacity-60">Write and publish blog articles with full SEO settings.</p>
                         <div class="card-actions justify-end mt-4">
-                            <Link href="/admin/posts" class="btn btn-ghost btn-sm group-hover:btn-secondary">Manage Posts <i class="fas fa-arrow-right ml-1"></i></Link>
+                            <Link href="/admin/posts" class="btn btn-ghost btn-sm group-hover:btn-secondary flex items-center gap-1">Manage Posts <PhArrowRight weight="regular" class="w-4 h-4 ml-1" /></Link>
                         </div>
                     </div>
                 </div>

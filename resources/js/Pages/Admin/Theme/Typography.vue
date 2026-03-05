@@ -1,9 +1,11 @@
 <script setup>
+import { markRaw } from 'vue';
 import ConfiguratorLayout from './ConfiguratorLayout.vue';
 import UnitInput from '../../../Components/UnitInput.vue';
+import { PhTextAa, PhWarning, PhHouse, PhPaintRoller } from '@phosphor-icons/vue';
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
     { label: 'Theme', url: '/admin/theme/colors' },
     { label: 'Typography' }
 ];
@@ -33,7 +35,7 @@ const weightOptions = {
                 <div class="card bg-base-100 shadow-sm border border-base-200">
                     <div class="card-body">
                         <h2 class="card-title text-xl mb-4 border-b border-base-200 pb-2">
-                            <i class="fas fa-text-height text-secondary"></i> Typography Metrics
+                            <PhTextAa weight="regular" class="w-6 h-6 text-secondary inline-block align-text-bottom" /> Typography Metrics
                         </h2>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -94,7 +96,7 @@ const weightOptions = {
             </div>
             
             <div v-else class="alert alert-warning shadow-sm">
-                <i class="fas fa-exclamation-triangle"></i>
+                <PhWarning weight="fill" class="w-6 h-6 text-warning" />
                 <div>
                     <h3 class="font-bold">Missing Config</h3>
                     <div class="text-xs">The configuration data was not found. Please re-save the theme settings to generate it.</div>

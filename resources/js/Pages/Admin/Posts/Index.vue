@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, markRaw } from 'vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
+import { PhPencilSimple, PhTrash, PhCircle, PhHouse, PhFeather } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ResourceTable from '@/Components/ResourceTable.vue';
 
@@ -9,7 +10,7 @@ const tableRef = ref(null);
 const deleteForm = useForm({});
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
     { label: 'Posts' }
 ];
 
@@ -32,7 +33,7 @@ function deletePost(item) {
         <ResourceTable
             title="Posts"
             description="Share your thoughts and news with the world."
-            icon="fas fa-feather"
+            :icon="markRaw(PhFeather)"
             :breadcrumbs="breadcrumbs"
             :resources="posts"
             :columns="columns"
@@ -43,9 +44,9 @@ function deletePost(item) {
             @delete-confirmed="deletePost"
         >
             <template #cell-is_published="{ item }">
-                <div class="badge font-bold py-3 px-4 border-none shadow-sm" 
+                <div class="badge font-bold py-3 px-4 border-none shadow-sm flex items-center gap-2" 
                      :class="item.is_published ? 'bg-success/10 text-success' : 'bg-base-200 text-base-content/40'">
-                    <i class="fas fa-circle text-[6px] mr-2" :class="item.is_published ? 'animate-pulse' : ''"></i>
+                    <PhCircle weight="fill" class="w-1.5 h-1.5" :class="item.is_published ? 'animate-pulse' : ''" />
                     {{ item.is_published ? 'Published' : 'Draft' }}
                 </div>
             </template>
@@ -53,10 +54,10 @@ function deletePost(item) {
             <template #cell-actions="{ item }">
                 <div class="flex justify-end gap-2">
                     <Link :href="`/admin/posts/${item.id}/edit`" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all">
-                        <i class="fas fa-edit text-xs"></i>
+                        <PhPencilSimple weight="regular" class="w-4 h-4" />
                     </Link>
                     <button @click="tableRef?.openDeleteModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all">
-                        <i class="fas fa-trash text-xs"></i>
+                        <PhTrash weight="regular" class="w-4 h-4" />
                     </button>
                 </div>
             </template>

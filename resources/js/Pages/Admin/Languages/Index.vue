@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, markRaw } from 'vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
+import { PhPencilSimple, PhPlusCircle, PhGlobe, PhPlus, PhTrash, PhHouse } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ResourceTable from '@/Components/ResourceTable.vue';
 
@@ -20,7 +21,7 @@ const form = useForm({
 });
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
     { label: 'Languages' }
 ];
 
@@ -78,7 +79,8 @@ function deleteLanguage(item) {
     <AdminLayout>
         <div v-if="isCreating" class="mb-8 p-8 bg-base-100 rounded-box border border-primary/20 shadow-xl max-w-2xl mx-auto">
             <h3 class="text-xl font-black text-primary mb-6 flex items-center gap-2">
-                <i class="fas" :class="editingLanguage ? 'fa-edit' : 'fa-plus-circle'"></i>
+                <PhPencilSimple v-if="editingLanguage" weight="regular" class="w-6 h-6" />
+                <PhPlusCircle v-else weight="regular" class="w-6 h-6" />
                 {{ editingLanguage ? 'Edit Language' : 'Add New Language' }}
             </h3>
             <form @submit.prevent="submit" class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -117,7 +119,7 @@ function deleteLanguage(item) {
         <ResourceTable
             title="Languages"
             description="Manage available locales and site internationalization."
-            icon="fas fa-globe"
+            :icon="markRaw(PhGlobe)"
             :breadcrumbs="breadcrumbs"
             :resources="languages"
             :columns="columns"
@@ -128,7 +130,7 @@ function deleteLanguage(item) {
         >
             <template #header-actions>
                 <button @click="openCreate" class="btn btn-primary shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                    <i class="fas fa-plus mr-1"></i> Create
+                    <PhPlus weight="bold" class="w-3 h-3 mr-1" /> Create
                 </button>
             </template>
 
@@ -154,10 +156,10 @@ function deleteLanguage(item) {
             <template #cell-actions="{ item }">
                 <div class="flex justify-end gap-2">
                     <button @click="openEdit(item)" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all">
-                        <i class="fas fa-edit text-xs"></i>
+                        <PhPencilSimple weight="regular" class="w-4 h-4" />
                     </button>
                     <button @click="tableRef?.openDeleteModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all" :disabled="item.is_default">
-                        <i class="fas fa-trash text-xs"></i>
+                        <PhTrash weight="regular" class="w-4 h-4" />
                     </button>
                 </div>
             </template>

@@ -15,7 +15,7 @@ defineProps({
         default: () => []
     },
     icon: {
-        type: String,
+        type: [String, Object, Function],
         default: null
     }
 });
@@ -26,7 +26,8 @@ defineProps({
         <!-- Title, Description, and Breadcrumbs -->
         <div class="flex items-center gap-4">
             <div v-if="icon" class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-xl shadow-inner">
-                <i :class="icon"></i>
+                <component :is="icon" v-if="typeof icon !== 'string'" weight="regular" class="w-6 h-6" />
+                <i v-else :class="icon"></i>
             </div>
             <div>
                 <div class="flex items-center gap-3">
@@ -43,12 +44,14 @@ defineProps({
                     <div v-if="breadcrumbs && breadcrumbs.length > 0" class="breadcrumbs text-xs text-base-content/50 m-0 pt-2 p-0">
                         <ul>
                             <li v-for="(crumb, index) in breadcrumbs" :key="index">
-                                <Link v-if="crumb.url" :href="crumb.url" class="hover:text-primary transition-colors">
-                                    <i :class="crumb.icon" v-if="crumb.icon" class="mr-1"></i>
+                                <Link v-if="crumb.url" :href="crumb.url" class="hover:text-primary transition-colors flex items-center gap-1">
+                                    <component :is="crumb.icon" v-if="crumb.icon && typeof crumb.icon !== 'string'" weight="regular" class="w-4 h-4" />
+                                    <i v-else-if="crumb.icon" :class="crumb.icon" class="mr-1"></i>
                                     {{ crumb.label }}
                                 </Link>
-                                <span v-else class="text-base-content/70 font-medium tracking-wide">
-                                    <i :class="crumb.icon" v-if="crumb.icon" class="mr-1"></i>
+                                <span v-else class="text-base-content/70 font-medium tracking-wide flex items-center gap-1">
+                                    <component :is="crumb.icon" v-if="crumb.icon && typeof crumb.icon !== 'string'" weight="regular" class="w-4 h-4" />
+                                    <i v-else-if="crumb.icon" :class="crumb.icon" class="mr-1"></i>
                                     {{ crumb.label }}
                                 </span>
                             </li>

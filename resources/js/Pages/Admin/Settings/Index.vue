@@ -1,6 +1,7 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, markRaw } from 'vue';
+import { PhFloppyDisk, PhHouse, PhGear } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
 
@@ -10,7 +11,7 @@ const props = defineProps({
 });
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
     { label: 'Settings' }
 ];
 
@@ -39,13 +40,13 @@ function saveSettings() {
             <ModuleHeader
                 title="Global Settings"
                 description="Configure your website's main parameters."
-                icon="fas fa-cog"
+                :icon="markRaw(PhGear)"
                 :breadcrumbs="breadcrumbs"
             >
                 <template #actions>
                     <button @click="saveSettings" class="btn btn-primary shadow-lg shadow-primary/20" :disabled="form.processing">
                         <span v-if="form.processing" class="loading loading-spinner loading-sm mr-2"></span>
-                        <i class="fas fa-save mr-2"></i> Save
+                        <PhFloppyDisk weight="regular" class="w-4 h-4 mr-2" /> Save
                     </button>
                 </template>
             </ModuleHeader>

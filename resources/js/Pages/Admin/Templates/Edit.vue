@@ -34,7 +34,7 @@
             <template #canvas-footer v-if="form.type === 'header'">
                 <div class="h-[400px] bg-base-200/5 flex items-center justify-center opacity-10 select-none border-y border-black/5">
                     <div class="text-center">
-                        <i class="fas fa-file-alt text-6xl mb-4"></i>
+                        <PhFileText weight="regular" class="w-16 h-16 mb-4 mx-auto block" />
                         <p class="text-xl font-bold uppercase tracking-widest">Page Content Area</p>
                     </div>
                 </div>
@@ -43,7 +43,7 @@
             <template #canvas-header v-if="form.type === 'footer'">
                  <div class="h-[400px] bg-base-200/5 flex items-center justify-center opacity-10 select-none border-y border-black/5">
                     <div class="text-center">
-                        <i class="fas fa-file-alt text-6xl mb-4"></i>
+                        <PhFileText weight="regular" class="w-16 h-16 mb-4 mx-auto block" />
                         <p class="text-xl font-bold uppercase tracking-widest">Page Content Area</p>
                     </div>
                 </div>
@@ -57,6 +57,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
 import { useForm } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { PhFileText, PhLayout } from '@phosphor-icons/vue';
 import { onMounted } from 'vue';
 
 const props = defineProps({

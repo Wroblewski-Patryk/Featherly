@@ -2,7 +2,8 @@
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ResourceTable from '@/Components/ResourceTable.vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { PhPlus, PhTrash, PhHouse, PhTranslate } from '@phosphor-icons/vue';
+import { ref, markRaw } from 'vue';
 
 const props = defineProps({
     translations: Object // Now paginated
@@ -18,7 +19,7 @@ const addForm = useForm({
 });
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
     { label: 'Translations' }
 ];
 
@@ -60,7 +61,7 @@ const deleteTranslation = (item) => {
         <ResourceTable
             title="Translations"
             description="Manage multi-language strings for your website UI."
-            icon="fas fa-language"
+            :icon="markRaw(PhTranslate)"
             :breadcrumbs="breadcrumbs"
             :resources="translations"
             :columns="columns"
@@ -70,7 +71,7 @@ const deleteTranslation = (item) => {
         >
             <template #header-actions>
                 <button @click="showAddModal = true" class="btn btn-primary shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                    <i class="fas fa-plus mr-1"></i> Create
+                    <PhPlus weight="bold" class="w-3 h-3 mr-1" /> Create
                 </button>
             </template>
 
@@ -98,7 +99,7 @@ const deleteTranslation = (item) => {
             <template #cell-actions="{ item }">
                 <div class="flex justify-end order-last">
                     <button @click="tableRef?.openDeleteModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all opacity-0 group-hover:opacity-100">
-                        <i class="fas fa-trash-alt text-xs"></i>
+                        <PhTrash weight="regular" class="w-4 h-4" />
                     </button>
                 </div>
             </template>

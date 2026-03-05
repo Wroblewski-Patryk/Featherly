@@ -1,9 +1,10 @@
 <script setup>
-import { watch } from 'vue';
+import { watch, markRaw } from 'vue';
 import ConfiguratorLayout from './ConfiguratorLayout.vue';
+import { PhPalette, PhHouse, PhPaintRoller } from '@phosphor-icons/vue';
 
 const breadcrumbs = [
-    { label: 'Admin', url: '/admin', icon: 'fas fa-home' },
+    { label: 'Admin', url: '/admin', icon: markRaw(PhHouse) },
     { label: 'Theme', url: '/admin/theme/colors' },
     { label: 'Colors' }
 ];
@@ -75,7 +76,7 @@ const setupLivePreview = (form) => {
 
             <div class="card bg-base-100 shadow-sm border border-base-200">
                 <div class="card-body">
-                    <h2 class="card-title text-xl mb-4 border-b border-base-200 pb-2"><i class="fas fa-palette text-primary"></i> DaisyUI Colors</h2>
+                    <h2 class="card-title text-xl mb-4 border-b border-base-200 pb-2"><PhPalette weight="regular" class="w-6 h-6 text-primary inline-block align-text-bottom" /> DaisyUI Colors</h2>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                         <div v-for="(val, key) in form.globals.colors" :key="key" class="form-control">
