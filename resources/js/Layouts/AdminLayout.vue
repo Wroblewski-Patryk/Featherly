@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue';
-import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGear, PhBell, PhCaretLeft, PhCaretRight, PhSun, PhMoon, PhPalette, PhUser, PhUsers, PhSignOut, PhLifebuoy } from '@phosphor-icons/vue';
+import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGearSix, PhBell, PhCaretLeft, PhCaretRight, PhSun, PhMoon, PhPalette, PhUser, PhUsers, PhSignOut, PhLifebuoy } from '@phosphor-icons/vue';
 
 defineProps({
     fullWidth: {
@@ -99,7 +99,7 @@ function applyTheme(themeName) {
                             <span class="text-xs font-normal text-base-content/60 w-full whitespace-nowrap overflow-hidden text-ellipsis mt-1">admin@featherly.com</span>
                         </li>
                         <li><Link href="#"><PhUser weight="regular" class="w-4 h-4 text-base-content/70" /> Mój Profil</Link></li>
-                        <li><Link href="/admin/settings"><PhGear weight="regular" class="w-4 h-4 text-base-content/70" /> Ustawienia konta</Link></li>
+                        <li><Link href="/admin/settings"><PhGearSix weight="regular" class="w-4 h-4 text-base-content/70" /> Ustawienia konta</Link></li>
                         <li><Link href="#"><PhLifebuoy weight="regular" class="w-4 h-4 text-base-content/70" /> Pomoc techniczna</Link></li>
                         <div class="h-[1px] bg-base-200 my-1 mx-2"></div>
                         <li><Link href="#" class="text-error hover:bg-error/10 hover:text-error"><PhSignOut weight="regular" class="w-4 h-4" /> Wyloguj się</Link></li>
@@ -219,7 +219,7 @@ function applyTheme(themeName) {
                             <li>
                                 <Link href="/admin/users" class="group hover:bg-base-content/5 hover:text-base-content transition-all bg-transparent flex items-center text-nowrap" :class="{ 'text-base-content': $page.url === '/admin/users' || $page.url.startsWith('/admin/users/') }">
                                     <PhUsers weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-base-content': $page.url.startsWith('/admin/users'), 'text-base-content/50 group-hover:text-base-content': !$page.url.startsWith('/admin/users')}" />
-                                    <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Użytkownicy</span>
+                                    <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Users</span>
                                 </Link>
                             </li>
                             <li>
@@ -236,7 +236,7 @@ function applyTheme(themeName) {
                             </li>
                             <li>
                                 <Link href="/admin/settings" class="group hover:bg-base-content/5 hover:text-base-content transition-all bg-transparent flex items-center text-nowrap" :class="{ 'text-base-content': $page.url.startsWith('/admin/settings') }">
-                                    <PhGear weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-base-content': $page.url.startsWith('/admin/settings'), 'text-base-content/50 group-hover:text-base-content': !($page.url.startsWith('/admin/settings'))}" />
+                                    <PhGearSix weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-base-content': $page.url.startsWith('/admin/settings'), 'text-base-content/50 group-hover:text-base-content': !($page.url.startsWith('/admin/settings'))}" />
                                     <span v-show="!isSidebarCollapsed" class="ml-2 transition-opacity duration-300">Settings</span>
                                 </Link>
                             </li>
