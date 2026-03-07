@@ -126,22 +126,25 @@
                 </div>
 
                 <!-- Center: Canvas Area -->
-                <div class="flex-1 overflow-auto custom-scrollbar text-center whitespace-nowrap pb-32 px-4 md:px-8 transition-all duration-500"
+                <div class="flex-1 overflow-auto custom-scrollbar bg-base-200/50 grid place-items-center"
                      :style="{ 
-                        perspective: '1000px', 
-                        transformStyle: 'preserve-3d',
-                        paddingTop: store.isDepthView ? '8rem' : '4.5rem'
+                        padding: store.isDepthView ? '10rem' : '6rem',
+                        scrollbarGutter: 'stable'
                      }">
-                    <div class="inline-block text-left align-top transition-all duration-500" 
+                    <div class="inline-block text-left align-top relative flex-shrink-0" 
                          :style="[
                              { width: `${(viewport === 'custom' ? customWidth : (viewport === 'desktop' ? 1280 : (viewport === 'tablet' ? 768 : 375))) * zoomLevel}px` },
+                             { height: `${canvasHeight * zoomLevel}px` },
                              { 
                                 transform: store.isDepthView ? 'rotateY(75deg)' : 'rotateY(0deg)', 
                                 transformOrigin: 'left center', 
-                                transformStyle: 'preserve-3d' 
+                                transformStyle: 'preserve-3d',
+                                perspective: '1000px',
+                                transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
                              }
                          ]">
-                        <div :class="[
+                         <div ref="canvasRef"
+                         :class="[
                             'bg-base-100 shadow-2xl transition-all duration-500 relative flex flex-col whitespace-normal',
                             viewport === 'desktop' ? 'min-h-screen' : '',
                             viewport === 'tablet' ? 'min-h-screen' : '',
@@ -197,8 +200,9 @@
 
                         <slot name="canvas-footer"></slot>
                     </div>
-                    </div>
                 </div>
+            </div>
+
 
                 <!-- Bottom Timeline Panel -->
                 <div ref="timelinePanel" class="absolute bottom-0 left-0 right-0 h-48 bg-base-100 border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] flex flex-col z-[60] translate-y-full">
@@ -241,7 +245,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { 
     PhCube, PhTextT, PhTextAa, PhTextHOne, PhListBullets, PhQuotes, PhCode, 
     PhCursorClick, PhHandPointing, PhCaretDown, PhBrowsers, PhArrowsLeftRight, 
@@ -335,6 +339,28 @@ const toggleTimeline = () => {
 const cloneBlock = (block) => {
     return store.createBlockObject(block.type);
 };
+
+// --- FIX: Dynamic Footprint Height ---
+const canvasRef = ref(null);
+const canvasHeight = ref(0);
+let resizeObserver = null;
+
+onMounted(() => {
+    if (canvasRef.value) {
+        resizeObserver = new ResizeObserver((entries) => {
+            for (let entry of entries) {
+                canvasHeight.value = entry.contentRect.height;
+            }
+        });
+        resizeObserver.observe(canvasRef.value);
+    }
+});
+
+onUnmounted(() => {
+    if (resizeObserver) {
+        resizeObserver.disconnect();
+    }
+});
 </script>
 
 <style scoped>
