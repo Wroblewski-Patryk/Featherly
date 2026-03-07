@@ -102,8 +102,8 @@
                             >
                                 <slot :name="`cell-${col.key}`" :item="item">
                                     <span v-if="col.key === 'id'" class="text-xs font-mono opacity-40">#{{ item.id }}</span>
-                                    <span v-else-if="col.key === 'created_at'" class="text-xs opacity-60">
-                                        {{ new Date(item[col.key]).toLocaleDateString() }}
+                                    <span v-else-if="['created_at', 'updated_at', 'published_at'].includes(col.key)" class="text-xs opacity-60">
+                                        {{ item[col.key] ? new Date(item[col.key]).toLocaleDateString() : '-' }}
                                     </span>
                                     <span v-else>{{ getFieldValue(item, col.key) }}</span>
                                 </slot>

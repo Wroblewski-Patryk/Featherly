@@ -207,7 +207,7 @@ const form = useForm({
     title: props.page?.title || { pl: '', en: '' },
     slug: props.page?.slug || { pl: '', en: '' },
     content: props.page?.content || [],
-    status: props.page?.status || (props.page?.is_published ? 'published' : 'draft'),
+    status: props.page?.status || 'draft',
     published_at: props.page?.published_at ? props.page.published_at.substring(0, 19).replace('T', ' ') : '',
     header_override_id: props.page?.header_override_id || null,
     footer_override_id: props.page?.footer_override_id || null,

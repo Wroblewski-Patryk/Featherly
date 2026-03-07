@@ -23,6 +23,8 @@ class Page extends Model
     protected $casts = [
         'content' => 'array',
         'settings' => 'array',
+        'published_at' => 'datetime',
+        'archived_at' => 'datetime',
     ];
     public function getResolvedHeaderIdAttribute()
     {

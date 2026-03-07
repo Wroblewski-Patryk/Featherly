@@ -22,7 +22,7 @@ class Post extends Model
 
     protected $casts = [
         'content' => 'array',
-        'is_published' => 'boolean',
         'published_at' => 'datetime',
+        'archived_at' => 'datetime',
     ];
 }

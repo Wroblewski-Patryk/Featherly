@@ -78,7 +78,7 @@ Route::get('/', function () {
         $page = Page::with(['headerOverride', 'footerOverride'])->where('slug->en', 'home')->orWhere('slug->pl', 'home')->first();
     }
 
-    if (!$page) {
+    if (!$page || ($page->status !== 'published' && !auth()->check())) {
         return Inertia::render('Welcome', ['page' => null]);
     }
 
@@ -93,7 +93,7 @@ Route::get('/', function () {
 Route::post('/contact', [ContactController::class , 'store'])->name('contact.store');
 
 Route::get('/blog', function (\Illuminate\Http\Request $request) {
-    $posts = \App\Models\Post::where('is_published', true)
+    $posts = \App\Models\Post::where('status', 'published')
         ->latest('published_at')
         ->paginate(12);
 
@@ -104,13 +104,47 @@ Route::get('/blog', function (\Illuminate\Http\Request $request) {
 
 Route::get('/blog/{slug}', function (string $slug) {
     $post = \App\Models\Post::where('slug', $slug)
-        ->where('is_published', true)
+        ->where('status', 'published')
         ->firstOrFail();
 
     return Inertia::render('Blog/Show', [
     'post' => $post,
     ]);
 });
+
+Route::get('/projects', function () {
+    $projects = \App\Models\Project::where('status', 'published')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    $settings = \App\Models\Setting::where('key', 'general')->value('value') ?? [];
+
+    return Inertia::render('Public/ProjectList', [
+    'projects' => $projects,
+    'settings' => $settings,
+    ]);
+});
+
+Route::get('/projects/{slug}', function (string $slug) {
+    $project = \App\Models\Project::where('slug', $slug)
+        ->where('status', 'published')
+        ->firstOrFail();
+
+    $settings = \App\Models\Setting::where('key', 'general')->value('value') ?? [];
+
+    return Inertia::render('Public/Project', [
+    'project' => $project,
+    'settings' => $settings,
+    ]);
+});
+
+Route::get('/forms/{id}/preview', function ($id) {
+    $form = \App\Models\Form::findOrFail($id);
+    return Inertia::render('Public/FormPreview', [
+    'form' => $form,
+    'settings' => \App\Models\Setting::where('key', 'general')->value('value') ?? []
+    ]);
+})->name('forms.preview');
 
 Route::get('/live-preview', function () {
     return Inertia::render('Preview', [

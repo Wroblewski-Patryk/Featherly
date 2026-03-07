@@ -5,14 +5,14 @@
             save-label="Save Form"
             back-label="Back"
             :back-route="route('admin.forms.index')"
-            :categories="formCategories"
+            :categories="categories"
             :saving="form.processing"
             @save="save"
         >
             <template #info>
                 <div class="form-control">
                     <label class="label"><span class="label-text">Form Title</span></label>
-                    <input type="text" v-model="form.name" class="input input-bordered input-sm" placeholder="e.g. Contact Us" />
+                    <input type="text" v-model="form.title" class="input input-bordered input-sm" placeholder="e.g. Contact Us" />
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text">Success Message</span></label>
@@ -22,11 +22,28 @@
                     <label class="label"><span class="label-text">Notification Email</span></label>
                     <input type="email" v-model="form.settings.notification_email" class="input input-bordered input-sm" placeholder="admin@example.com" />
                 </div>
+                
+                <div class="divider opacity-5 my-2"></div>
+                
+                <div class="form-control">
+                    <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Status</span></label>
+                    <select v-model="form.status" class="select select-bordered select-sm text-xs bg-base-100/50 hover:bg-base-200/50 transition-all border-white/10 focus:border-primary/50">
+                        <option value="draft">Draft</option>
+                        <option value="published">Published</option>
+                        <option value="planned">Planned</option>
+                        <option value="archived">Archived</option>
+                    </select>
+                </div>
+                <DatePicker 
+                    v-if="form.status === 'planned' || form.status === 'published'"
+                    v-model="form.published_at" 
+                    label="Publish Date & Time"
+                />
             </template>
 
             <template #canvas-header>
                 <div class="p-12 bg-primary/5 border-b border-black/5 flex flex-col items-center text-center">
-                    <h1 class="text-4xl font-black mb-2">{{ form.name || 'Untitled Form' }}</h1>
+                    <h1 class="text-4xl font-black mb-2">{{ form.title || 'Untitled Form' }}</h1>
                     <p class="opacity-40 text-sm">Preview of the generated form interface</p>
                 </div>
             </template>
@@ -35,12 +52,13 @@
 </template>
 
 <script setup>
+import { ref, onMounted, computed } from 'vue';
 import { PhTextbox } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
+import DatePicker from '@/Components/DatePicker.vue';
 import { useForm } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
-import { onMounted, computed } from 'vue';
 
 const props = defineProps({
     form_data: Object,
@@ -48,16 +66,6 @@ const props = defineProps({
 });
 
 const store = useBlockBuilderStore();
-
-const blocks = computed({
-    get: () => store.blocks,
-    set: (value) => {
-        store.blocks = value;
-        store.isDirty = true;
-    }
-});
-const viewport = ref('desktop');
-const leftTab = ref('blocks');
 
 const categories = ref([
     {
@@ -94,14 +102,12 @@ const categories = ref([
     }
 ]);
 
-const cloneBlock = (block) => {
-    return store.createBlockObject(block.type);
-};
-
 const form = useForm({
-    name: props.form_data?.name || '',
+    title: props.form_data?.title || '',
     content: props.form_data?.content || [],
     settings: props.form_data?.settings || { success_message: 'Message sent!', notification_email: '', submit_url: '' },
+    status: props.form_data?.status || 'draft',
+    published_at: props.form_data?.published_at ? props.form_data.published_at.substring(0, 19).replace('T', ' ') : '',
 });
 
 onMounted(() => {
