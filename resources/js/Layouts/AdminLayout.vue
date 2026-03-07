@@ -348,7 +348,7 @@ function applyTheme(themeName) {
 
                 <!-- Main Content Area -->
                 <div class="drawer-content flex flex-col min-w-0 flex-1 overflow-x-hidden pt-0 shadow-inner bg-base-200">
-                    <main class="p-4 lg:p-8 flex-grow" :class="{ 'max-w-7xl mx-auto w-full': !fullWidth }">
+                    <main class="p-4 lg:p-8 flex-grow max-h-full" :class="{ 'max-w-7xl mx-auto w-full': !fullWidth }">
                         <!-- Flash Messages (Optional) -->
                         <div v-if="$page.props.flash?.success" class="alert alert-success shadow-lg mb-6">
                             <div>

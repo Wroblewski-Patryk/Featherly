@@ -4,10 +4,11 @@
         <div class="flex items-center gap-4 mb-4 bg-base-200/50 p-2 rounded-lg border border-white/5">
             <div class="flex gap-2">
                 <button @click="restart" class="btn btn-sm btn-ghost btn-square" title="Restart">
-                    <i class="fas fa-step-backward"></i>
+                    <PhSkipBack weight="bold" class="w-4 h-4" />
                 </button>
                 <button @click="togglePlay" class="btn btn-sm btn-primary btn-square" :title="isPlaying ? 'Pause' : 'Play'">
-                    <i :class="isPlaying ? 'fas fa-pause' : 'fas fa-play'"></i>
+                    <PhPause weight="fill" v-if="isPlaying" class="w-4 h-4" />
+                    <PhPlay weight="fill" v-else class="w-4 h-4" />
                 </button>
             </div>
             
@@ -47,7 +48,7 @@
                      <!-- Block Info -->
                      <div class="w-48 shrink-0 flex items-center gap-2 pl-2 bg-base-100/50 h-full border-r border-white/10 relative z-20 backdrop-blur-sm">
                         <div class="w-4 text-center text-[10px] font-mono opacity-40">{{ index + 1 }}</div>
-                        <i :class="block.icon || 'fas fa-cube'" class="text-xs opacity-50"></i>
+                        <component :is="PhCube" weight="bold" class="w-3 h-3 opacity-50" />
                         <div class="text-xs truncate font-semibold" :title="block.type">{{ block.type.charAt(0).toUpperCase() + block.type.slice(1) }}</div>
                      </div>
 
@@ -64,7 +65,7 @@
                 </div>
 
                 <div v-if="blocks.length === 0" class="flex flex-col items-center justify-center opacity-30 py-12 pointer-events-none">
-                    <i class="fas fa-project-diagram text-4xl mb-4"></i>
+                    <PhTimer weight="bold" class="w-12 h-12 mb-4" />
                     <p class="text-xs text-center max-w-sm">No blocks attached to the Main Timeline.</p>
                 </div>
             </div>
@@ -74,6 +75,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { PhSkipBack, PhPlay, PhPause, PhTimer, PhCube } from '@phosphor-icons/vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import gsap from 'gsap';
 

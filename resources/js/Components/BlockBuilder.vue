@@ -62,17 +62,20 @@
                             <PhCube weight="fill" class="w-4 h-4" v-if="showLeftSidebar" />
                             <PhCube weight="regular" class="w-4 h-4" v-else />
                         </button>
+                        <button @click="toggleTimeline" class="btn btn-square btn-xs border-none transition-colors" :class="showTimeline ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Toggle Timeline">
+                            <PhTimer weight="fill" class="w-4 h-4" v-if="showTimeline" />
+                            <PhTimer weight="regular" class="w-4 h-4" v-else />
+                        </button>
                         <button @click="showRightSidebar = !showRightSidebar" class="btn btn-square btn-xs border-none transition-colors" :class="showRightSidebar ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Toggle Document Inspector">
                             <PhSlidersHorizontal weight="fill" class="w-4 h-4" v-if="showRightSidebar" />
                             <PhSlidersHorizontal weight="regular" class="w-4 h-4" v-else />
                         </button>
+
+                        <div class="h-5 w-[1px] bg-base-content/10 mx-1.5"></div>
+
                         <button @click="store.isDepthView = !store.isDepthView" class="btn btn-square btn-xs border-none transition-colors" :class="store.isDepthView ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Toggle Depth View (3D)">
                             <PhStack weight="fill" class="w-4 h-4" v-if="store.isDepthView" />
                             <PhStack weight="regular" class="w-4 h-4" v-else />
-                        </button>
-                        <button @click="toggleTimeline" class="btn btn-square btn-xs border-none transition-colors" :class="showTimeline ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Toggle Timeline">
-                            <PhTimer weight="fill" class="w-4 h-4" v-if="showTimeline" />
-                            <PhTimer weight="regular" class="w-4 h-4" v-else />
                         </button>
                     </div>
 
@@ -201,10 +204,12 @@
                 <div ref="timelinePanel" class="absolute bottom-0 left-0 right-0 h-48 bg-base-100 border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] flex flex-col z-[60] translate-y-full">
                     <div class="flex items-center justify-between px-4 py-2 bg-base-200/50 border-b border-white/5 backdrop-blur shadow-sm">
                         <div class="flex items-center gap-2">
-                            <i class="fas fa-stopwatch text-primary"></i>
+                            <PhTimer weight="bold" class="w-4 h-4 text-primary" />
                             <span class="text-xs font-bold uppercase tracking-widest">GSAP Timeline sequence</span>
                         </div>
-                        <button @click="toggleTimeline" class="btn btn-ghost btn-xs btn-circle"><i class="fas fa-times opacity-50"></i></button>
+                        <button @click="toggleTimeline" class="btn btn-ghost btn-xs btn-circle">
+                            <PhX weight="bold" class="w-4 h-4 opacity-50" />
+                        </button>
                     </div>
                     <div class="flex-1 overflow-y-auto p-4 custom-scrollbar flex flex-col">
                         <GsapTimelineEditor :blocks="timelineBlocks" class="flex-1" />
@@ -248,7 +253,7 @@ import {
     PhVideoCamera, PhNavigationArrow, PhDotsThree, PhBrowser, PhFootprints, 
     PhFolder, PhTerminal, PhDeviceMobile, PhAppWindow, PhPlusCircle, PhArticle, 
     PhBriefcase, PhArrowsClockwise, PhListNumbers, PhDeviceTablet, PhArrowsOut,
-    PhArrowUUpLeft, PhPlus
+    PhArrowUUpLeft, PhPlus, PhX
 } from '@phosphor-icons/vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
