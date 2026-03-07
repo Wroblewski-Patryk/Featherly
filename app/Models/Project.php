@@ -14,6 +14,8 @@ class Project extends Model
 
     protected $casts = [
         'content' => 'array',
+        'published_at' => 'datetime',
+        'archived_at' => 'datetime',
     ];
 
     public $translatable = ['title', 'description'];

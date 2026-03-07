@@ -65,7 +65,7 @@ class PostController extends Controller
             'slug' => 'required|array',
             'excerpt' => 'nullable|array',
             'content' => 'required|array',
-            'is_published' => 'boolean',
+            'status' => 'nullable|string',
             'published_at' => 'nullable|date',
             'featured_image' => 'nullable|array',
         ]);
@@ -94,7 +94,7 @@ class PostController extends Controller
             'slug' => 'required|array',
             'excerpt' => 'nullable|array',
             'content' => 'required|array',
-            'is_published' => 'boolean',
+            'status' => 'nullable|string',
             'published_at' => 'nullable|date',
             'featured_image' => 'nullable|array',
         ]);

@@ -14,7 +14,7 @@ class FormController extends Controller
         $query = Form::query();
 
         $query->when($request->search, function ($q, $search) {
-            $q->where('name', 'like', "%{$search}%");
+            $q->where('title', 'like', "%{$search}%");
         });
 
         if ($request->has('sort') && $request->has('direction')) {
@@ -40,10 +40,11 @@ class FormController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'content' => 'nullable|array',
             'settings' => 'nullable|array',
-            'is_published' => 'boolean',
+            'status' => 'nullable|string',
+            'published_at' => 'nullable|date',
         ]);
 
         $formModel = Form::create($validated);
@@ -62,10 +63,11 @@ class FormController extends Controller
     public function update(Request $request, Form $form)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'content' => 'nullable|array',
             'settings' => 'nullable|array',
-            'is_published' => 'boolean',
+            'status' => 'nullable|string',
+            'published_at' => 'nullable|date',
         ]);
 
         $form->update($validated);

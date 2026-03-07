@@ -4,6 +4,7 @@ import { Head, useForm, Link } from '@inertiajs/vue3';
 import { PhCamera, PhCards } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
+import DatePicker from '@/Components/DatePicker.vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 
 const props = defineProps({
@@ -23,9 +24,8 @@ const form = useForm({
     url: props.project?.url || '',
     category: props.project?.category || '',
     order: props.project?.order || 0,
-    // Added missing fields from template
-    client: props.project?.client || '',
-    status: props.project?.status || 'completed'
+    status: props.project?.status || 'draft',
+    published_at: props.project?.published_at ? props.project.published_at.substring(0, 19).replace('T', ' ') : '',
 });
 
 onMounted(() => {
@@ -84,13 +84,19 @@ function submit() {
                     <input type="text" v-model="form.category" class="input input-bordered input-sm" placeholder="e.g. Residential" />
                 </div>
                 <div class="form-control">
-                    <label class="label"><span class="label-text text-xs opacity-60">Status</span></label>
-                    <select v-model="form.status" class="select select-bordered select-sm text-xs">
-                        <option value="completed">Completed</option>
-                        <option value="in_progress">In Progress</option>
+                    <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Status</span></label>
+                    <select v-model="form.status" class="select select-bordered select-sm text-xs bg-base-100/50 hover:bg-base-200/50 transition-all border-white/10 focus:border-primary/50">
+                        <option value="draft">Draft</option>
+                        <option value="published">Published</option>
                         <option value="planned">Planned</option>
+                        <option value="archived">Archived</option>
                     </select>
                 </div>
+                <DatePicker 
+                    v-if="form.status === 'planned' || form.status === 'published'"
+                    v-model="form.published_at" 
+                    label="Publish Date & Time"
+                />
             </template>
 
             <template #canvas-header>

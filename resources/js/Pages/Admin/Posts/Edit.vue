@@ -167,7 +167,7 @@ const form = useForm({
     slug: props.post?.slug || { pl: '', en: '' },
     excerpt: props.post?.excerpt || { pl: '', en: '' },
     content: props.post?.content || [],
-    status: props.post?.status || (props.post?.is_published ? 'published' : 'draft'),
+    status: props.post?.status || 'draft',
     published_at: props.post?.published_at ? props.post.published_at.substring(0, 19).replace('T', ' ') : '',
     featured_image: props.post?.featured_image || { pl: '', en: '' },
     // SEO Fields

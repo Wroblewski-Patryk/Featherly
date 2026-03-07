@@ -10,9 +10,18 @@ class Form extends Model
     use HasFactory;
     protected $guarded = [];
 
+    protected $fillable = [
+        'title',
+        'content',
+        'settings',
+        'status',
+        'published_at'
+    ];
+
     protected $casts = [
         'content' => 'array',
         'settings' => 'array',
-        'is_published' => 'boolean',
+        'published_at' => 'datetime',
+        'archived_at' => 'datetime',
     ];
 }

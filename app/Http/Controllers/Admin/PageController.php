@@ -57,7 +57,8 @@ class PageController extends Controller
             'title' => 'required|array',
             'slug' => 'required|array',
             'content' => 'required|array',
-            'is_published' => 'boolean',
+            'status' => 'nullable|string',
+            'published_at' => 'nullable|date',
             'header_override_id' => 'nullable|exists:templates,id',
             'footer_override_id' => 'nullable|exists:templates,id',
         ]);
@@ -85,7 +86,8 @@ class PageController extends Controller
             'title' => 'required|array',
             'slug' => 'required|array',
             'content' => 'required|array',
-            'is_published' => 'boolean',
+            'status' => 'nullable|string',
+            'published_at' => 'nullable|date',
             'header_override_id' => 'nullable|exists:templates,id',
             'footer_override_id' => 'nullable|exists:templates,id',
         ]);

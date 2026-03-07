@@ -62,7 +62,9 @@ class ProjectController extends Controller
             'url' => 'nullable|string',
             'category' => 'nullable|string',
             'order' => 'integer',
-            'content' => 'nullable|array'
+            'content' => 'nullable|array',
+            'status' => 'nullable|string',
+            'published_at' => 'nullable|date',
         ]);
 
         if (empty($validated['slug'])) {
@@ -91,7 +93,10 @@ class ProjectController extends Controller
             'url' => 'nullable|string',
             'category' => 'nullable|string',
             'order' => 'integer',
-            'content' => 'nullable|array'
+            'content' => 'nullable|array',
+            'status' => 'nullable|string',
+            'is_published' => 'boolean',
+            'published_at' => 'nullable|date',
         ]);
 
         $project->update($validated);
