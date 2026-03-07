@@ -7,6 +7,8 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         hoveredBlockId: null,
         isDirty: false,
         isDepthView: false,
+        showRightSidebar: true,
+        isEditingBlock: false,
         categories: [
             {
                 id: 'typography',

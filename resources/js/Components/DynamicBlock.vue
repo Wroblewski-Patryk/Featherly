@@ -4,7 +4,7 @@ import { useGsapRuntime } from '@/Composables/useGsapRuntime';
 import { useForm, usePage } from '@inertiajs/vue3';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
 import draggable from 'vuedraggable';
-import { PhArrowsOut, PhCopy, PhTrash, PhInfo, PhCheckCircle } from '@phosphor-icons/vue';
+import { PhArrowsOut, PhCopy, PhTrash, PhInfo, PhCheckCircle, PhSlidersHorizontal } from '@phosphor-icons/vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 
 const props = defineProps(['block']);
@@ -217,7 +217,7 @@ const contactForm = useForm({
             { 'editor-ring': isEditor && store.activeBlockId === block.id }
          ]" 
          :style="styleObj"
-         @click.stop="isEditor ? (store.activeBlockId = block.id) : null"
+          @click.stop="isEditor ? (store.activeBlockId = block.id, store.isEditingBlock = false) : null"
          @mouseover.stop="isEditor ? (store.hoveredBlockId = block.id) : null"
          @mouseout.stop="isEditor ? (store.hoveredBlockId = null) : null"
          class="transition-all duration-500 relative group/block">
@@ -232,9 +232,12 @@ const contactForm = useForm({
                 </div>
             </div>
             
-            <!-- Actions (Right: Duplicate, Delete) -->
+            <!-- Actions (Right: Settings, Duplicate, Delete) -->
             <div class="absolute right-2 top-1/2 -translate-y-1/2 z-[100] transition-opacity duration-200 flex items-center gap-1"
                  :class="{'opacity-100 pointer-events-auto': store.hoveredBlockId === block.id || store.activeBlockId === block.id, 'opacity-0 pointer-events-none': store.hoveredBlockId !== block.id && store.activeBlockId !== block.id}">
+                <button type="button" @click.stop.prevent="store.isEditingBlock = true; store.showRightSidebar = true; store.activeBlockId = block.id" class="btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur text-base-content/60 hover:bg-primary hover:text-primary-content shadow-sm rounded-box relative z-50 pointer-events-auto" title="Block Settings">
+                    <PhSlidersHorizontal weight="bold" class="w-3 h-3" />
+                </button>
                 <button type="button" @click.stop.prevent="store.duplicateBlock(block.id)" class="btn btn-square btn-xs btn-ghost bg-base-100 border border-base-content/10 backdrop-blur text-primary/80 hover:bg-primary hover:text-primary-content shadow-sm rounded-box relative z-50 pointer-events-auto" title="Duplicate Block">
                     <PhCopy weight="bold" class="w-3 h-3" />
                 </button>

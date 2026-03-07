@@ -66,8 +66,8 @@
                             <PhTimer weight="fill" class="w-4 h-4" v-if="showTimeline" />
                             <PhTimer weight="regular" class="w-4 h-4" v-else />
                         </button>
-                        <button @click="showRightSidebar = !showRightSidebar" class="btn btn-square btn-xs border-none transition-colors" :class="showRightSidebar ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Toggle Document Inspector">
-                            <PhSlidersHorizontal weight="fill" class="w-4 h-4" v-if="showRightSidebar" />
+                        <button @click="store.showRightSidebar = !store.showRightSidebar" class="btn btn-square btn-xs border-none transition-colors" :class="store.showRightSidebar ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Toggle Document Inspector">
+                            <PhSlidersHorizontal weight="fill" class="w-4 h-4" v-if="store.showRightSidebar" />
                             <PhSlidersHorizontal weight="regular" class="w-4 h-4" v-else />
                         </button>
 
@@ -209,7 +209,7 @@
             <!-- Right Sidebar: Document Inspector / Block Settings -->
             <div 
                 class="bg-base-100 border-l border-white/5 overflow-hidden z-10 shadow-2xl flex flex-col transition-all duration-300"
-                :class="showRightSidebar ? 'w-80' : 'w-0 border-l-0'"
+                :class="store.showRightSidebar ? 'w-80' : 'w-0 border-l-0'"
             >
                 <div class="w-80 h-full flex flex-col">
                     <BlockEditorSidebar :menus="menus">
@@ -309,7 +309,6 @@ const resetZoom = () => {
 };
 
 const showLeftSidebar = ref(true);
-const showRightSidebar = ref(true);
 const showTimeline = ref(false);
 const timelinePanel = ref(null);
 

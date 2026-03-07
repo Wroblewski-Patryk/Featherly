@@ -102,7 +102,7 @@ const toggleOffset = (direction) => {
 </script>
 
 <template>
-    <div v-if="store.activeBlock" class="h-full flex flex-col bg-base-100 border-l border-white/5 animate-in slide-in-from-right-4 fade-in duration-300">
+    <div v-if="store.activeBlock && store.isEditingBlock" class="h-full flex flex-col bg-base-100 border-l border-white/5 animate-in slide-in-from-right-4 fade-in duration-300">
         <!-- Sidebar Header -->
         <div class="px-6 py-4 border-b border-base-content/10 flex items-center justify-between sticky top-0 bg-base-100/80 backdrop-blur-xl z-20">
             <div class="flex items-center gap-3">
@@ -118,7 +118,7 @@ const toggleOffset = (direction) => {
                     <p class="text-[10px] opacity-40 uppercase tracking-widest leading-none">Settings</p>
                 </div>
             </div>
-            <button @click="store.activeBlockId = null" class="btn btn-ghost btn-xs btn-circle">
+            <button @click="store.isEditingBlock = false" class="btn btn-ghost btn-xs btn-circle">
                 <PhX weight="bold" class="w-4 h-4" />
             </button>
         </div>
@@ -793,7 +793,6 @@ const toggleOffset = (direction) => {
             
             <!-- Layers -->
             <div v-if="activeInspectorTab === 'layers'" class="space-y-4 animate-in fade-in">
-                <p class="text-[10px] font-bold uppercase tracking-widest opacity-30 mb-2">Canvas Graph</p>
                 <LayerTreeItem 
                     :blocks="store.blocks" 
                     @select="id => store.activeBlockId = id"
