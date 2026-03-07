@@ -1,7 +1,7 @@
 <script setup>
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import { computed, ref, watch } from 'vue';
-import { PhTextHOne, PhBriefcase, PhCode, PhBoundingBox, PhCube, PhX, PhTrash, PhPlus, PhTextAlignLeft, PhTextAlignCenter, PhTextAlignRight, PhTextAlignJustify, PhArrowUp, PhArrowDown, PhArrowLeft, PhArrowRight, PhFileText } from '@phosphor-icons/vue';
+import { PhTextHOne, PhBriefcase, PhCode, PhBoundingBox, PhCube, PhX, PhTrash, PhPlus, PhTextAlignLeft, PhTextAlignCenter, PhTextAlignRight, PhTextAlignJustify, PhArrowUp, PhArrowDown, PhArrowLeft, PhArrowRight, PhFileText, PhSlidersHorizontal } from '@phosphor-icons/vue';
 import UnitInput from '@/Components/UnitInput.vue';
 import LinkedUnitInput from '@/Components/LinkedUnitInput.vue';
 import AdminCollapse from '@/Components/AdminCollapse.vue';
@@ -768,7 +768,7 @@ const toggleOffset = (direction) => {
         <div class="px-6 py-4 border-b border-base-content/10 flex items-center justify-between sticky top-0 bg-base-100/80 backdrop-blur-xl z-20">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-base-content/5 flex items-center justify-center text-base-content/70 flex-shrink-0">
-                    <PhFileText weight="bold" class="w-4 h-4" />
+                    <PhSlidersHorizontal weight="bold" class="w-4 h-4" />
                 </div>
                 <div>
                     <h3 class="text-sm font-bold capitalize">Document Inspector</h3>
