@@ -14,6 +14,7 @@ import AnimationSettings from './BlockBuilder/Settings/AnimationSettings.vue';
 import InspectorLayersTab from './BlockBuilder/Inspector/InspectorLayersTab.vue';
 import InspectorHistoryTab from './BlockBuilder/Inspector/InspectorHistoryTab.vue';
 import InspectorInfoTab from './BlockBuilder/Inspector/InspectorInfoTab.vue';
+import SidebarPanelHeader from './BlockBuilder/Layout/SidebarPanelHeader.vue';
 
 const props = defineProps({
     templates: [Array, Object],
@@ -62,20 +63,16 @@ const showAdvanced = computed(() => !!$slots.advanced);
         <!-- CASE 1: BLOCK SETTINGS -->
         <template v-if="store.activeBlock && store.isEditingBlock">
             <!-- Sidebar Header -->
-            <div class="px-6 py-4 border-b border-base-content/10 flex items-center justify-between sticky top-0 bg-base-100/10 backdrop-blur-xl z-20">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                        <PhSelection weight="bold" class="w-4 h-4" />
-                    </div>
-                    <div>
-                        <h3 class="text-xs font-bold capitalize">{{ store.activeBlock.type.replace(/_/g, ' ') }}</h3>
-                        <p class="text-[10px] opacity-40 uppercase tracking-widest leading-none font-black">Block Settings</p>
-                    </div>
-                </div>
-                <button @click="closeSidebar" class="btn btn-ghost btn-xs btn-circle">
-                    <PhX weight="bold" class="w-4 h-4" />
-                </button>
-            </div>
+            <SidebarPanelHeader
+                :icon="PhSelection"
+                icon-weight="bold"
+                title="Settings">
+                <template #actions>
+                    <button @click="closeSidebar" class="btn btn-ghost btn-xs btn-circle">
+                        <PhX weight="bold" class="w-4 h-4" />
+                    </button>
+                </template>
+            </SidebarPanelHeader>
 
             <!-- Sidebar Tabs -->
             <div class="flex border-b border-base-content/10 bg-base-200/50">
@@ -129,23 +126,16 @@ const showAdvanced = computed(() => !!$slots.advanced);
         <!-- CASE 2: DOCUMENT INSPECTOR (No block selected) -->
         <template v-else>
             <!-- Inspector Header -->
-            <div class="px-6 py-5 border-b border-base-content/10 flex items-center justify-between sticky top-0 bg-base-100/80 backdrop-blur-xl z-20">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
-                        <PhStack weight="duotone" class="w-5 h-5" />
-                    </div>
-                    <div>
-                        <h3 class="text-xs font-black uppercase tracking-wider text-base-content/90">Document</h3>
-                        <p class="text-[10px] opacity-40 uppercase tracking-widest leading-none font-bold">Inspector</p>
-                    </div>
-                </div>
-            </div>
+            <SidebarPanelHeader
+                :icon="PhStack"
+                icon-weight="duotone"
+                title="Inspector" />
 
             <!-- Inspector Tabs -->
-            <div class="flex border-b border-base-content/10 bg-base-200/50 backdrop-blur-sm sticky top-[76px] z-10 overflow-x-auto no-scrollbar scroll-smooth">
+            <div class="flex border-b border-base-content/10 bg-base-200/50 backdrop-blur-sm sticky z-10 overflow-x-auto no-scrollbar scroll-smooth">
                 <button v-for="tab in ['layers', 'history', 'info', ...(showSeo ? ['seo'] : []), ...(showAdvanced ? ['advanced'] : [])]" :key="tab"
                         @click="activeInspectorTab = tab"
-                        class="flex-1 min-w-[60px] py-3 text-[9px] font-black uppercase tracking-tighter transition-all relative flex flex-col items-center justify-center gap-1.5"
+                        class="flex-1 min-w-[60px] py-3 text-[9px] font-normal uppercase tracking-tighter transition-all relative flex flex-col items-center justify-center gap-1.5"
                         :class="activeInspectorTab === tab ? 'text-primary' : 'opacity-40 hover:opacity-100 hover:bg-base-content/5'">
                     
                     <PhStack v-if="tab === 'layers'" weight="bold" class="w-4 h-4" />
@@ -228,4 +218,6 @@ const showAdvanced = computed(() => !!$slots.advanced);
     background: rgba(255, 255, 255, 0.1);
 }
 </style>
+
+
 

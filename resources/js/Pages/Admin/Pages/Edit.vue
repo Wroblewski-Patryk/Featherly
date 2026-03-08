@@ -12,98 +12,110 @@
             <!-- Info Tab -->
             <template #info>
                 <div class="flex flex-col gap-6">
-                    <!-- Status Selection -->
-                    <div class="form-control">
-                        <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Status</span></label>
-                        <select v-model="form.status" class="select select-bordered select-sm focus:select-primary transition-all w-full">
-                            <option value="draft">Draft (Private)</option>
-                            <option value="published">Published (Public)</option>
-                            <option value="planned">Planned (Scheduled)</option>
-                            <option value="archived">Archived</option>
-                        </select>
+                    <div class="space-y-4">
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug (PL)</span></label>
+                            <div class="join w-full">
+                                <input type="text" v-model="form.slug.pl" class="input input-bordered input-sm join-item focus:border-primary/50 transition-all font-mono text-xs w-full" placeholder="page-slug" />
+                                <button @click="form.slug.pl = generateSlug(form.title.pl)" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
+                                    <PhArrowsClockwise weight="bold" class="w-3 h-3" />
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Generated URL</span></label>
+                            <div class="join w-full">
+                                <input
+                                    type="text"
+                                    :value="previewUrl || ''"
+                                    readonly
+                                    class="input input-bordered input-sm join-item w-full font-mono text-[10px]"
+                                    :placeholder="form.slug?.pl ? '' : 'Slug required for URL'"
+                                />
+                                <a
+                                    v-if="previewUrl"
+                                    :href="previewUrl"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="btn btn-sm btn-ghost join-item"
+                                    title="Open Preview URL"
+                                >
+                                    <PhArrowSquareOut weight="bold" class="w-3 h-3" />
+                                </a>
+                                <button v-else type="button" class="btn btn-sm btn-ghost join-item" disabled title="URL unavailable">
+                                    <PhArrowSquareOut weight="bold" class="w-3 h-3 opacity-40" />
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Status</span></label>
+                            <select v-model="form.status" class="select select-bordered select-sm focus:select-primary transition-all w-full">
+                                <option value="draft">Draft (Private)</option>
+                                <option value="published">Published (Public)</option>
+                                <option value="planned">Planned (Scheduled)</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                        </div>
+
+                        <div v-if="form.status === 'planned' || form.status === 'published'" class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Publish Date & Time</span></label>
+                            <DatePicker v-model="form.published_at" />
+                        </div>
                     </div>
 
-                    <!-- Publish Date & Time -->
-                    <div v-if="form.status === 'planned' || form.status === 'published'" class="form-control">
-                        <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Publish Date & Time</span></label>
-                        <DatePicker v-model="form.published_at" />
+                    <div class="divider opacity-10 my-0"></div>
+
+                    <div class="space-y-4">
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Main Page Template</span></label>
+                            <select v-model="form.template_id" class="select select-bordered select-sm text-xs w-full">
+                                <option :value="null">Default Page Layout</option>
+                                <option v-for="t in templates.page || []" :key="t.id" :value="t.id">{{ t.name }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Header Section</span></label>
+                            <select v-model="form.header_override_id" class="select select-bordered select-sm text-xs w-full">
+                                <option :value="null">System Default Header</option>
+                                <option v-for="t in templates.header || []" :key="t.id" :value="t.id">{{ t.name }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Sidebar Section</span></label>
+                            <select v-model="form.sidebar_override_id" class="select select-bordered select-sm text-xs w-full">
+                                <option :value="null">System Default Sidebar</option>
+                                <option v-for="t in templates.sidebar || []" :key="t.id" :value="t.id">{{ t.name }}</option>
+                            </select>
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Footer Section</span></label>
+                            <select v-model="form.footer_override_id" class="select select-bordered select-sm text-xs w-full">
+                                <option :value="null">System Default Footer</option>
+                                <option v-for="t in templates.footer || []" :key="t.id" :value="t.id">{{ t.name }}</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <!-- Metadata Section -->
-                    <div class="space-y-3 bg-base-content/5 p-3 rounded-xl border border-base-content/5">
-                        <div class="flex items-center justify-between text-[10px] uppercase tracking-wider opacity-50 font-bold px-1">
+                    <div class="divider opacity-10 my-0"></div>
+
+                    <div class="space-y-3 bg-base-200/30 p-4 rounded-xl border border-base-content/10">
+                        <div class="flex items-center justify-between text-[10px] uppercase tracking-wider opacity-60 font-bold px-1">
                             <span>Metadata</span>
                             <PhFingerprint weight="bold" class="w-3 h-3 text-primary" />
                         </div>
                         <div class="flex flex-col gap-2 text-[11px]">
-                            <div class="flex justify-between items-center bg-base-100/30 p-2 rounded-lg">
-                                <span class="opacity-50">Created:</span>
+                            <div class="flex justify-between items-center bg-base-100/50 p-2 rounded-lg border border-base-content/5">
+                                <span class="opacity-60">Created</span>
                                 <span class="font-mono">{{ page?.created_at ? new Date(page.created_at).toLocaleString() : 'New Content' }}</span>
                             </div>
-                            <div class="flex justify-between items-center bg-base-100/30 p-2 rounded-lg">
-                                <span class="opacity-50">Last Edit:</span>
+                            <div class="flex justify-between items-center bg-base-100/50 p-2 rounded-lg border border-base-content/5">
+                                <span class="opacity-60">Last Edit</span>
                                 <span class="font-mono">{{ page?.updated_at ? new Date(page.updated_at).toLocaleString() : 'N/A' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </template>
-
-            <!-- Advanced Tab -->
-            <template #advanced>
-                <div class="flex flex-col gap-6">
-                    <!-- Slug Section -->
-                    <div class="form-control">
-                        <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug (PL)</span></label>
-                        <div class="flex items-center gap-2">
-                            <input type="text" v-model="form.slug.pl" class="input input-bordered input-sm focus:border-primary/50 transition-all font-mono text-xs flex-1" placeholder="page-slug" />
-                            <button @click="form.slug.pl = generateSlug(form.title.pl)" type="button" class="btn btn-square btn-sm btn-ghost opacity-40 hover:opacity-100" title="Regenerate Slug">
-                                <PhArrowsClockwise weight="bold" class="w-4 h-4"/>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="divider opacity-5 my-0"></div>
-
-                    <!-- Overrides Section -->
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-2 px-1">
-                            <div class="h-[1px] flex-1 bg-base-content/10"></div>
-                            <span class="text-[10px] font-bold uppercase tracking-widest opacity-30">Template Style</span>
-                            <div class="h-[1px] flex-1 bg-base-content/10"></div>
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-4">
-                            <div class="form-control">
-                                <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Main Page Template</span></label>
-                                <select v-model="form.template_id" class="select select-bordered select-sm text-xs w-full">
-                                    <option :value="null">Default Page Layout</option>
-                                    <option v-for="t in templates.page || []" :key="t.id" :value="t.id">{{ t.name }}</option>
-                                </select>
-                            </div>
-
-                            <div class="form-control">
-                                <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Header Section</span></label>
-                                <select v-model="form.header_override_id" class="select select-bordered select-sm text-xs w-full">
-                                    <option :value="null">System Default Header</option>
-                                    <option v-for="t in templates.header || []" :key="t.id" :value="t.id">{{ t.name }}</option>
-                                </select>
-                            </div>
-
-                            <div class="form-control">
-                                <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Sidebar Section</span></label>
-                                <select v-model="form.sidebar_override_id" class="select select-bordered select-sm text-xs w-full">
-                                    <option :value="null">System Default Sidebar</option>
-                                    <option v-for="t in templates.sidebar || []" :key="t.id" :value="t.id">{{ t.name }}</option>
-                                </select>
-                            </div>
-
-                            <div class="form-control">
-                                <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Footer Section</span></label>
-                                <select v-model="form.footer_override_id" class="select select-bordered select-sm text-xs w-full">
-                                    <option :value="null">System Default Footer</option>
-                                    <option v-for="t in templates.footer || []" :key="t.id" :value="t.id">{{ t.name }}</option>
-                                </select>
                             </div>
                         </div>
                     </div>
@@ -181,13 +193,12 @@
 </template>
 
 <script setup>
-import { 
-    PhEye, 
-    PhFloppyDisk, 
-    PhFingerprint, 
+import {
+    PhFingerprint,
     PhShareNetwork,
     PhArrowsClockwise,
-    PhClockCounterClockwise
+    PhClockCounterClockwise,
+    PhArrowSquareOut
 } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';

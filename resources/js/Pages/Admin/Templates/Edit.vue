@@ -5,43 +5,70 @@
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"
+            :preview-url="previewUrl"
             @save="save"
         >
             <template #info>
                 <div class="flex flex-col gap-6">
-                    <div class="form-control">
-                        <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Template Type</span></label>
-                        <select v-model="form.type" class="select select-bordered select-sm focus:select-primary w-full">
-                            <option value="header">Header</option>
-                            <option value="footer">Footer</option>
-                            <option value="sidebar">Sidebar</option>
-                            <option value="page">Page Template</option>
-                        </select>
-                    </div>
-                    <div class="form-control flex-row items-center gap-3 p-4 bg-base-200 rounded-2xl border border-white/5">
-                        <input type="checkbox" v-model="form.is_default" class="checkbox checkbox-primary" id="is_default" />
-                        <label for="is_default" class="cursor-pointer">
-                            <span class="text-sm font-bold">Set as Default</span>
-                            <p class="text-[10px] opacity-50">Applies to all pages without override</p>
-                        </label>
-                    </div>
-                </div>
-            </template>
+                    <div class="space-y-4">
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug</span></label>
+                            <div class="join w-full">
+                                <input type="text" v-model="templateSlug" class="input input-bordered input-sm join-item focus:border-primary/50 transition-all font-mono text-xs w-full" placeholder="template-slug" />
+                                <button @click="templateSlug = generateSlug(form.name)" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
+                                    <PhArrowsClockwise weight="bold" class="w-3 h-3" />
+                                </button>
+                            </div>
+                        </div>
 
-            <template #canvas-footer v-if="form.type === 'header'">
-                <div class="h-[400px] bg-base-200/5 flex items-center justify-center opacity-10 select-none border-y border-black/5">
-                    <div class="text-center">
-                        <PhFileText weight="regular" class="w-16 h-16 mb-4 mx-auto block" />
-                        <p class="text-xl font-bold uppercase tracking-widest">Page Content Area</p>
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Generated URL</span></label>
+                            <div class="join w-full">
+                                <input
+                                    type="text"
+                                    :value="previewUrl || ''"
+                                    readonly
+                                    class="input input-bordered input-sm join-item w-full font-mono text-[10px]"
+                                    placeholder="Preview URL not available for templates"
+                                />
+                                <button type="button" class="btn btn-sm btn-ghost join-item" disabled title="URL unavailable">
+                                    <PhArrowSquareOut weight="bold" class="w-3 h-3 opacity-40" />
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </template>
 
-            <template #canvas-header v-if="form.type === 'footer'">
-                 <div class="h-[400px] bg-base-200/5 flex items-center justify-center opacity-10 select-none border-y border-black/5">
-                    <div class="text-center">
-                        <PhFileText weight="regular" class="w-16 h-16 mb-4 mx-auto block" />
-                        <p class="text-xl font-bold uppercase tracking-widest">Page Content Area</p>
+                    <div class="divider opacity-10 my-0"></div>
+
+                    <div class="space-y-4">
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Template Type</span></label>
+                            <select v-model="form.type" class="select select-bordered select-sm focus:select-primary w-full">
+                                <option value="header">Header</option>
+                                <option value="footer">Footer</option>
+                                <option value="sidebar">Sidebar</option>
+                                <option value="page">Page Template</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="divider opacity-10 my-0"></div>
+
+                    <div class="space-y-3 bg-base-200/30 p-4 rounded-xl border border-base-content/10">
+                        <div class="flex items-center justify-between text-[10px] uppercase tracking-wider opacity-60 font-bold px-1">
+                            <span>Metadata</span>
+                            <PhFingerprint weight="bold" class="w-3 h-3 text-primary" />
+                        </div>
+                        <div class="flex flex-col gap-2 text-[11px]">
+                            <div class="flex justify-between items-center bg-base-100/50 p-2 rounded-lg border border-base-content/5">
+                                <span class="opacity-60">Created</span>
+                                <span class="font-mono">{{ template?.created_at ? new Date(template.created_at).toLocaleString() : 'New Content' }}</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-base-100/50 p-2 rounded-lg border border-base-content/5">
+                                <span class="opacity-60">Last Edit</span>
+                                <span class="font-mono">{{ template?.updated_at ? new Date(template.updated_at).toLocaleString() : 'N/A' }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </template>
@@ -71,8 +98,8 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
 import { useForm } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
-import { PhFileText, PhLayout, PhClockCounterClockwise } from '@phosphor-icons/vue';
-import { onMounted } from 'vue';
+import { PhClockCounterClockwise, PhArrowsClockwise, PhArrowSquareOut, PhFingerprint } from '@phosphor-icons/vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const props = defineProps({
     template: Object,
@@ -86,6 +113,27 @@ const form = useForm({
     type: props.template?.type || 'header',
     content: props.template?.content || [],
     is_default: props.template?.is_default ?? false,
+});
+
+const previewUrl = computed(() => null);
+
+const generateSlug = (text) => {
+    if (!text) return '';
+    return text.toString().toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9 -]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim()
+        .replace(/^-+/, '')
+        .replace(/-+$/, '');
+};
+
+const templateSlug = ref(generateSlug(form.name));
+
+watch(() => form.name, (newName) => {
+    templateSlug.value = generateSlug(newName);
 });
 
 onMounted(() => {

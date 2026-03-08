@@ -58,24 +58,16 @@
                 class="bg-base-100 border-r border-white/5 flex flex-col z-10 shadow-xl transition-all duration-300"
                 :class="showLeftSidebar ? 'w-80' : 'w-0 overflow-hidden border-r-0'"
             >
-                <!-- Header -->
-                <div class="px-6 py-4 border-b border-white/5 bg-base-100/80 backdrop-blur-xl flex items-center justify-between sticky top-0 z-20">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-base-content/5 flex items-center justify-center text-base-content/70 flex-shrink-0">
-                            <PhCube weight="regular" class="w-5 h-5" />
-                        </div>
-                        <div class="whitespace-nowrap">
-                            <h3 class="text-sm font-bold capitalize">Block Palette</h3>
-                            <p class="text-[10px] opacity-40 uppercase tracking-widest leading-none">Modules</p>
-                        </div>
-                    </div>
-                </div>
+                <SidebarPanelHeader
+                    :icon="PhCube"
+                    icon-weight="regular"
+                    title="Palette" />
 
                 <div class="flex-1 overflow-y-auto p-4 custom-scrollbar">
                     <!-- Categories -->
                     <div class="space-y-4">
                         <AdminCollapse 
-                            v-for="cat in categories" 
+                            v-for="cat in paletteCategories" 
                             :key="cat.id" 
                             :title="cat.label || cat.name" 
                             :icon="cat.icon" 
@@ -230,6 +222,7 @@ import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
 import BlockEditorSidebar from '@/Components/BlockEditorSidebar.vue';
 import BuilderHeader from '@/Components/BlockBuilder/Layout/BuilderHeader.vue';
+import SidebarPanelHeader from '@/Components/BlockBuilder/Layout/SidebarPanelHeader.vue';
 import LayerTreeItem from '@/Components/LayerTreeItem.vue';
 import GsapTimelineEditor from '@/Components/GsapTimelineEditor.vue';
 import AdminCollapse from '@/Components/AdminCollapse.vue';
@@ -251,7 +244,8 @@ const iconMap = {
 
 const props = defineProps({
     title: { type: String, default: 'Untitled' },
-    categories: { type: Array, required: true },
+    categories: { type: Array, default: () => [] },
+    moduleCategories: { type: Array, default: () => [] },
     menus: { type: Array, default: () => [] },
     templates: { type: [Array, Object], default: () => [] },
     previewUrl: { type: String, default: null },
@@ -267,6 +261,45 @@ const emit = defineEmits(['save', 'update:title', 'update:viewport']);
 
 const store = useBlockBuilderStore();
 const viewport = ref('desktop');
+
+const paletteCategories = computed(() => {
+    const baseCategories = Array.isArray(props.categories) && props.categories.length
+        ? props.categories
+        : store.categories;
+
+    const merged = baseCategories.map((cat) => ({
+        ...cat,
+        blocks: Array.isArray(cat.blocks) ? [...cat.blocks] : []
+    }));
+
+    if (!Array.isArray(props.moduleCategories) || props.moduleCategories.length === 0) {
+        return merged;
+    }
+
+    props.moduleCategories.forEach((moduleCat) => {
+        if (!moduleCat || !moduleCat.id) return;
+
+        const moduleBlocks = Array.isArray(moduleCat.blocks) ? moduleCat.blocks : [];
+        const existing = merged.find((cat) => cat.id === moduleCat.id);
+
+        if (!existing) {
+            merged.push({
+                ...moduleCat,
+                blocks: [...moduleBlocks]
+            });
+            return;
+        }
+
+        const knownTypes = new Set((existing.blocks || []).map((block) => block.type));
+        moduleBlocks.forEach((block) => {
+            if (!block?.type || knownTypes.has(block.type)) return;
+            existing.blocks.push(block);
+            knownTypes.add(block.type);
+        });
+    });
+
+    return merged;
+});
 
 const docTitle = computed({
     get: () => props.title,
@@ -505,3 +538,4 @@ onUnmounted(() => {
     opacity: 0 !important; /* Visually empty out the ghost block to make it a clear target */
 }
 </style>
+

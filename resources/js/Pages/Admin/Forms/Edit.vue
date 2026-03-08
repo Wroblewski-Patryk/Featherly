@@ -2,7 +2,8 @@
     <AdminLayout :full-width="true">
         <BlockBuilder 
             v-model:title="form.title"
-            :categories="categories"
+            :categories="store.categories"
+            :module-categories="formModuleCategories"
             :saving="form.processing"
             :templates="templates"
             :preview-url="previewUrl"
@@ -10,38 +11,90 @@
         >
             <template #info>
                 <div class="flex flex-col gap-6">
-                    <div class="form-control">
-                        <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Success Message</span></label>
-                        <textarea v-model="form.settings.success_message" class="textarea textarea-bordered textarea-sm h-20 focus:border-primary/50 transition-all font-sans text-xs" placeholder="Thank you for your message!"></textarea>
-                    </div>
-                    <div class="form-control">
-                        <label class="label"><span class="label-text text-xs font-bold opacity-60">Notification Email</span></label>
-                        <input type="email" v-model="form.settings.notification_email" class="input input-bordered input-sm focus:border-primary/50 transition-all" placeholder="admin@example.com" />
-                    </div>
-                    
-                    <div class="divider opacity-5 my-2"></div>
-                    
-                    <div class="form-control">
-                        <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Status</span></label>
-                        <select v-model="form.status" class="select select-bordered select-sm text-xs bg-base-100/50 hover:bg-base-200/50 transition-all border-white/10 focus:border-primary/50">
-                            <option value="draft">Draft</option>
-                            <option value="published">Published</option>
-                            <option value="planned">Planned</option>
-                            <option value="archived">Archived</option>
-                        </select>
-                    </div>
-                    <DatePicker 
-                        v-if="form.status === 'planned' || form.status === 'published'"
-                        v-model="form.published_at" 
-                        label="Publish Date & Time"
-                    />
-                </div>
-            </template>
+                    <div class="space-y-4">
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug</span></label>
+                            <div class="join w-full">
+                                <input type="text" v-model="form.settings.slug" class="input input-bordered input-sm join-item focus:border-primary/50 transition-all font-mono text-xs w-full" placeholder="form-slug" />
+                                <button @click="form.settings.slug = generateSlug(form.title)" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
+                                    <PhArrowsClockwise weight="bold" class="w-3 h-3" />
+                                </button>
+                            </div>
+                        </div>
 
-            <template #canvas-header>
-                <div class="p-12 bg-primary/5 border-b border-black/5 flex flex-col items-center text-center">
-                    <h1 class="text-4xl font-black mb-2">{{ form.title || 'Untitled Form' }}</h1>
-                    <p class="opacity-40 text-sm">Preview of the generated form interface</p>
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Generated URL</span></label>
+                            <div class="join w-full">
+                                <input
+                                    type="text"
+                                    :value="previewUrl || ''"
+                                    readonly
+                                    class="input input-bordered input-sm join-item w-full font-mono text-[10px]"
+                                    :placeholder="previewUrl ? '' : 'Save form first to generate preview URL'"
+                                />
+                                <a
+                                    v-if="previewUrl"
+                                    :href="previewUrl"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="btn btn-sm btn-ghost join-item"
+                                    title="Open Preview URL"
+                                >
+                                    <PhArrowSquareOut weight="bold" class="w-3 h-3" />
+                                </a>
+                                <button v-else type="button" class="btn btn-sm btn-ghost join-item" disabled title="URL unavailable">
+                                    <PhArrowSquareOut weight="bold" class="w-3 h-3 opacity-40" />
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Status</span></label>
+                            <select v-model="form.status" class="select select-bordered select-sm focus:select-primary transition-all w-full">
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                                <option value="planned">Planned</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                        </div>
+
+                        <div v-if="form.status === 'planned' || form.status === 'published'" class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Publish Date & Time</span></label>
+                            <DatePicker v-model="form.published_at" />
+                        </div>
+                    </div>
+
+                    <div class="divider opacity-10 my-0"></div>
+
+                    <div class="space-y-4">
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Success Message</span></label>
+                            <textarea v-model="form.settings.success_message" class="textarea textarea-bordered textarea-sm h-20 focus:border-primary/50 transition-all font-sans text-xs" placeholder="Thank you for your message!"></textarea>
+                        </div>
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Notification Email</span></label>
+                            <input type="email" v-model="form.settings.notification_email" class="input input-bordered input-sm focus:border-primary/50 transition-all" placeholder="admin@example.com" />
+                        </div>
+                    </div>
+
+                    <div class="divider opacity-10 my-0"></div>
+
+                    <div class="space-y-3 bg-base-200/30 p-4 rounded-xl border border-base-content/10">
+                        <div class="flex items-center justify-between text-[10px] uppercase tracking-wider opacity-60 font-bold px-1">
+                            <span>Metadata</span>
+                            <PhFingerprint weight="bold" class="w-3 h-3 text-primary" />
+                        </div>
+                        <div class="flex flex-col gap-2 text-[11px]">
+                            <div class="flex justify-between items-center bg-base-100/50 p-2 rounded-lg border border-base-content/5">
+                                <span class="opacity-60">Created</span>
+                                <span class="font-mono">{{ formModel?.created_at ? new Date(formModel.created_at).toLocaleString() : 'New Content' }}</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-base-100/50 p-2 rounded-lg border border-base-content/5">
+                                <span class="opacity-60">Last Edit</span>
+                                <span class="font-mono">{{ formModel?.updated_at ? new Date(formModel.updated_at).toLocaleString() : 'N/A' }}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </template>
         </BlockBuilder>
@@ -49,8 +102,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { PhTextbox } from '@phosphor-icons/vue';
+import { onMounted, computed, watch } from 'vue';
+import { PhArrowsClockwise, PhArrowSquareOut, PhFingerprint } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
 import DatePicker from '@/Components/DatePicker.vue';
@@ -59,54 +112,43 @@ import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 
 const props = defineProps({
     formModel: Object,
-    templates: Array
+    templates: [Array, Object]
 });
 
 const store = useBlockBuilderStore();
 
-const categories = ref([
-    {
-        id: 'forms',
-        name: 'Form Fields',
-        icon: 'Textbox',
-        blocks: [
-            { type: 'form_input', label: 'Text Input', icon: 'TextT' },
-            { type: 'form_textarea', label: 'Long Text', icon: 'TextAlignLeft' },
-            { type: 'form_select', label: 'Dropdown', icon: 'ListBullets' },
-            { type: 'button', label: 'Submit Button', icon: 'CursorClick' },
-        ]
-    },
-    {
-        id: 'content',
-        name: 'Design Elements',
-        icon: 'PaintBrush',
-        blocks: [
-            { type: 'heading', label: 'Heading', icon: 'TextHOne' },
-            { type: 'paragraph', label: 'Instruction', icon: 'Paragraph' },
-            { type: 'image', label: 'Illustration', icon: 'Image' },
-            { type: 'divider', label: 'Divider', icon: 'Minus' },
-            { type: 'spacer', label: 'Spacer', icon: 'ArrowsVertical' },
-        ]
-    },
-    {
-        id: 'layout',
-        name: 'Structure',
-        icon: 'SquaresFour',
-        blocks: [
-            { type: 'columns', label: 'Side by Side', icon: 'Columns' },
-            { type: 'group', label: 'Field Group', icon: 'ObjectGroup' },
-        ]
-    }
-]);
+const formModuleCategories = [];
 
 const previewUrl = computed(() => props.formModel?.id ? `/forms/${props.formModel.id}/preview` : null);
+
+const generateSlug = (text) => {
+    if (!text) return '';
+    return text.toString().toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9 -]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim()
+        .replace(/^-+/, '')
+        .replace(/-+$/, '');
+};
 
 const form = useForm({
     title: props.formModel?.title || '',
     content: props.formModel?.content || [],
-    settings: props.formModel?.settings || { success_message: 'Message sent!', notification_email: '', submit_url: '' },
+    settings: {
+        success_message: props.formModel?.settings?.success_message || 'Message sent!',
+        notification_email: props.formModel?.settings?.notification_email || '',
+        submit_url: props.formModel?.settings?.submit_url || '',
+        slug: props.formModel?.settings?.slug || '',
+    },
     status: props.formModel?.status || 'draft',
     published_at: props.formModel?.published_at ? props.formModel.published_at.substring(0, 19).replace('T', ' ') : '',
+});
+
+watch(() => form.title, (newTitle) => {
+    form.settings.slug = generateSlug(newTitle);
 });
 
 onMounted(() => {
