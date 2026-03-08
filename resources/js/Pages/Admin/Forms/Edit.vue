@@ -1,45 +1,41 @@
 <template>
     <AdminLayout :full-width="true">
         <BlockBuilder 
-            title="Form" 
-            save-label="Save Form"
-            back-label="Back"
-            :back-route="route('admin.forms.index')"
+            v-model:title="form.title"
             :categories="categories"
             :saving="form.processing"
             :templates="templates"
+            :preview-url="previewUrl"
             @save="save"
         >
             <template #info>
-                <div class="form-control">
-                    <label class="label"><span class="label-text">Form Title</span></label>
-                    <input type="text" v-model="form.title" class="input input-bordered input-sm" placeholder="e.g. Contact Us" />
+                <div class="flex flex-col gap-6">
+                    <div class="form-control">
+                        <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Success Message</span></label>
+                        <textarea v-model="form.settings.success_message" class="textarea textarea-bordered textarea-sm h-20 focus:border-primary/50 transition-all font-sans text-xs" placeholder="Thank you for your message!"></textarea>
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-xs font-bold opacity-60">Notification Email</span></label>
+                        <input type="email" v-model="form.settings.notification_email" class="input input-bordered input-sm focus:border-primary/50 transition-all" placeholder="admin@example.com" />
+                    </div>
+                    
+                    <div class="divider opacity-5 my-2"></div>
+                    
+                    <div class="form-control">
+                        <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Status</span></label>
+                        <select v-model="form.status" class="select select-bordered select-sm text-xs bg-base-100/50 hover:bg-base-200/50 transition-all border-white/10 focus:border-primary/50">
+                            <option value="draft">Draft</option>
+                            <option value="published">Published</option>
+                            <option value="planned">Planned</option>
+                            <option value="archived">Archived</option>
+                        </select>
+                    </div>
+                    <DatePicker 
+                        v-if="form.status === 'planned' || form.status === 'published'"
+                        v-model="form.published_at" 
+                        label="Publish Date & Time"
+                    />
                 </div>
-                <div class="form-control">
-                    <label class="label"><span class="label-text">Success Message</span></label>
-                    <textarea v-model="form.settings.success_message" class="textarea textarea-bordered textarea-sm h-20" placeholder="Thank you for your message!"></textarea>
-                </div>
-                <div class="form-control">
-                    <label class="label"><span class="label-text">Notification Email</span></label>
-                    <input type="email" v-model="form.settings.notification_email" class="input input-bordered input-sm" placeholder="admin@example.com" />
-                </div>
-                
-                <div class="divider opacity-5 my-2"></div>
-                
-                <div class="form-control">
-                    <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Status</span></label>
-                    <select v-model="form.status" class="select select-bordered select-sm text-xs bg-base-100/50 hover:bg-base-200/50 transition-all border-white/10 focus:border-primary/50">
-                        <option value="draft">Draft</option>
-                        <option value="published">Published</option>
-                        <option value="planned">Planned</option>
-                        <option value="archived">Archived</option>
-                    </select>
-                </div>
-                <DatePicker 
-                    v-if="form.status === 'planned' || form.status === 'published'"
-                    v-model="form.published_at" 
-                    label="Publish Date & Time"
-                />
             </template>
 
             <template #canvas-header>
@@ -103,6 +99,8 @@ const categories = ref([
     }
 ]);
 
+const previewUrl = computed(() => props.formModel?.id ? `/forms/${props.formModel.id}/preview` : null);
+
 const form = useForm({
     title: props.formModel?.title || '',
     content: props.formModel?.content || [],
@@ -144,9 +142,4 @@ const save = () => {
     background: rgba(255, 255, 255, 0.1);
 }
 
-.ghost-block {
-    opacity: 0.5;
-    background: #c8ebfb;
-    border: 2px dashed #000;
-}
 </style>

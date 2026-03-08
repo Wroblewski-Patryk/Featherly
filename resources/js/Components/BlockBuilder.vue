@@ -1,6 +1,56 @@
 <template>
     <div class="h-full flex flex-col overflow-hidden bg-base-300" style="--admin-p: var(--color-primary, #38bdf8); --admin-radius: var(--radius-box, var(--rounded-box, 1rem));">
+        
+        <!-- Unified Header -->
+        <BuilderHeader 
+            v-model:title="docTitle"
+            :current-viewport="viewport"
+            :custom-width="customWidth"
+            :custom-height="customHeight"
+            :preview-url="previewUrl"
+            :saving="saving"
+            @update:viewport="viewport = $event"
+            @update:customWidth="customWidth = $event"
+            @update:customHeight="customHeight = $event"
+            @save="$emit('save')"
+        >
+            <template #actions-left>
+                <div class="flex items-center mr-2">
+                    <div class="join">
+                        <button @click="showLeftSidebar = !showLeftSidebar" class="btn btn-xs join-item h-8 px-3 gap-2" :class="showLeftSidebar ? 'btn-primary' : 'btn-ghost'" title="Toggle Block Palette">
+                            <PhCube weight="bold" class="w-3 h-3" />
+                        </button>
+                        <button @click="toggleTimeline" class="btn btn-xs join-item h-8 px-3 gap-2" :class="showTimeline ? 'btn-primary' : 'btn-ghost'" title="Toggle Timeline">
+                            <PhTimer weight="bold" class="w-3 h-3" />
+                        </button>
+                        <button @click="store.showRightSidebar = !store.showRightSidebar" class="btn btn-xs join-item h-8 px-3 gap-2" :class="store.showRightSidebar ? 'btn-primary' : 'btn-ghost'" title="Toggle Document Inspector">
+                            <PhSlidersHorizontal weight="bold" class="w-3 h-3" />
+                        </button>
+                    </div>
 
+                    <div class="h-4 w-[1px] bg-base-content/15 mx-2"></div>
+
+                    <button @click="store.isDepthView = !store.isDepthView" class="btn btn-xs h-8 px-3 gap-2" :class="store.isDepthView ? 'btn-primary' : 'btn-ghost'" title="Toggle 3D View">
+                        <PhStack weight="bold" class="w-3 h-3" />
+                    </button>
+
+                    <div class="h-4 w-[1px] bg-base-content/15 mx-2"></div>
+
+                    <div class="join items-center">
+                        <button @click="zoomOut" class="btn btn-xs btn-ghost join-item h-8 px-3 gap-2" title="Zoom Out">
+                            <PhMinus weight="bold" class="w-3 h-3" />
+                        </button>
+                        <span class="join-item h-8 px-2 text-[10px] font-black font-mono text-center flex items-center">{{ Math.round(zoomLevel * 100) }}%</span>
+                        <button @click="zoomIn" class="btn btn-xs btn-ghost join-item h-8 px-3 gap-2" title="Zoom In">
+                            <PhPlus weight="bold" class="w-3 h-3" />
+                        </button>
+                        <button @click="resetZoom" class="btn btn-xs btn-ghost join-item h-8 px-3 gap-2" title="Reset Zoom">
+                            <PhArrowUUpLeft weight="bold" class="w-3 h-3" />
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </BuilderHeader>
 
         <div class="flex-1 flex overflow-hidden">
             <!-- Left Sidebar: Block Palette -->
@@ -54,76 +104,6 @@
 
             <!-- Center: Wrapper -->
             <div class="flex-1 flex flex-col relative overflow-hidden bg-base-300">
-                <!-- Floating Island for Viewport/Zoom Controls -->
-                <div class="absolute top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 bg-base-100/80 backdrop-blur-xl border border-base-content/10 shadow-2xl px-2.5 py-1.5 rounded-box transition-all">
-                    <!-- Toggles -->
-                    <div class="flex items-center gap-1">
-                        <button @click="showLeftSidebar = !showLeftSidebar" class="btn btn-square btn-xs border-none transition-colors" :class="showLeftSidebar ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Toggle Block Palette">
-                            <PhCube weight="fill" class="w-4 h-4" v-if="showLeftSidebar" />
-                            <PhCube weight="regular" class="w-4 h-4" v-else />
-                        </button>
-                        <button @click="toggleTimeline" class="btn btn-square btn-xs border-none transition-colors" :class="showTimeline ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Toggle Timeline">
-                            <PhTimer weight="fill" class="w-4 h-4" v-if="showTimeline" />
-                            <PhTimer weight="regular" class="w-4 h-4" v-else />
-                        </button>
-                        <button @click="store.showRightSidebar = !store.showRightSidebar" class="btn btn-square btn-xs border-none transition-colors" :class="store.showRightSidebar ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Toggle Document Inspector">
-                            <PhSlidersHorizontal weight="fill" class="w-4 h-4" v-if="store.showRightSidebar" />
-                            <PhSlidersHorizontal weight="regular" class="w-4 h-4" v-else />
-                        </button>
-
-                        <div class="h-5 w-[1px] bg-base-content/10 mx-1.5"></div>
-
-                        <button @click="store.isDepthView = !store.isDepthView" class="btn btn-square btn-xs border-none transition-colors" :class="store.isDepthView ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Toggle Depth View (3D)">
-                            <PhStack weight="fill" class="w-4 h-4" v-if="store.isDepthView" />
-                            <PhStack weight="regular" class="w-4 h-4" v-else />
-                        </button>
-                    </div>
-
-                    <div class="h-5 w-[1px] bg-base-content/10 mx-1.5"></div>
-
-                    <!-- Viewport Controls -->
-                    <div class="flex items-center gap-1">
-                        <button @click="viewport = 'desktop'" class="btn btn-square btn-xs border-none transition-colors" :class="viewport === 'desktop' ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Desktop (1280px)">
-                            <PhDesktop weight="fill" class="w-4 h-4" v-if="viewport === 'desktop'" />
-                            <PhDesktop weight="regular" class="w-4 h-4" v-else />
-                        </button>
-                        <button @click="viewport = 'tablet'" class="btn btn-square btn-xs border-none transition-colors" :class="viewport === 'tablet' ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Tablet (768px)">
-                            <PhDeviceTablet weight="fill" class="w-4 h-4" v-if="viewport === 'tablet'" />
-                            <PhDeviceTablet weight="regular" class="w-4 h-4" v-else />
-                        </button>
-                        <button @click="viewport = 'mobile'" class="btn btn-square btn-xs border-none transition-colors" :class="viewport === 'mobile' ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Mobile (375px)">
-                            <PhDeviceMobile weight="fill" class="w-4 h-4" v-if="viewport === 'mobile'" />
-                            <PhDeviceMobile weight="regular" class="w-4 h-4" v-else />
-                        </button>
-                        <button @click="viewport = 'custom'" class="btn btn-square btn-xs border-none transition-colors" :class="viewport === 'custom' ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-transparent text-base-content/50 hover:bg-base-content/10 text-base-content/80'" title="Custom Width">
-                            <PhArrowsOut weight="fill" class="w-4 h-4" v-if="viewport === 'custom'" />
-                            <PhArrowsOut weight="regular" class="w-4 h-4" v-else />
-                        </button>
-                    </div>
-
-                    <div v-if="viewport === 'custom'" class="flex items-center gap-1.5 px-3 border-l border-base-content/10 ml-1 bg-base-200/50 rounded-box py-0.5">
-                        <input type="number" v-model="customWidth" class="input input-xs input-ghost hover:bg-base-100 focus:bg-base-100 w-14 px-1 text-center font-mono focus:outline-none" title="Width" />
-                        <span class="text-[9px] opacity-40 text-base-content font-bold">x</span>
-                        <input type="number" v-model="customHeight" class="input input-xs input-ghost hover:bg-base-100 focus:bg-base-100 w-14 px-1 text-center font-mono focus:outline-none" title="Height" />
-                        <span class="text-[9px] opacity-40 text-base-content font-bold">px</span>
-                    </div>
-
-                    <div class="h-5 w-[1px] bg-base-content/10 mx-1.5"></div>
-
-                    <!-- Zoom Controls -->
-                    <div class="flex items-center gap-0.5">
-                        <button @click="zoomOut" class="btn btn-square btn-xs bg-transparent border-none text-base-content/50 hover:bg-base-content/10 hover:text-base-content/80 transition-colors" title="Zoom Out">
-                            <PhMinus weight="bold" class="w-3 h-3" />
-                        </button>
-                        <div class="px-1 text-[10px] font-mono font-bold opacity-70 w-10 text-center text-base-content select-none">{{ Math.round(zoomLevel * 100) }}%</div>
-                        <button @click="zoomIn" class="btn btn-square btn-xs bg-transparent border-none text-base-content/50 hover:bg-base-content/10 hover:text-base-content/80 transition-colors" title="Zoom In">
-                            <PhPlus weight="bold" class="w-3 h-3" />
-                        </button>
-                        <button @click="resetZoom" class="btn btn-square btn-xs bg-transparent border-none text-base-content/50 hover:bg-base-content/10 hover:text-base-content/80 transition-colors ml-1" title="Reset Zoom">
-                            <PhArrowUUpLeft weight="bold" class="w-3.5 h-3.5" />
-                        </button>
-                    </div>
-                </div>
 
                 <!-- Center: Canvas Area -->
                 <div ref="scrollerRef" 
@@ -140,10 +120,9 @@
                              { width: `${(viewport === 'custom' ? customWidth : (viewport === 'desktop' ? 1280 : (viewport === 'tablet' ? 768 : 375))) * zoomLevel}px` },
                              { height: `${canvasHeight * zoomLevel}px` },
                              { 
-                                transform: store.isDepthView ? 'rotateY(75deg)' : 'rotateY(0deg)', 
+                                transform: `${hasDepthPerspective ? 'perspective(1000px) ' : ''}${store.isDepthView ? 'rotateY(75deg)' : 'rotateY(0deg)'}`,
                                 transformOrigin: 'left center', 
                                 transformStyle: 'preserve-3d',
-                                perspective: '1000px',
                                 transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), width 0.5s cubic-bezier(0.4, 0, 0.2, 1), height 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
                              }
                          ]">
@@ -206,18 +185,25 @@
                 </div>
             </div>
 
-            <!-- Right Sidebar: Document Inspector / Block Settings -->
             <div 
-                class="bg-base-100 border-l border-white/5 overflow-hidden z-10 shadow-2xl flex flex-col transition-all duration-300"
-                :class="store.showRightSidebar ? 'w-80' : 'w-0 border-l-0'"
+                class="bg-base-100 border-l border-white/5 overflow-hidden z-10 shadow-2xl transition-all duration-300"
+                :class="store.showRightSidebar ? 'w-[360px]' : 'w-0 border-l-0'"
             >
-                <div class="w-80 h-full flex flex-col">
-                    <BlockEditorSidebar :menus="menus" :templates="templates">
+                <div class="w-[360px] h-full flex flex-col">
+                    <BlockEditorSidebar 
+                        :menus="menus" 
+                        :templates="templates" 
+                        :saving="saving"
+                        @save="$emit('save')"
+                    >
                         <template #info>
                             <slot name="info"></slot>
                         </template>
-                        <template #seo>
+                        <template v-if="$slots.seo" #seo>
                             <slot name="seo"></slot>
+                        </template>
+                        <template v-if="$slots.advanced" #advanced>
+                            <slot name="advanced"></slot>
                         </template>
                         <template #history>
                             <slot name="history"></slot>
@@ -230,7 +216,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, nextTick, provide } from 'vue';
 import { 
     PhCube, PhTextT, PhTextAa, PhTextHOne, PhListBullets, PhQuotes, PhCode, 
     PhCursorClick, PhHandPointing, PhCaretDown, PhBrowsers, PhArrowsLeftRight, 
@@ -242,11 +228,12 @@ import {
     PhVideoCamera, PhNavigationArrow, PhDotsThree, PhBrowser, PhFootprints, 
     PhFolder, PhTerminal, PhDeviceMobile, PhAppWindow, PhPlusCircle, PhArticle, 
     PhBriefcase, PhArrowsClockwise, PhListNumbers, PhDeviceTablet, PhArrowsOut,
-    PhArrowUUpLeft, PhPlus, PhX
+    PhArrowUUpLeft, PhPlus, PhX, PhPerspective
 } from '@phosphor-icons/vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
 import BlockEditorSidebar from '@/Components/BlockEditorSidebar.vue';
+import BuilderHeader from '@/Components/BlockBuilder/Layout/BuilderHeader.vue';
 import LayerTreeItem from '@/Components/LayerTreeItem.vue';
 import GsapTimelineEditor from '@/Components/GsapTimelineEditor.vue';
 import AdminCollapse from '@/Components/AdminCollapse.vue';
@@ -263,22 +250,30 @@ const iconMap = {
     PhStack, PhBoundingBox, PhColumns, PhList, PhMinus, PhStar, PhImage, 
     PhVideoCamera, PhNavigationArrow, PhDotsThree, PhBrowser, PhFootprints, 
     PhFolder, PhTerminal, PhDeviceMobile, PhAppWindow, PhPlusCircle, PhArticle, 
-    PhBriefcase, PhArrowsClockwise, PhListNumbers
+    PhBriefcase, PhArrowsClockwise, PhListNumbers, PhPerspective
 };
 
 const props = defineProps({
+    title: { type: String, default: 'Untitled' },
     categories: { type: Array, required: true },
     menus: { type: Array, default: () => [] },
-    templates: { type: Array, default: () => [] }
+    templates: { type: [Array, Object], default: () => [] },
+    previewUrl: { type: String, default: null },
+    saving: { type: Boolean, default: false }
 });
 
-import { provide } from 'vue';
+
 provide('isEditor', true);
 
-const emit = defineEmits(['save']);
+const emit = defineEmits(['save', 'update:title', 'update:viewport']);
 
 const store = useBlockBuilderStore();
 const viewport = ref('desktop');
+
+const docTitle = computed({
+    get: () => props.title,
+    set: (val) => emit('update:title', val)
+});
 const customWidth = ref(1920);
 const customHeight = ref(1080);
 const isInitialLoad = ref(true);
@@ -312,6 +307,28 @@ const resetZoom = () => {
 const showLeftSidebar = ref(true);
 const showTimeline = ref(false);
 const timelinePanel = ref(null);
+const DEPTH_TRANSITION_MS = 500;
+const hasDepthPerspective = ref(store.isDepthView);
+let depthPerspectiveTimeout = null;
+
+watch(() => store.isDepthView, (isDepth) => {
+    if (depthPerspectiveTimeout) {
+        clearTimeout(depthPerspectiveTimeout);
+        depthPerspectiveTimeout = null;
+    }
+
+    if (isDepth) {
+        // 2D -> 3D: perspective is enabled before rotation starts.
+        hasDepthPerspective.value = true;
+        return;
+    }
+
+    // 3D -> 2D: remove perspective only after rotate-back animation ends.
+    depthPerspectiveTimeout = setTimeout(() => {
+        hasDepthPerspective.value = false;
+        depthPerspectiveTimeout = null;
+    }, DEPTH_TRANSITION_MS);
+});
 
 const toggleTimeline = () => {
     showTimeline.value = !showTimeline.value;
@@ -359,7 +376,17 @@ const canvasRef = ref(null);
 const canvasHeight = ref(0);
 let resizeObserver = null;
 
+const handleKeyDown = (e) => {
+    // Save: Ctrl+S
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        emit('save');
+    }
+};
+
 onMounted(() => {
+    window.addEventListener('keydown', handleKeyDown);
+
     if (canvasRef.value) {
         resizeObserver = new ResizeObserver((entries) => {
             for (let entry of entries) {
@@ -380,6 +407,13 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+    window.removeEventListener('keydown', handleKeyDown);
+
+    if (depthPerspectiveTimeout) {
+        clearTimeout(depthPerspectiveTimeout);
+        depthPerspectiveTimeout = null;
+    }
+
     if (resizeObserver) {
         resizeObserver.disconnect();
     }

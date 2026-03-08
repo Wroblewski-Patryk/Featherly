@@ -1,20 +1,30 @@
 <script setup>
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
-import { computed, ref, watch } from 'vue';
-import { PhTextHOne, PhBriefcase, PhCode, PhBoundingBox, PhCube, PhX, PhTrash, PhPlus, PhTextAlignLeft, PhTextAlignCenter, PhTextAlignRight, PhTextAlignJustify, PhArrowUp, PhArrowDown, PhArrowLeft, PhArrowRight, PhFileText, PhSlidersHorizontal } from '@phosphor-icons/vue';
-import UnitInput from '@/Components/UnitInput.vue';
-import LinkedUnitInput from '@/Components/LinkedUnitInput.vue';
-import AdminCollapse from '@/Components/AdminCollapse.vue';
-import LayerTreeItem from '@/Components/LayerTreeItem.vue';
-import FillControl from '@/Components/FillControl.vue';
+import { computed, ref, watch, useSlots } from 'vue';
+import { 
+    PhX, PhStack, PhClockCounterClockwise, PhSelection, PhInfo, PhCloudArrowUp, PhFloppyDisk, PhGlobe, PhGear
+} from '@phosphor-icons/vue';
+
+// New Modular Components
+import BlockSettingsManager from './BlockBuilder/BlockSettingsManager.vue';
+import StyleSettings from './BlockBuilder/Settings/StyleSettings.vue';
+import AnimationSettings from './BlockBuilder/Settings/AnimationSettings.vue';
+
+// Inspector Tabs
+import InspectorLayersTab from './BlockBuilder/Inspector/InspectorLayersTab.vue';
+import InspectorHistoryTab from './BlockBuilder/Inspector/InspectorHistoryTab.vue';
+import InspectorInfoTab from './BlockBuilder/Inspector/InspectorInfoTab.vue';
 
 const props = defineProps({
-    templates: [Array, Object]
+    templates: [Array, Object],
+    saving: Boolean
 });
 
 const store = useBlockBuilderStore();
+defineEmits(['save']);
 const activeSidebarTab = ref('content');
-const activeInspectorTab = ref('layers'); // New default: Layers
+const activeInspectorTab = ref('layers'); // Layers, History, Info, SEO
+const $slots = useSlots();
 
 // Helper to get a flat list of templates for dropdowns
 const flattenedTemplates = computed(() => {
@@ -25,908 +35,197 @@ const flattenedTemplates = computed(() => {
     return [];
 });
 
-const createFillProxy = (newProp, legacyProp) => computed({
-    get: () => {
-        if (!store.activeBlock || !store.activeBlock.settings.style) return undefined;
-        // Prefer the new advanced object
-        if (store.activeBlock.settings.style[newProp] !== undefined) {
-            return store.activeBlock.settings.style[newProp];
-        }
-        // Fallback to legacy string
-        return store.activeBlock.settings.style[legacyProp];
-    },
-    set: (val) => {
-        if (store.activeBlock && store.activeBlock.settings.style) {
-            store.activeBlock.settings.style[legacyProp] = undefined;
-            store.activeBlock.settings.style[newProp] = val;
-        }
-    }
-});
-
-const backgroundFill = createFillProxy('backgroundFill', 'backgroundColor');
-const textFill = createFillProxy('textFill', 'textColor');
-const borderFill = createFillProxy('borderFill', 'borderColor');
-
 watch(() => store.activeBlock, (newBlock) => {
     if (newBlock) {
         if (!newBlock.settings) newBlock.settings = {};
         if (!newBlock.settings.style) newBlock.settings.style = {};
-        if (!newBlock.settings.animations) {
-            newBlock.settings.animations = {
-                enabled: false,
-                trigger: 'onEnter',
-                preset: 'fade-up',
-                duration: 0.8,
-                delay: 0,
-                ease: 'power2.out',
-                bindToTimeline: false,
-                once: true,
-            };
-        }
-        if (!newBlock.settings.layout) {
-            newBlock.settings.layout = {
-                fullHeight: false,
-                fixedBg: false,
-                padding: 'py-0',
-            };
+        if (!newBlock.settings.animation) newBlock.settings.animation = {};
+        // Ensure default animation fields if enabled
+        if (newBlock.settings.animation.type && !newBlock.settings.animation.duration) {
+            newBlock.settings.animation.duration = 800;
         }
     }
 }, { immediate: true, deep: true });
 
-const addProject = () => {
-    store.activeBlock.content.projects.push({
-        title: 'New Project',
-        date: new Date().getFullYear().toString(),
-        description: '',
-        desktop_image: '',
-        mobile_image: '',
-        url: ''
-    });
+const closeSidebar = () => {
+    store.isEditingBlock = false;
+    store.activeBlockId = null;
 };
 
-const removeProject = (idx) => {
-    store.activeBlock.content.projects.splice(idx, 1);
-};
-
-const toggleOffset = (direction) => {
-    if (!store.activeBlock || !store.activeBlock.settings.style) return;
-    const style = store.activeBlock.settings.style;
-    
-    if (direction === 'top') {
-        const val = style.bottom ?? style.top ?? '0px';
-        style.bottom = undefined;
-        style.top = val;
-    } else if (direction === 'bottom') {
-        const val = style.top ?? style.bottom ?? '0px';
-        style.top = undefined;
-        style.bottom = val;
-    } else if (direction === 'left') {
-        const val = style.right ?? style.left ?? '0px';
-        style.right = undefined;
-        style.left = val;
-    } else if (direction === 'right') {
-        const val = style.left ?? style.right ?? '0px';
-        style.left = undefined;
-        style.right = val;
-    }
-};
+const showSeo = computed(() => !!$slots.seo);
+const showAdvanced = computed(() => !!$slots.advanced);
 </script>
 
 <template>
-    <div v-if="store.activeBlock && store.isEditingBlock" class="h-full flex flex-col bg-base-100 border-l border-white/5 animate-in slide-in-from-right-4 fade-in duration-300">
-        <!-- Sidebar Header -->
-        <div class="px-6 py-4 border-b border-base-content/10 flex items-center justify-between sticky top-0 bg-base-100/80 backdrop-blur-xl z-20">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                    <PhTextHOne v-if="store.activeBlock.type === 'heading'" weight="bold" class="w-4 h-4" />
-                    <PhBriefcase v-else-if="store.activeBlock.type === 'portfolio'" weight="bold" class="w-4 h-4" />
-                    <PhCode v-else-if="store.activeBlock.type === 'custom_code'" weight="bold" class="w-4 h-4" />
-                    <PhBoundingBox v-else-if="store.activeBlock.type === 'container'" weight="bold" class="w-4 h-4" />
-                    <PhCube v-else weight="bold" class="w-4 h-4" />
-                </div>
-                <div>
-                    <h3 class="text-sm font-bold capitalize">{{ store.activeBlock.type.replace('_', ' ') }}</h3>
-                    <p class="text-[10px] opacity-40 uppercase tracking-widest leading-none">Settings</p>
-                </div>
-            </div>
-            <button @click="store.isEditingBlock = false" class="btn btn-ghost btn-xs btn-circle">
-                <PhX weight="bold" class="w-4 h-4" />
-            </button>
-        </div>
-
-        <!-- Sidebar Tabs -->
-        <div class="flex border-b border-base-content/10 bg-base-200/50">
-            <button v-for="tab in ['content', 'style', 'animations', 'advanced']" :key="tab"
-                    @click="activeSidebarTab = tab"
-                    class="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-all relative"
-                    :class="activeSidebarTab === tab ? 'text-primary' : 'opacity-40 hover:opacity-100'">
-                {{ tab }}
-                <div v-if="activeSidebarTab === tab" class="absolute bottom-0 left-4 right-4 h-0.5 bg-primary rounded-full"></div>
-            </button>
-        </div>
-
-        <!-- Sidebar Content Area -->
-        <div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
-            
-            <!-- CONTENT TAB -->
-            <div v-if="activeSidebarTab === 'content'" class="space-y-6">
-                <!-- Paragraph / Text -->
-                <div v-if="['paragraph', 'text'].includes(store.activeBlock.type)" class="space-y-4">
-                    <div class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50">Content</span></label>
-                        <textarea v-model="store.activeBlock.content.text" class="textarea textarea-bordered h-32 w-full"></textarea>
+    <div class="h-full flex flex-col bg-base-100 min-w-[320px] w-full">
+        
+        <!-- CASE 1: BLOCK SETTINGS -->
+        <template v-if="store.activeBlock && store.isEditingBlock">
+            <!-- Sidebar Header -->
+            <div class="px-6 py-4 border-b border-base-content/10 flex items-center justify-between sticky top-0 bg-base-100/10 backdrop-blur-xl z-20">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                        <PhSelection weight="bold" class="w-4 h-4" />
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-bold capitalize">{{ store.activeBlock.type.replace(/_/g, ' ') }}</h3>
+                        <p class="text-[10px] opacity-40 uppercase tracking-widest leading-none font-black">Block Settings</p>
                     </div>
                 </div>
-
-                <!-- Heading -->
-                <div v-if="store.activeBlock.type === 'heading'" class="space-y-4">
-                    <div class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50">Text</span></label>
-                        <input type="text" v-model="store.activeBlock.content.text" class="input input-bordered w-full" />
-                    </div>
-                    <div class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50">Level</span></label>
-                        <div class="join w-full">
-                            <button v-for="h in [1,2,3,4,5,6]" :key="h" 
-                                    @click="store.activeBlock.content.level = h"
-                                    class="btn btn-xs join-item flex-1"
-                                    :class="store.activeBlock.content.level === h ? 'btn-primary' : ''">H{{h}}</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- List -->
-                <div v-if="store.activeBlock.type === 'list'" class="space-y-4">
-                    <div class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50">Items</span></label>
-                        <div v-for="(item, i) in store.activeBlock.content.items" :key="i" class="flex gap-2 mb-2">
-                            <input type="text" v-model="store.activeBlock.content.items[i]" class="input input-sm input-bordered flex-1" />
-                            <button @click="store.activeBlock.content.items.splice(i, 1)" class="btn btn-square btn-xs btn-ghost text-error"><PhX weight="bold" class="w-3 h-3" /></button>
-                        </div>
-                        <button @click="store.activeBlock.content.items.push('New item')" class="btn btn-sm btn-outline btn-block mt-2">Add Item</button>
-                    </div>
-                </div>
-
-                <!-- Quote -->
-                <div v-if="store.activeBlock.type === 'quote'" class="space-y-4">
-                    <div class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50">Quote Text</span></label>
-                        <textarea v-model="store.activeBlock.content.text" class="textarea textarea-bordered h-24 w-full"></textarea>
-                    </div>
-                    <div class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50">Author</span></label>
-                        <input type="text" v-model="store.activeBlock.content.author" class="input input-bordered w-full" />
-                    </div>
-                </div>
-
-                <!-- Spacer / Divider -->
-                <div v-if="['spacer', 'divider'].includes(store.activeBlock.type)" class="space-y-4">
-                    <div v-if="store.activeBlock.type === 'spacer'" class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50">Height</span></label>
-                        <select v-model="store.activeBlock.content.height" class="select select-bordered w-full">
-                            <option value="py-5">X-Small</option>
-                            <option value="py-10">Small</option>
-                            <option value="py-20">Medium</option>
-                            <option value="py-40">Large</option>
-                            <option value="py-60">X-Large</option>
-                        </select>
-                    </div>
-                    <div v-if="store.activeBlock.type === 'divider'" class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50">Style</span></label>
-                        <select v-model="store.activeBlock.content.style" class="select select-bordered w-full">
-                            <option value="solid">Solid</option>
-                            <option value="dashed">Dashed</option>
-                            <option value="dotted">Dotted</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Table -->
-                <div v-if="store.activeBlock.type === 'table'" class="space-y-4">
-                    <div class="flex items-center justify-between">
-                        <label class="text-[10px] opacity-40 uppercase font-black">Table Layout</label>
-                        <div class="join">
-                            <button @click="store.activeBlock.content.rows.forEach(r => r.push(''))" class="btn btn-xs join-item btn-ghost bg-base-200 hover:bg-base-300 px-3" title="Add Column">+ Col</button>
-                            <button @click="store.activeBlock.content.rows.forEach(r => { if(r.length > 1) r.pop() })" class="btn btn-xs join-item btn-ghost bg-base-200 hover:bg-base-300 px-3" title="Remove Last Column">- Col</button>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-2">
-                        <div v-for="(row, rIdx) in store.activeBlock.content.rows" :key="rIdx" class="flex gap-2 items-center bg-base-200 p-2 rounded-box overflow-hidden">
-                            <div class="flex gap-2 flex-1 overflow-x-auto custom-scrollbar pb-1">
-                                <input v-for="(cell, cIdx) in row" :key="cIdx" type="text" v-model="store.activeBlock.content.rows[rIdx][cIdx]" class="input input-xs input-bordered min-w-[80px] flex-1" />
-                            </div>
-                            <button @click="store.activeBlock.content.rows.splice(rIdx, 1)" class="btn btn-square btn-xs btn-ghost text-error shrink-0" :disabled="store.activeBlock.content.rows.length <= 1" title="Remove Row"><PhTrash weight="bold" class="w-3 h-3" /></button>
-                        </div>
-                    </div>
-                    
-                    <button @click="store.activeBlock.content.rows.push(new Array(store.activeBlock.content.rows[0].length).fill(''))" class="btn btn-xs btn-outline btn-block border-dashed border-base-content/20"><PhPlus weight="bold" class="w-3 h-3 mr-2" />Add Row</button>
-                </div>
-
-                <!-- Media Blocks -->
-                <div v-if="['image', 'gallery', 'video', 'audio', 'file', 'media_text', 'carousel'].includes(store.activeBlock.type)" class="space-y-4">
-                    <div v-if="store.activeBlock.type === 'image'" class="space-y-3">
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-xs opacity-50">Image URL</span></label>
-                            <input type="text" v-model="store.activeBlock.content.url" class="input input-bordered w-full font-mono text-xs" />
-                        </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-xs opacity-50">Alt Text</span></label>
-                            <input type="text" v-model="store.activeBlock.content.alt" class="input input-bordered w-full" />
-                        </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-xs opacity-50">Caption</span></label>
-                            <input type="text" v-model="store.activeBlock.content.caption" class="input input-bordered w-full" />
-                        </div>
-                    </div>
-
-                    <div v-if="store.activeBlock.type === 'gallery' || store.activeBlock.type === 'carousel'" class="space-y-3">
-                         <label class="text-[10px] opacity-40 uppercase font-black">Images</label>
-                         <div v-for="(img, idx) in store.activeBlock.content.images || store.activeBlock.content.items" :key="idx" class="flex gap-2">
-                             <input type="text" v-model="(store.activeBlock.content.images || store.activeBlock.content.items)[idx]" class="input input-xs input-bordered flex-1" />
-                             <button @click="(store.activeBlock.content.images || store.activeBlock.content.items).splice(idx, 1)" class="btn btn-xs btn-error btn-ghost"><PhX weight="bold" class="w-3 h-3" /></button>
-                         </div>
-                         <button @click="(store.activeBlock.content.images || store.activeBlock.content.items).push('')" class="btn btn-xs btn-outline btn-block">Add Image</button>
-                    </div>
-
-                    <div v-if="store.activeBlock.type === 'video'" class="space-y-3">
-                        <select v-model="store.activeBlock.content.source" class="select select-bordered select-sm w-full">
-                            <option value="youtube">YouTube</option>
-                            <option value="vimeo">Vimeo</option>
-                            <option value="self">Self-Hosted</option>
-                        </select>
-                        <input type="text" v-model="store.activeBlock.content.url" placeholder="Video URL" class="input input-sm input-bordered w-full" />
-                    </div>
-
-                    <div v-if="store.activeBlock.type === 'media_text'" class="space-y-3">
-                        <input type="text" v-model="store.activeBlock.content.media_url" placeholder="Media URL" class="input input-sm input-bordered w-full" />
-                        <textarea v-model="store.activeBlock.content.text" placeholder="Text Content" class="textarea textarea-sm textarea-bordered w-full"></textarea>
-                        <select v-model="store.activeBlock.content.media_position" class="select select-bordered select-sm w-full">
-                            <option value="left">Media Left</option>
-                            <option value="right">Media Right</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Data Display -->
-                <div v-if="['accordion', 'timeline', 'card', 'stat', 'chat', 'countdown', 'diff'].includes(store.activeBlock.type)" class="space-y-4">
-                    <div v-if="store.activeBlock.type === 'card'" class="space-y-3">
-                        <input type="text" v-model="store.activeBlock.content.title" placeholder="Card Title" class="input input-sm input-bordered w-full font-bold" />
-                        <textarea v-model="store.activeBlock.content.description" placeholder="Description" class="textarea textarea-sm textarea-bordered w-full"></textarea>
-                        <input type="text" v-model="store.activeBlock.content.image" placeholder="Image URL" class="input input-sm input-bordered w-full text-xs" />
-                        <input type="text" v-model="store.activeBlock.content.buttonText" placeholder="Button Text" class="input input-sm input-bordered w-full" />
-                    </div>
-                    
-                    <div v-if="store.activeBlock.type === 'stat'" class="space-y-3">
-                        <input type="text" v-model="store.activeBlock.content.title" placeholder="Title" class="input input-sm input-bordered w-full" />
-                        <input type="text" v-model="store.activeBlock.content.value" placeholder="Value (e.g., 34K)" class="input input-sm input-bordered w-full font-bold" />
-                        <input type="text" v-model="store.activeBlock.content.desc" placeholder="Description" class="input input-sm input-bordered w-full text-xs" />
-                        <input type="text" v-model="store.activeBlock.content.icon" placeholder="Icon class (e.g. fas fa-bolt)" class="input input-sm input-bordered w-full font-mono text-xs" />
-                    </div>
-
-                    <div v-if="store.activeBlock.type === 'accordion'" class="space-y-3">
-                        <div v-for="(item, idx) in store.activeBlock.content.items" :key="idx" class="p-2 bg-base-200 rounded-lg">
-                            <input type="text" v-model="item.title" placeholder="Title" class="input input-xs input-bordered w-full mb-1 font-bold" />
-                            <textarea v-model="item.content" placeholder="Content" class="textarea textarea-xs textarea-bordered w-full"></textarea>
-                        </div>
-                        <button @click="store.activeBlock.content.items.push({title:'New Item', content:'Content here'})" class="btn btn-xs btn-outline btn-block">Add Item</button>
-                    </div>
-
-                    <div v-if="store.activeBlock.type === 'timeline'" class="space-y-3">
-                        <div v-for="(item, idx) in store.activeBlock.content.items" :key="idx" class="p-2 bg-base-200 rounded-lg">
-                            <input type="text" v-model="item.year" placeholder="Year / Time" class="input input-xs input-bordered w-full mb-1 font-bold" />
-                            <input type="text" v-model="item.title" placeholder="Title" class="input input-xs input-bordered w-full mb-1 font-bold text-primary" />
-                            <textarea v-model="item.content" placeholder="Details" class="textarea textarea-xs textarea-bordered w-full"></textarea>
-                        </div>
-                        <button @click="store.activeBlock.content.items.push({year:'2026', title:'New Milestone', content:''})" class="btn btn-xs btn-outline btn-block">Add Milestone</button>
-                    </div>
-
-                    <div v-if="store.activeBlock.type === 'chat'" class="space-y-3">
-                        <label class="text-[10px] opacity-40 uppercase font-black">Messages</label>
-                        <div v-for="(msg, idx) in store.activeBlock.content.messages" :key="idx" class="p-2 bg-base-200 rounded-lg flex flex-col gap-2">
-                            <select v-model="msg.side" class="select select-xs select-bordered w-full">
-                                <option value="start">Left (Start)</option>
-                                <option value="end">Right (End)</option>
-                            </select>
-                            <input type="text" v-model="msg.text" placeholder="Message text" class="input input-xs input-bordered w-full" />
-                            <button @click="store.activeBlock.content.messages.splice(idx, 1)" class="btn btn-xs btn-error btn-outline btn-block mt-1">Remove</button>
-                        </div>
-                        <button @click="store.activeBlock.content.messages.push({side:'start', text:''})" class="btn btn-xs btn-outline btn-block">Add Message</button>
-                    </div>
-
-                    <div v-if="store.activeBlock.type === 'countdown'" class="space-y-3">
-                        <input type="number" v-model="store.activeBlock.content.value" placeholder="Value (e.g. 15)" class="input input-sm input-bordered w-full" />
-                        <input type="text" v-model="store.activeBlock.content.unit" placeholder="Unit (e.g. days, hours)" class="input input-sm input-bordered w-full" />
-                    </div>
-
-                    <div v-if="store.activeBlock.type === 'diff'" class="space-y-3">
-                        <input type="text" v-model="store.activeBlock.content.img1" placeholder="Image 1 URL" class="input input-sm input-bordered w-full font-mono text-xs" />
-                        <input type="text" v-model="store.activeBlock.content.img2" placeholder="Image 2 URL" class="input input-sm input-bordered w-full font-mono text-xs" />
-                    </div>
-                </div>
-
-                <!-- Feedback -->
-                <div v-if="['alert', 'progress', 'radial_progress'].includes(store.activeBlock.type)" class="space-y-4">
-                    <div v-if="store.activeBlock.type === 'alert'" class="space-y-3">
-                        <textarea v-model="store.activeBlock.content.text" placeholder="Alert text" class="textarea textarea-sm textarea-bordered w-full"></textarea>
-                        <select v-model="store.activeBlock.content.type" class="select select-bordered select-sm w-full">
-                            <option value="alert-info">Info</option>
-                            <option value="alert-success">Success</option>
-                            <option value="alert-warning">Warning</option>
-                            <option value="alert-error">Error</option>
-                        </select>
-                    </div>
-                    
-                    <div v-if="['progress', 'radial_progress'].includes(store.activeBlock.type)" class="space-y-3">
-                        <input type="number" v-model="store.activeBlock.content.value" placeholder="Current Value" class="input input-sm input-bordered w-full" />
-                        <input v-if="store.activeBlock.type === 'progress'" type="number" v-model="store.activeBlock.content.max" placeholder="Max Value" class="input input-sm input-bordered w-full" />
-                        <select v-if="store.activeBlock.type === 'progress'" v-model="store.activeBlock.content.color" class="select select-bordered select-sm w-full">
-                            <option value="progress-primary">Primary</option>
-                            <option value="progress-secondary">Secondary</option>
-                            <option value="progress-accent">Accent</option>
-                            <option value="progress-success">Success</option>
-                            <option value="progress-warning">Warning</option>
-                            <option value="progress-error">Error</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Navigation & Arrays -->
-                <div v-if="['breadcrumbs', 'menu', 'steps', 'tabs', 'navbar'].includes(store.activeBlock.type)" class="space-y-4">
-                    <div v-if="store.activeBlock.type === 'tabs'" class="space-y-3">
-                        <div v-for="(t, idx) in store.activeBlock.content.tabs" :key="idx" class="p-2 bg-base-200 rounded-lg">
-                            <input type="text" v-model="t.title" placeholder="Tab Title" class="input input-xs input-bordered w-full mb-1 font-bold" />
-                            <textarea v-model="t.content" placeholder="Tab Content" class="textarea textarea-xs textarea-bordered w-full"></textarea>
-                        </div>
-                        <button @click="store.activeBlock.content.tabs.push({title:'New Tab', content:''})" class="btn btn-xs btn-outline btn-block">Add Tab</button>
-                    </div>
-                    
-                    <div v-if="['breadcrumbs', 'menu', 'steps'].includes(store.activeBlock.type)" class="space-y-3">
-                        <label class="text-[10px] opacity-40 uppercase font-black">List Items</label>
-                        <div v-for="(item, idx) in store.activeBlock.content.items" :key="idx" class="flex gap-2">
-                             <input type="text" v-model="store.activeBlock.content.items[idx]" class="input input-xs input-bordered flex-1" />
-                             <button @click="store.activeBlock.content.items.splice(idx, 1)" class="btn btn-xs btn-error btn-ghost"><PhX weight="bold" class="w-3 h-3" /></button>
-                        </div>
-                        <button @click="store.activeBlock.content.items.push('New Item')" class="btn btn-xs btn-outline btn-block">Add Item</button>
-                    </div>
-
-                    <div v-if="store.activeBlock.type === 'navbar'" class="space-y-3">
-                        <input type="text" v-model="store.activeBlock.content.title" placeholder="Brand Title" class="input input-sm input-bordered w-full font-bold" />
-                        <input type="text" v-model="store.activeBlock.content.actionButton" placeholder="Action Button Text" class="input input-sm input-bordered w-full" />
-                        <label class="text-[10px] opacity-40 uppercase font-black mt-2 block">Links</label>
-                        <div v-for="(link, idx) in store.activeBlock.content.links" :key="idx" class="flex gap-2">
-                             <input type="text" v-model="store.activeBlock.content.links[idx]" class="input input-xs input-bordered flex-1" />
-                             <button @click="store.activeBlock.content.links.splice(idx, 1)" class="btn btn-xs btn-error btn-ghost"><PhX weight="bold" class="w-3 h-3" /></button>
-                        </div>
-                        <button @click="store.activeBlock.content.links.push('New Link')" class="btn btn-xs btn-outline btn-block">Add Link</button>
-                    </div>
-                </div>
-
-                <!-- Data Input -->
-                <div v-if="['text_input', 'textarea', 'select', 'checkbox', 'radio', 'toggle', 'range', 'rating', 'file_input'].includes(store.activeBlock.type)" class="space-y-4">
-                     <div class="space-y-3">
-                        <input v-if="['text_input', 'textarea', 'select', 'checkbox', 'radio', 'toggle', 'file_input'].includes(store.activeBlock.type)" 
-                               type="text" v-model="store.activeBlock.content.label" placeholder="Label" class="input input-sm input-bordered w-full font-bold" />
-                        
-                        <input v-if="['text_input', 'textarea'].includes(store.activeBlock.type)" 
-                               type="text" v-model="store.activeBlock.content.placeholder" placeholder="Placeholder" class="input input-sm input-bordered w-full" />
-                        
-                        <textarea v-if="store.activeBlock.type === 'select'" 
-                                  v-model="store.activeBlock.content.options" placeholder="Options (one per line)" class="textarea textarea-sm textarea-bordered w-full"></textarea>
-                                  
-                        <input v-if="['checkbox', 'toggle'].includes(store.activeBlock.type)" 
-                               type="checkbox" v-model="store.activeBlock.content.checked" class="toggle toggle-primary toggle-sm" />
-
-                        <input v-if="store.activeBlock.type === 'radio'" type="text" v-model="store.activeBlock.content.group" placeholder="Radio Group Name" class="input input-sm input-bordered w-full" />       
-
-                        <div v-if="['range', 'rating'].includes(store.activeBlock.type)" class="space-y-2">
-                            <label class="label"><span class="label-text text-xs opacity-50">Current Value: {{ store.activeBlock.content.val }}</span></label>
-                            <input type="range" v-model="store.activeBlock.content.val" :min="store.activeBlock.content.min || 1" :max="store.activeBlock.content.max || 100" class="range range-xs" />
-                            <div class="grid grid-cols-2 gap-2 mt-2" v-if="store.activeBlock.type === 'range'">
-                                <input type="number" v-model="store.activeBlock.content.min" placeholder="Min" class="input input-xs input-bordered w-full" />
-                                <input type="number" v-model="store.activeBlock.content.max" placeholder="Max" class="input input-xs input-bordered w-full" />
-                            </div>
-                            <div class="form-control mt-2" v-if="store.activeBlock.type === 'rating'">
-                                <input type="number" v-model="store.activeBlock.content.max" placeholder="Max Stars" class="input input-xs input-bordered w-full" max="10" />
-                            </div>
-                        </div>
-                     </div>
-                </div>
-
-                <!-- Mockups -->
-                <div v-if="['mockup_browser', 'mockup_code', 'mockup_phone', 'mockup_window'].includes(store.activeBlock.type)" class="space-y-4">
-                     <input v-if="['mockup_browser', 'mockup_phone'].includes(store.activeBlock.type)" 
-                            type="text" v-model="store.activeBlock.content.url" :placeholder="store.activeBlock.type === 'mockup_browser' ? 'Browser URL' : 'Image URL'" class="input input-sm input-bordered w-full font-mono text-xs" />
-                     
-                     <textarea v-if="['mockup_browser', 'mockup_window'].includes(store.activeBlock.type)" 
-                               v-model="store.activeBlock.content.content" placeholder="Content text" class="textarea textarea-sm textarea-bordered w-full"></textarea>
-
-                     <textarea v-if="store.activeBlock.type === 'mockup_code'" 
-                               v-model="store.activeBlock.content.code" placeholder="Code snippet" class="textarea textarea-sm textarea-bordered w-full font-mono text-xs bg-base-300 text-success leading-relaxed"></textarea>
-                </div>
-
-                <!-- Extended Blocks (App Specific) -->
-                <div v-if="['posts_list', 'projects_list', 'text_rotate'].includes(store.activeBlock.type)" class="space-y-4">
-                    <div v-if="['posts_list', 'projects_list'].includes(store.activeBlock.type)" class="space-y-3">
-                        <label class="label"><span class="label-text text-xs opacity-50">Items count to display</span></label>
-                        <input type="number" v-model="store.activeBlock.content.count" class="input input-sm input-bordered w-full" />
-                        <label class="label mt-2"><span class="label-text text-xs opacity-50">Display Layout</span></label>
-                        <select v-model="store.activeBlock.content.layout" class="select select-bordered select-sm w-full">
-                            <option value="grid">Grid Layout</option>
-                            <option value="list">List Layout (Stacked)</option>
-                        </select>
-                    </div>
-                    
-                    <div v-if="store.activeBlock.type === 'text_rotate'" class="space-y-3">
-                        <input type="text" v-model="store.activeBlock.content.prefix" placeholder="Prefix" class="input input-sm input-bordered w-full" />
-                        <textarea v-model="store.activeBlock.content.words" placeholder="Words (one per line)" class="textarea textarea-sm textarea-bordered w-full"></textarea>
-                        <input type="text" v-model="store.activeBlock.content.suffix" placeholder="Suffix" class="input input-sm input-bordered w-full" />
-                    </div>
-                </div>
-
-                <!-- Building Blocks -->
-                <div v-if="['template_reference', 'content_slot'].includes(store.activeBlock.type)" class="space-y-4">
-                    <div v-if="store.activeBlock.type === 'template_reference'" class="space-y-3">
-                        <label class="label"><span class="label-text text-xs opacity-50">Select Template Part</span></label>
-                        <select v-model="store.activeBlock.content.template_id" class="select select-bordered select-sm w-full">
-                            <option :value="null">None</option>
-                            <option v-for="t in flattenedTemplates" :key="t.id" :value="t.id">
-                                {{ t.name }} ({{ t.type }})
-                            </option>
-                        </select>
-                        <p class="text-[10px] opacity-40 italic">Note: Only headers, footers, and sidebars should be referenced here.</p>
-                    </div>
-                    
-                    <div v-if="store.activeBlock.type === 'content_slot'" class="space-y-3">
-                        <label class="label"><span class="label-text text-xs opacity-50">Slot Label</span></label>
-                        <input type="text" v-model="store.activeBlock.content.label" placeholder="e.g. Page Content" class="input input-sm input-bordered w-full" />
-                    </div>
-                </div>
-
-
-                <!-- Custom Code -->
-                <div v-if="store.activeBlock.type === 'custom_code'" class="space-y-4">
-                    <div class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50 font-mono">HTML</span></label>
-                        <textarea v-model="store.activeBlock.content.html" class="textarea textarea-bordered h-48 w-full font-mono text-xs"></textarea>
-                    </div>
-                    <div class="form-control">
-                        <label class="label"><span class="label-text text-xs opacity-50 font-mono">JS (Executed on mount)</span></label>
-                        <textarea v-model="store.activeBlock.content.js" class="textarea textarea-bordered h-32 w-full font-mono text-xs"></textarea>
-                    </div>
-                </div>
-
-                <!-- Container (Unified Layout) -->
-                <div v-if="store.activeBlock.type === 'container'" class="space-y-6">
-                    <!-- General Settings -->
-                    <div class="space-y-4">
-                        <label class="text-[10px] opacity-40 uppercase font-black">General</label>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-xs opacity-50">HTML Tag</span></label>
-                            <select v-model="store.activeBlock.content.htmlTag" class="select select-bordered select-sm w-full">
-                                <option value="section">Section</option>
-                                <option value="main">Main</option>
-                                <option value="header">Header</option>
-                                <option value="footer">Footer</option>
-                                <option value="article">Article</option>
-                                <option value="aside">Aside</option>
-                                <option value="nav">Navigation</option>
-                                <option value="div">Div (Generic)</option>
-                            </select>
-                        </div>
-                        <div class="form-control">
-                            <label class="label cursor-pointer justify-start gap-4 p-3 bg-base-200/50 rounded-xl border border-white/5">
-                                <input type="checkbox" v-model="store.activeBlock.content.isBoxed" class="checkbox checkbox-primary checkbox-sm" />
-                                <span class="text-xs font-bold">Boxed / Centered (Container)</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="divider opacity-10"></div>
-
-                    <!-- Layout Mode -->
-                    <div class="space-y-4">
-                        <label class="text-[10px] opacity-40 uppercase font-black">Layout Mode</label>
-                        <div class="join w-full">
-                            <button @click="store.activeBlock.content.layoutType = 'default'" 
-                                    class="btn btn-xs join-item flex-1"
-                                    :class="store.activeBlock.content.layoutType === 'default' ? 'btn-primary' : ''">Default</button>
-                            <button @click="store.activeBlock.content.layoutType = 'flex'" 
-                                    class="btn btn-xs join-item flex-1"
-                                    :class="store.activeBlock.content.layoutType === 'flex' ? 'btn-primary' : ''">Flexbox</button>
-                            <button @click="store.activeBlock.content.layoutType = 'grid'" 
-                                    class="btn btn-xs join-item flex-1"
-                                    :class="store.activeBlock.content.layoutType === 'grid' ? 'btn-primary' : ''">Grid</button>
-                        </div>
-
-                        <!-- Flexbox Settings -->
-                        <div v-if="store.activeBlock.content.layoutType === 'flex'" class="p-4 bg-base-200/30 rounded-2xl border border-white/5 space-y-4 animate-in slide-in-from-top-2 duration-300">
-                            <div class="form-control">
-                                <label class="label"><span class="label-text text-[10px] uppercase opacity-50">Direction</span></label>
-                                <div class="join w-full">
-                                    <button @click="store.activeBlock.content.flexConfig.direction = 'row'" class="btn btn-xs join-item flex-1" :class="store.activeBlock.content.flexConfig.direction === 'row' ? 'btn-primary' : ''">Row</button>
-                                    <button @click="store.activeBlock.content.flexConfig.direction = 'col'" class="btn btn-xs join-item flex-1" :class="store.activeBlock.content.flexConfig.direction === 'col' ? 'btn-primary' : ''">Column</button>
-                                </div>
-                            </div>
-                            <div class="form-control">
-                                <label class="label"><span class="label-text text-[10px] uppercase opacity-50">Align Items</span></label>
-                                <select v-model="store.activeBlock.content.flexConfig.align" class="select select-bordered select-xs w-full">
-                                    <option value="start">Start</option>
-                                    <option value="center">Center</option>
-                                    <option value="end">End</option>
-                                    <option value="stretch">Stretch</option>
-                                    <option value="baseline">Baseline</option>
-                                </select>
-                            </div>
-                            <div class="form-control">
-                                <label class="label"><span class="label-text text-[10px] uppercase opacity-50">Justify Content</span></label>
-                                <select v-model="store.activeBlock.content.flexConfig.justify" class="select select-bordered select-xs w-full">
-                                    <option value="start">Start</option>
-                                    <option value="center">Center</option>
-                                    <option value="end">End</option>
-                                    <option value="between">Space Between</option>
-                                    <option value="around">Space Around</option>
-                                    <option value="evenly">Space Evenly</option>
-                                </select>
-                            </div>
-                            <div class="form-control">
-                                <label class="label"><span class="label-text text-[10px] uppercase opacity-50">Gap (Tailwind)</span></label>
-                                <select v-model="store.activeBlock.content.flexConfig.gap" class="select select-bordered select-xs w-full">
-                                    <option v-for="g in [0,1,2,3,4,6,8,10,12,16,20]" :key="g" :value="g.toString()">Gap {{g}}</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Grid Settings -->
-                        <div v-if="store.activeBlock.content.layoutType === 'grid'" class="p-4 bg-base-200/30 rounded-2xl border border-white/5 space-y-4 animate-in slide-in-from-top-2 duration-300">
-                            <div class="form-control">
-                                <label class="label"><span class="label-text text-[10px] uppercase opacity-50">Columns (MD+)</span></label>
-                                <input type="number" v-model="store.activeBlock.content.gridConfig.cols" min="1" max="12" class="input input-bordered input-sm w-full" />
-                            </div>
-                            <div class="form-control">
-                                <label class="label"><span class="label-text text-[10px] uppercase opacity-50">Gap (Tailwind)</span></label>
-                                <select v-model="store.activeBlock.content.gridConfig.gap" class="select select-bordered select-xs w-full">
-                                    <option v-for="g in [0,1,2,3,4,6,8,10,12,16,20]" :key="g" :value="g.toString()">Gap {{g}}</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                <button @click="closeSidebar" class="btn btn-ghost btn-xs btn-circle">
+                    <PhX weight="bold" class="w-4 h-4" />
+                </button>
             </div>
 
-            <!-- ANIMATIONS TAB -->
-            <div v-if="activeSidebarTab === 'animations'" class="space-y-6 animate-in fade-in">
+            <!-- Sidebar Tabs -->
+            <div class="flex border-b border-base-content/10 bg-base-200/50">
+                <button v-for="tab in ['content', 'design', 'animations', 'advanced']" :key="tab"
+                        @click="activeSidebarTab = (tab === 'design' ? 'style' : tab)"
+                        class="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-all relative"
+                        :class="activeSidebarTab === (tab === 'design' ? 'style' : tab) ? 'text-primary' : 'opacity-40 hover:opacity-100'">
+                    {{ tab }}
+                    <div v-if="activeSidebarTab === (tab === 'design' ? 'style' : tab)" class="absolute bottom-0 left-4 right-4 h-0.5 bg-primary rounded-full"></div>
+                </button>
+            </div>
+
+            <!-- Sidebar Content Area -->
+            <div class="flex-1 overflow-y-auto custom-scrollbar">
                 
-                <div class="form-control">
-                    <label class="label cursor-pointer justify-between bg-base-200 p-3 rounded-box">
-                        <span class="label-text font-bold text-xs uppercase tracking-widest opacity-70">Enable Animations</span>
-                        <input type="checkbox" v-model="store.activeBlock.settings.animations.enabled" class="toggle toggle-primary toggle-sm" />
-                    </label>
+                <!-- CONTENT TAB -->
+                <div v-if="activeSidebarTab === 'content'">
+                    <BlockSettingsManager 
+                        :active-block="store.activeBlock" 
+                        :templates="flattenedTemplates" 
+                    />
                 </div>
 
-                <div v-if="store.activeBlock.settings.animations.enabled" class="space-y-4">
+                <!-- STYLE / DESIGN TAB -->
+                <div v-if="activeSidebarTab === 'style' || activeSidebarTab === 'design'" class="p-6">
+                    <StyleSettings 
+                        :settings="store.activeBlock.settings" 
+                        :block-type="store.activeBlock.type" 
+                    />
+                </div>
+
+                <!-- ANIMATIONS TAB -->
+                <div v-if="activeSidebarTab === 'animations'" class="p-6">
+                    <AnimationSettings :settings="store.activeBlock.settings" />
+                </div>
+
+                <!-- ADVANCED TAB -->
+                <div v-if="activeSidebarTab === 'advanced'" class="p-6 space-y-4">
                     <div class="form-control">
-                        <label class="label"><span class="label-text text-[10px] opacity-40 uppercase font-bold">Trigger Event</span></label>
-                        <select v-model="store.activeBlock.settings.animations.trigger" class="select select-bordered select-sm w-full">
-                            <option value="onEnter">On Enter (Viewport)</option>
-                            <option value="onLoad">On Page Load</option>
-                            <option value="onScroll">On Scroll (Scrub)</option>
-                            <option value="timeline">Main GSAP Timeline sequence</option>
-                        </select>
+                        <label class="label"><span class="label-text text-xs opacity-50">Custom CSS Class</span></label>
+                        <input type="text" v-model="store.activeBlock.settings.customClass" class="input input-bordered w-full font-mono text-xs" />
                     </div>
-
                     <div class="form-control">
-                        <label class="label"><span class="label-text text-[10px] opacity-40 uppercase font-bold">Animation Preset</span></label>
-                        <select v-model="store.activeBlock.settings.animations.preset" class="select select-bordered select-sm w-full">
-                            <option value="fade-up">Fade Up</option>
-                            <option value="fade-in">Fade In</option>
-                            <option value="slide-left">Slide Left</option>
-                            <option value="slide-right">Slide Right</option>
-                            <option value="zoom-in">Zoom In</option>
-                            <option value="clip-reveal">Clip Reveal</option>
-                        </select>
+                        <label class="label"><span class="label-text text-xs opacity-50">Block ID</span></label>
+                        <input type="text" v-model="store.activeBlock.id" readonly class="input input-bordered w-full font-mono text-[10px] opacity-50 cursor-not-allowed" />
                     </div>
+                </div>
+            </div>
+        </template>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] opacity-40 uppercase">Duration (s)</span></label>
-                            <input type="number" step="0.1" v-model="store.activeBlock.settings.animations.duration" class="input input-bordered input-sm" />
-                        </div>
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] opacity-40 uppercase">Delay (s)</span></label>
-                            <input type="number" step="0.1" v-model="store.activeBlock.settings.animations.delay" class="input input-bordered input-sm" />
-                        </div>
+        <!-- CASE 2: DOCUMENT INSPECTOR (No block selected) -->
+        <template v-else>
+            <!-- Inspector Header -->
+            <div class="px-6 py-5 border-b border-base-content/10 flex items-center justify-between sticky top-0 bg-base-100/80 backdrop-blur-xl z-20">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
+                        <PhStack weight="duotone" class="w-5 h-5" />
                     </div>
-
-                    <div class="form-control">
-                        <label class="label"><span class="label-text text-[10px] opacity-40 uppercase">Easing Curve</span></label>
-                        <select v-model="store.activeBlock.settings.animations.ease" class="select select-bordered select-sm w-full">
-                            <option value="power2.out">Smooth Out (Standard)</option>
-                            <option value="back.out(1.7)">Pop Out (Elastic)</option>
-                            <option value="expo.out">Rapid Out (High-End)</option>
-                            <option value="none">Linear</option>
-                        </select>
+                    <div>
+                        <h3 class="text-xs font-black uppercase tracking-wider text-base-content/90">Document</h3>
+                        <p class="text-[10px] opacity-40 uppercase tracking-widest leading-none font-bold">Inspector</p>
                     </div>
-
                 </div>
             </div>
 
-            <!-- STYLE & ADVANCED TABS -->
-            <div v-if="activeSidebarTab === 'style'" class="space-y-6 animate-in fade-in">
-                
-                <!-- Colors -->
-                <AdminCollapse title="Colors" icon="PhPalette">
-                    <div class="space-y-4 pt-1">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="form-control items-center w-full col-span-2">
-                                <FillControl v-model="backgroundFill" label="Background" />
-                            </div>
-                            <div class="divider my-0 opacity-10 col-span-2"></div>
-                            <div class="form-control items-center w-full col-span-2">
-                                <FillControl v-model="textFill" label="Text" />
-                            </div>
-                        </div>
-                    </div>
-                </AdminCollapse>
+            <!-- Inspector Tabs -->
+            <div class="flex border-b border-base-content/10 bg-base-200/50 backdrop-blur-sm sticky top-[76px] z-10 overflow-x-auto no-scrollbar scroll-smooth">
+                <button v-for="tab in ['layers', 'history', 'info', ...(showSeo ? ['seo'] : []), ...(showAdvanced ? ['advanced'] : [])]" :key="tab"
+                        @click="activeInspectorTab = tab"
+                        class="flex-1 min-w-[60px] py-3 text-[9px] font-black uppercase tracking-tighter transition-all relative flex flex-col items-center justify-center gap-1.5"
+                        :class="activeInspectorTab === tab ? 'text-primary' : 'opacity-40 hover:opacity-100 hover:bg-base-content/5'">
+                    
+                    <PhStack v-if="tab === 'layers'" weight="bold" class="w-4 h-4" />
+                    <PhClockCounterClockwise v-if="tab === 'history'" weight="bold" class="w-4 h-4" />
+                    <PhInfo v-if="tab === 'info'" weight="bold" class="w-4 h-4" />
+                    <PhGlobe v-if="tab === 'seo'" weight="bold" class="w-4 h-4" />
+                    <PhGear v-if="tab === 'advanced'" weight="bold" class="w-4 h-4" />
+                    
+                    <span class="leading-none whitespace-nowrap overflow-hidden text-ellipsis max-w-full px-1">
+                        {{ tab === 'advanced' ? 'Advanced' : tab }}
+                    </span>
 
-                <!-- Spacing (Margin & Padding) -->
-                <AdminCollapse title="Spacing" icon="PhFrameCorners">
-                    <div class="space-y-6 pt-1">
-                        <LinkedUnitInput 
-                            v-model:top="store.activeBlock.settings.style.marginTop"
-                            v-model:right="store.activeBlock.settings.style.marginRight"
-                            v-model:bottom="store.activeBlock.settings.style.marginBottom"
-                            v-model:left="store.activeBlock.settings.style.marginLeft"
-                            label="Margin" 
-                        />
-                        <div class="divider my-0 opacity-10"></div>
-                        <LinkedUnitInput 
-                            v-model:top="store.activeBlock.settings.style.paddingTop"
-                            v-model:right="store.activeBlock.settings.style.paddingRight"
-                            v-model:bottom="store.activeBlock.settings.style.paddingBottom"
-                            v-model:left="store.activeBlock.settings.style.paddingLeft"
-                            label="Padding" 
-                        />
-                    </div>
-                </AdminCollapse>
-
-                <!-- Typography -->
-                <AdminCollapse title="Typography" icon="PhTextT" :open="true">
-                    <div class="space-y-4 pt-1">
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] uppercase">Font Family</span></label>
-                            <select v-model="store.activeBlock.settings.style.fontFamily" class="select select-bordered select-sm w-full">
-                                <option :value="undefined">Default</option>
-                                <option value="sans-serif">Sans Serif</option>
-                                <option value="serif">Serif</option>
-                                <option value="monospace">Monospace</option>
-                                <option value="'Inter', sans-serif">Inter</option>
-                                <option value="'Titillium Web', sans-serif">Titillium Web</option>
-                            </select>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="form-control">
-                                <label class="label"><span class="label-text text-[10px] uppercase">Font Size</span></label>
-                                <UnitInput v-model="store.activeBlock.settings.style.fontSize" placeholder="Size" />
-                            </div>
-                            <div class="form-control">
-                                <label class="label"><span class="label-text text-[10px] uppercase">Letter Spacing</span></label>
-                                <UnitInput v-model="store.activeBlock.settings.style.letterSpacing" placeholder="Spacing" />
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="form-control col-span-2">
-                                <label class="label"><span class="label-text text-[10px] uppercase">Alignment</span></label>
-                                <div class="join w-full">
-                                    <button @click="store.activeBlock.settings.style.textAlign = 'left'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'left' ? 'btn-primary' : 'bg-base-300'"><PhTextAlignLeft weight="bold" class="w-4 h-4" /></button>
-                                    <button @click="store.activeBlock.settings.style.textAlign = 'center'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'center' ? 'btn-primary' : 'bg-base-300'"><PhTextAlignCenter weight="bold" class="w-4 h-4" /></button>
-                                    <button @click="store.activeBlock.settings.style.textAlign = 'right'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'right' ? 'btn-primary' : 'bg-base-300'"><PhTextAlignRight weight="bold" class="w-4 h-4" /></button>
-                                    <button @click="store.activeBlock.settings.style.textAlign = 'justify'" class="btn btn-sm join-item flex-1" :class="store.activeBlock.settings.style.textAlign === 'justify' ? 'btn-primary' : 'bg-base-300'"><PhTextAlignJustify weight="bold" class="w-4 h-4" /></button>
-                                </div>
-                            </div>
-                            <div class="form-control col-span-2">
-                                <label class="label"><span class="label-text text-[10px] uppercase">Weight</span></label>
-                                <div class="join w-full">
-                                    <button @click="store.activeBlock.settings.style.fontWeight = '300'" class="btn btn-sm join-item flex-1 font-light" :class="store.activeBlock.settings.style.fontWeight === '300' ? 'btn-primary' : 'bg-base-300'">L</button>
-                                    <button @click="store.activeBlock.settings.style.fontWeight = 'normal'" class="btn btn-sm join-item flex-1 font-normal" :class="(!store.activeBlock.settings.style.fontWeight || store.activeBlock.settings.style.fontWeight === 'normal') ? 'btn-primary' : 'bg-base-300'">R</button>
-                                    <button @click="store.activeBlock.settings.style.fontWeight = '500'" class="btn btn-sm join-item flex-1 font-medium" :class="store.activeBlock.settings.style.fontWeight === '500' ? 'btn-primary' : 'bg-base-300'">M</button>
-                                    <button @click="store.activeBlock.settings.style.fontWeight = 'bold'" class="btn btn-sm join-item flex-1 font-bold" :class="store.activeBlock.settings.style.fontWeight === 'bold' ? 'btn-primary' : 'bg-base-300'">B</button>
-                                    <button @click="store.activeBlock.settings.style.fontWeight = '900'" class="btn btn-sm join-item flex-1 font-black" :class="store.activeBlock.settings.style.fontWeight === '900' ? 'btn-primary' : 'bg-base-300'">H</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </AdminCollapse>
-
-                <!-- Borders -->
-                <AdminCollapse title="Border & Appearance" icon="PhSquareHalf">
-                    <div class="space-y-6 pt-1">
-                        <!-- Border Radius Linked Input -->
-                        <LinkedUnitInput 
-                            v-model:top="store.activeBlock.settings.style.borderTopLeftRadius"
-                            v-model:right="store.activeBlock.settings.style.borderTopRightRadius"
-                            v-model:bottom="store.activeBlock.settings.style.borderBottomRightRadius"
-                            v-model:left="store.activeBlock.settings.style.borderBottomLeftRadius"
-                            label="Radius" 
-                        />
-
-                        <div class="divider my-0 opacity-10"></div>
-
-                        <!-- Border Width Linked Input -->
-                        <LinkedUnitInput 
-                            v-model:top="store.activeBlock.settings.style.borderTopWidth"
-                            v-model:right="store.activeBlock.settings.style.borderRightWidth"
-                            v-model:bottom="store.activeBlock.settings.style.borderBottomWidth"
-                            v-model:left="store.activeBlock.settings.style.borderLeftWidth"
-                            label="Width" 
-                        />
-
-                        <div class="divider my-0 opacity-10"></div>
-
-                        <div class="grid grid-cols-1">
-                            <div class="form-control w-full">
-                                <FillControl v-model="borderFill" label="Border" />
-                            </div>
-                        </div>
-                    </div>
-                </AdminCollapse>
-
-                <!-- Layout & Position -->
-                <AdminCollapse title="Layout & Position" icon="PhLayout">
-                    <div class="space-y-4 pt-1">
-                        <!-- 1. Z-Index and Position -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="form-control">
-                                <label class="label"><span class="label-text text-[10px] uppercase">Z-Index</span></label>
-                                <input type="number" v-model="store.activeBlock.settings.style.zIndex" class="input input-sm input-bordered w-full" />
-                            </div>
-                            <div class="form-control">
-                                <label class="label"><span class="label-text text-[10px] uppercase">Position</span></label>
-                                <select v-model="store.activeBlock.settings.style.position" class="select select-bordered select-sm w-full">
-                                    <option :value="undefined">Static</option>
-                                    <option value="relative">Relative</option>
-                                    <option value="absolute">Absolute</option>
-                                    <option value="fixed">Fixed</option>
-                                    <option value="sticky">Sticky</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <!-- 2. Offsets (Only visible if not static) -->
-                        <div v-if="['absolute', 'fixed', 'sticky', 'relative'].includes(store.activeBlock.settings.style.position)" class="bg-base-300/50 p-4 rounded-xl mt-4 space-y-4">
-                            <div class="text-[10px] uppercase font-bold opacity-50 mb-2 border-b border-white/10 pb-1">Offsets</div>
-
-                            <div class="flex items-center gap-4">
-                                <div class="join">
-                                    <button @click="toggleOffset('top')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.top !== undefined || store.activeBlock.settings.style.bottom === undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Top Offset"><PhArrowUp weight="bold" class="w-3 h-3" /></button>
-                                    <button @click="toggleOffset('bottom')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.bottom !== undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Bottom Offset"><PhArrowDown weight="bold" class="w-3 h-3" /></button>
-                                </div>
-                                <UnitInput v-if="store.activeBlock.settings.style.bottom !== undefined" v-model="store.activeBlock.settings.style.bottom" placeholder="Bottom value" class="flex-1" />
-                                <UnitInput v-else v-model="store.activeBlock.settings.style.top" placeholder="Top value" class="flex-1" />
-                            </div>
-                            
-                            <div class="flex items-center gap-4">
-                                <div class="join">
-                                    <button @click="toggleOffset('left')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.left !== undefined || store.activeBlock.settings.style.right === undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Left Offset"><PhArrowLeft weight="bold" class="w-3 h-3" /></button>
-                                    <button @click="toggleOffset('right')" class="btn btn-xs join-item min-h-0 h-6 w-8 border-none" :class="store.activeBlock.settings.style.right !== undefined ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" title="Right Offset"><PhArrowRight weight="bold" class="w-3 h-3" /></button>
-                                </div>
-                                <UnitInput v-if="store.activeBlock.settings.style.right !== undefined" v-model="store.activeBlock.settings.style.right" placeholder="Right value" class="flex-1" />
-                                <UnitInput v-else v-model="store.activeBlock.settings.style.left" placeholder="Left value" class="flex-1" />
-                            </div>
-                        </div>
-
-                        <div class="divider my-0 opacity-10"></div>
-
-                        <!-- 3. Display -->
-                        <div class="form-control">
-                            <label class="label"><span class="label-text text-[10px] uppercase">Display</span></label>
-                            <select v-model="store.activeBlock.settings.style.display" class="select select-bordered select-sm w-full">
-                                <option :value="undefined">Default</option>
-                                <option value="block">Block</option>
-                                <option value="inline-block">Inline Block</option>
-                                <option value="flex">Flex</option>
-                                <option value="grid">Grid</option>
-                                <option value="inline-flex">Inline Flex</option>
-                                <option value="inline-grid">Inline Grid</option>
-                                <option value="none">None</option>
-                            </select>
-                        </div>
-                        
-                        <!-- 4. Width / Height -->
-                        <div class="grid grid-cols-2 gap-4 mt-2">
-                            <div class="form-control">
-                                <label class="label"><span class="label-text text-[10px] uppercase">Width</span></label>
-                                <UnitInput v-model="store.activeBlock.settings.style.width" placeholder="Width" />
-                            </div>
-                            <div class="form-control">
-                                <label class="label"><span class="label-text text-[10px] uppercase">Height</span></label>
-                                <UnitInput v-model="store.activeBlock.settings.style.height" placeholder="Height" />
-                            </div>
-                        </div>
-                    </div>
-                </AdminCollapse>
-                
-                <div class="form-control mt-6">
-                    <button @click="store.activeBlock.settings.style = {}" class="btn btn-outline btn-error btn-sm w-full">Reset Styles</button>
-                </div>
+                    <div v-if="activeInspectorTab === tab" class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary shadow-[0_-2px_10px_rgba(var(--admin-p),0.5)]"></div>
+                </button>
             </div>
 
-            <div v-if="activeSidebarTab === 'advanced'" class="space-y-4">
-                <div class="form-control">
-                    <label class="label"><span class="label-text text-xs opacity-50">HTML ID</span></label>
-                    <input type="text" v-model="store.activeBlock.settings.id" placeholder="e.g. contact-anchor" class="input input-bordered font-mono text-xs" />
-                </div>
-                <div class="form-control">
-                    <label class="label"><span class="label-text text-xs opacity-50">Custom Classes</span></label>
-                    <input type="text" v-model="store.activeBlock.settings.class" placeholder="e.g. premium-shadow lg:p-20" class="input input-bordered font-mono text-xs" />
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Empty State: Document Inspector -->
-    <div v-else class="h-full flex flex-col bg-base-100 animate-in fade-in duration-300">
-        <!-- Inspector Header -->
-        <div class="px-6 py-4 border-b border-base-content/10 flex items-center justify-between sticky top-0 bg-base-100/80 backdrop-blur-xl z-20">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-base-content/5 flex items-center justify-center text-base-content/70 flex-shrink-0">
-                    <PhSlidersHorizontal weight="bold" class="w-4 h-4" />
-                </div>
-                <div>
-                    <h3 class="text-sm font-bold capitalize">Document Inspector</h3>
-                    <p class="text-[10px] opacity-40 uppercase tracking-widest leading-none">Global Settings</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Inspector Tabs -->
-        <div class="flex border-b border-base-content/10 bg-base-200/50">
-            <button v-for="tab in ['layers', 'seo', 'info', 'history']" :key="tab"
-                    @click="activeInspectorTab = tab"
-                    class="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest transition-all relative"
-                    :class="activeInspectorTab === tab ? 'text-primary' : 'opacity-40 hover:opacity-100'">
-                {{ tab }}
-                <div v-if="activeInspectorTab === tab" class="absolute bottom-0 left-4 right-4 h-0.5 bg-primary rounded-full"></div>
-            </button>
-        </div>
-
-        <!-- Inspector Content -->
-        <div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
-            
-            <!-- Layers -->
-            <div v-if="activeInspectorTab === 'layers'" class="space-y-4 animate-in fade-in">
-                <LayerTreeItem 
-                    :blocks="store.blocks" 
-                    @select="id => store.activeBlockId = id"
+            <!-- Inspector Content Area -->
+            <div class="flex-1 flex flex-col overflow-hidden bg-base-200/10">
+                <InspectorLayersTab 
+                    v-if="activeInspectorTab === 'layers'"
+                    v-model="store.blocks"
+                    :active-block-id="store.activeBlockId"
+                    @select="store.selectBlock($event)"
+                    @delete="store.deleteBlock($event)"
+                    @toggle-visibility="store.toggleBlockVisibility($event)"
+                    class="pt-4"
                 />
-                
-                <div v-if="store.blocks.length === 0" class="text-xs opacity-40 italic mt-2 text-center py-8">
-                    <i class="fas fa-cubes text-2xl mb-2 opacity-20 block"></i>
-                    No blocks on canvas.
+
+                <div v-if="activeInspectorTab === 'history'" class="h-full overflow-y-auto custom-scrollbar p-4">
+                    <slot name="history">
+                        <InspectorHistoryTab 
+                            :history="store.history"
+                            :current-index="store.historyIndex"
+                            @restore="store.restoreHistory"
+                            class="pt-4"
+                        />
+                    </slot>
+                </div>
+
+                <InspectorInfoTab 
+                    v-if="activeInspectorTab === 'info'"
+                    :total-blocks="store.blocks.length"
+                    :last-saved="store.lastSaved"
+                    class="pt-4"
+                >
+                    <template #module-info>
+                        <slot name="info"></slot>
+                    </template>
+                </InspectorInfoTab>
+
+                <div v-if="activeInspectorTab === 'seo'" class="p-6 h-full overflow-y-auto custom-scrollbar">
+                    <slot name="seo"></slot>
+                </div>
+                <div v-if="activeInspectorTab === 'advanced'" class="p-6 h-full overflow-y-auto custom-scrollbar">
+                    <slot name="advanced">
+                        <div class="text-center py-20 opacity-20 italic text-xs font-serif">
+                            No advanced options for this module.
+                        </div>
+                    </slot>
                 </div>
             </div>
 
-            <!-- SEO -->
-            <div v-if="activeInspectorTab === 'seo'" class="space-y-4 animate-in fade-in">
-                <slot name="seo"></slot>
-            </div>
 
-            <!-- Info -->
-            <div v-if="activeInspectorTab === 'info'" class="space-y-4 animate-in fade-in">
-                <slot name="info"></slot>
-            </div>
-
-            <!-- History -->
-            <div v-if="activeInspectorTab === 'history'" class="space-y-4 animate-in fade-in">
-                <slot name="history"></slot>
-            </div>
-        </div>
+        </template>
     </div>
 </template>
 
 <style scoped>
-.custom-scrollbar::-webkit-scrollbar { width: 4px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
 </style>
+

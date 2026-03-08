@@ -63,7 +63,7 @@ class TemplateController extends Controller
     public function edit(Template $template)
     {
         return Inertia::render('Admin/Templates/Edit', [
-            'template' => $template,
+            'template' => $template->load('revisions'),
             'templates' => [
                 'header' => \App\Models\Template::where('type', 'header')->get(),
                 'footer' => \App\Models\Template::where('type', 'footer')->get(),
@@ -82,6 +82,14 @@ class TemplateController extends Controller
             'is_default' => 'boolean',
             'content' => 'nullable|array'
         ]);
+
+        // Store revision
+        if ($template->content) {
+            $template->revisions()->create([
+                'content' => $template->content,
+                'user_id' => auth()->id(),
+            ]);
+        }
 
         $template->update($data);
         return redirect()->back()->with('success', 'Template updated successfully.');

@@ -21,7 +21,7 @@
                     class="group relative text-[11px] py-1 pl-1 pr-2 flex items-center gap-1.5 cursor-pointer transition-all border-l-2 border-transparent hover:bg-base-content/5 rounded-r-md"
                     :class="{ 
                         'active-layer bg-primary/10 text-primary border-primary shadow-sm': store.activeBlockId === element.id,
-                        'opacity-50': element.hidden 
+                        'opacity-50': element.settings?.hidden 
                     }"
                     @click="store.activeBlockId = element.id"
                 >
@@ -58,26 +58,52 @@
                     </span>
 
                     <!-- Quick Actions (Visible when hovered or if active) -->
-                    <div class="flex items-center gap-0 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                    <div class="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 pr-1"
                          :class="{ 'opacity-100': store.activeBlockId === element.id }">
+                        
+                        <!-- Group 1: Visibility & Lock -->
+                        <div class="flex items-center">
+                            <button @click.stop="store.toggleBlockVisibility(element.id)" 
+                                    class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-primary transition-colors" 
+                                    :title="element.settings?.hidden ? 'Show Block' : 'Hide Block'">
+                                <component :is="element.settings?.hidden ? PhEyeSlash : PhEye" weight="bold" class="w-3 h-3" />
+                            </button>
+                            <button @click.stop="store.toggleBlockLock(element.id)" 
+                                    class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-warning transition-colors" 
+                                    :title="element.settings?.locked ? 'Unlock Block' : 'Lock Block'">
+                                <component :is="element.settings?.locked ? PhLock : PhLockSimpleOpen" weight="bold" class="w-3 h-3" />
+                            </button>
+                        </div>
+
+                        <!-- Separator -->
+                        <div class="w-px h-3 bg-base-content/10 mx-1"></div>
+
+                        <!-- Group 2: Drag & Drop -->
                         <div class="drag-handle btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-primary transition-colors cursor-move" title="Drag to reorder">
                             <PhDotsSixVertical weight="bold" class="w-3 h-3" />
                         </div>
-                        <button @click.stop="store.isEditingBlock = true; store.showRightSidebar = true; store.activeBlockId = element.id" 
-                                class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-primary transition-colors" 
-                                title="Settings">
-                            <PhSlidersHorizontal weight="bold" class="w-3 h-3" />
-                        </button>
-                        <button @click.stop="store.duplicateBlock(element.id)" 
-                                class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-primary transition-colors" 
-                                title="Duplicate">
-                            <PhCopy weight="bold" class="w-3 h-3" />
-                        </button>
-                        <button @click.stop="store.removeBlock(element.id)" 
-                                class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-error transition-colors" 
-                                title="Delete">
-                            <PhX weight="bold" class="w-3 h-3" />
-                        </button>
+
+                        <!-- Separator -->
+                        <div class="w-px h-3 bg-base-content/10 mx-1"></div>
+
+                        <!-- Group 3: Settings, Duplicate, Remove -->
+                        <div class="flex items-center">
+                            <button @click.stop="store.isEditingBlock = true; store.showRightSidebar = true; store.activeBlockId = element.id" 
+                                    class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-primary transition-colors" 
+                                    title="Settings">
+                                <PhSlidersHorizontal weight="bold" class="w-3 h-3" />
+                            </button>
+                            <button @click.stop="store.duplicateBlock(element.id)" 
+                                    class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-primary transition-colors" 
+                                    title="Duplicate">
+                                <PhCopy weight="bold" class="w-3.5 h-3.5" />
+                            </button>
+                            <button @click.stop="store.removeBlock(element.id)" 
+                                    class="btn btn-ghost btn-xs btn-square h-5 w-5 min-h-0 text-base-content/30 hover:text-error transition-colors" 
+                                    title="Delete">
+                                <PhTrash weight="bold" class="w-3 h-3" />
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -125,7 +151,7 @@ const iconMap = {
     PhStack, PhBoundingBox, PhColumns, PhList, PhMinus, PhStar, PhImage, 
     PhVideoCamera, PhNavigationArrow, PhDotsThree, PhBrowser, PhFootprints, 
     PhFolder, PhTerminal, PhDeviceMobile, PhAppWindow, PhPlusCircle, PhArticle, 
-    PhBriefcase, PhArrowsClockwise, PhListNumbers
+    PhBriefcase, PhArrowsClockwise, PhListNumbers, PhEye, PhEyeSlash, PhLock, PhLockSimpleOpen
 };
 
 const props = defineProps({
