@@ -82,9 +82,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 label: 'Layout & Media',
                 icon: 'PhStack',
                 blocks: [
-                    { type: 'section', label: 'Section', icon: 'PhBoundingBox' },
-                    { type: 'columns', label: 'Columns', icon: 'PhColumns' },
-                    { type: 'stack', label: 'Stack', icon: 'PhList' },
+                    { type: 'container', label: 'Container', icon: 'PhBoundingBox' },
                     { type: 'divider', label: 'Divider', icon: 'PhMinus' },
                     { type: 'hero', label: 'Hero', icon: 'PhStar' },
                     { type: 'image', label: 'Image', icon: 'PhImage' },
@@ -177,9 +175,13 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 file_input: { label: 'Upload document', placeholder: 'Choose file' },
 
                 // 5. Layout & Media
-                section: { width: 'boxed', bgColor: 'transparent', align: 'left' },
-                columns: { count: 2, stackOnMobile: true },
-                stack: { direction: 'col', gap: '4' },
+                container: {
+                    htmlTag: 'section',
+                    isBoxed: true,
+                    layoutType: 'default',
+                    flexConfig: { direction: 'col', align: 'stretch', justify: 'start', wrap: 'nowrap', gap: '4' },
+                    gridConfig: { cols: '1', gap: '4' }
+                },
                 divider: { text: 'OR' },
                 hero: { headline: 'Provident cupiditate voluptatem et in.', subheadline: 'Provident cupiditate voluptatem et in.', primaryLabel: 'Get Started', bg_image: 'https://img.daisyui.com/images/stock/photo-1507358522600-9f71e620c44e.webp' },
                 image: { url: 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp', alt: '', caption: '' },

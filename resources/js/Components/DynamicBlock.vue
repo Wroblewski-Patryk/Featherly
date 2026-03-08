@@ -161,6 +161,44 @@ const styleObj = computed(() => {
     };
 });
 
+const containerClasses = computed(() => {
+    if (props.block.type !== 'container') return '';
+    const c = props.block.content;
+    let classes = [];
+
+    if (c.isBoxed) classes.push('container mx-auto');
+
+    if (c.layoutType === 'flex') {
+        classes.push('flex');
+        if (c.flexConfig.direction === 'row') classes.push('flex-row');
+        else classes.push('flex-col');
+
+        if (c.flexConfig.wrap === 'wrap') classes.push('flex-wrap');
+        else classes.push('flex-nowrap');
+
+        if (c.flexConfig.align === 'start') classes.push('items-start');
+        else if (c.flexConfig.align === 'center') classes.push('items-center');
+        else if (c.flexConfig.align === 'end') classes.push('items-end');
+        else if (c.flexConfig.align === 'baseline') classes.push('items-baseline');
+        else classes.push('items-stretch');
+
+        if (c.flexConfig.justify === 'start') classes.push('justify-start');
+        else if (c.flexConfig.justify === 'center') classes.push('justify-center');
+        else if (c.flexConfig.justify === 'end') classes.push('justify-end');
+        else if (c.flexConfig.justify === 'between') classes.push('justify-between');
+        else if (c.flexConfig.justify === 'around') classes.push('justify-around');
+        else if (c.flexConfig.justify === 'evenly') classes.push('justify-evenly');
+
+        if (c.flexConfig.gap) classes.push(`gap-${c.flexConfig.gap}`);
+    } else if (c.layoutType === 'grid') {
+        classes.push('grid');
+        classes.push(`grid-cols-${c.gridConfig.cols || '1'}`);
+        if (c.gridConfig.gap) classes.push(`gap-${c.gridConfig.gap}`);
+    }
+
+    return classes.join(' ');
+});
+
 const textStyleObj = computed(() => {
     const s = props.block.settings || {};
     const st = s.style || {};
@@ -247,9 +285,14 @@ const contactForm = useForm({
             </div>
         </template>
         
-        <!-- Section Block -->
-        <div v-if="block.type === 'section'" class="w-full relative transition-colors p-4"
-             :class="{'min-h-[50px] border border-dashed editor-dashed-frame': isEditor}"
+        <!-- Container Block (Unified Layout) -->
+        <component :is="block.content.htmlTag || 'section'" 
+             v-if="block.type === 'container'" 
+             class="w-full relative transition-colors"
+             :class="[
+                containerClasses,
+                {'min-h-[100px] border border-dashed editor-dashed-frame': isEditor}
+             ]"
              :style="{ transformStyle: 'preserve-3d' }">
             <template v-if="isEditor">
                 <draggable 
@@ -258,7 +301,14 @@ const contactForm = useForm({
                     item-key="id"
                     handle=".drag-handle"
                     ghost-class="ghost-block"
-                    class="min-h-[50px] flex flex-col gap-2 w-full"
+                    class="min-h-[100px] w-full"
+                    :class="[
+                        block.content.layoutType === 'flex' ? 'flex' : '',
+                        block.content.layoutType === 'flex' && block.content.flexConfig.direction === 'row' ? 'flex-row' : 'flex-col',
+                        block.content.layoutType === 'grid' ? 'grid' : '',
+                        block.content.layoutType === 'grid' ? `grid-cols-${block.content.gridConfig.cols || '1'}` : '',
+                        (block.content.layoutType === 'flex' || block.content.layoutType === 'grid') && block.content.flexConfig?.gap ? `gap-${block.content.flexConfig.gap}` : ''
+                    ]"
                     :style="{ transformStyle: 'preserve-3d' }">
                     <template #item="{ element }">
                         <DynamicBlock :block="element" />
@@ -267,11 +317,9 @@ const contactForm = useForm({
                 <div v-if="!block.children?.length" class="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none text-xs font-bold uppercase tracking-widest border border-dashed border-base-content/10 m-2 rounded-lg bg-base-100/30 backdrop-blur-sm">Drop blocks here</div>
             </template>
             <template v-else>
-                <div class="flex flex-col gap-2 w-full" :style="store.isDepthView ? { transformStyle: 'preserve-3d' } : {}">
-                    <DynamicBlock v-for="child in block.children" :key="child.id" :block="child" />
-                </div>
+                <DynamicBlock v-for="child in block.children" :key="child.id" :block="child" />
             </template>
-        </div>
+        </component>
 
         <!-- 1. Typography -->
         <div v-else-if="block.type === 'paragraph'" class="prose prose-lg" :class="{'opacity-80': !isEditor}" :style="textStyleObj" v-html="block.content.text"></div>
@@ -631,65 +679,6 @@ const contactForm = useForm({
             </div>
         </div>
 
-        <!-- Layout Blocks -->
-        <div v-else-if="block.type === 'columns'" class="max-w-7xl mx-auto px-6 grid gap-8" 
-             :class="[`grid-cols-1 md:grid-cols-${block.content.count || 2}`, {'border border-dashed editor-dashed-frame p-4 rounded-xl group relative': isEditor}]"
-             :style="store.isDepthView ? { transformStyle: 'preserve-3d' } : {}">
-             <template v-if="isEditor">
-                 <div class="absolute -top-3 left-4 text-[10px] font-black uppercase tracking-widest bg-base-100 px-2 opacity-50 z-10 transition-opacity"
-                      :class="{'!opacity-100': store.hoveredBlockId === block.id || store.activeBlockId === block.id}"
-                      :style="{ color: store.hoveredBlockId === block.id || store.activeBlockId === block.id ? 'var(--admin-p)' : '' }">Columns Layout</div>
-                 <div v-for="i in (block.content.count || 2)" :key="i" class="space-y-4 border border-dashed editor-dashed-frame-sub p-2 rounded-lg relative min-h-[50px]"
-                      :style="store.isDepthView ? { transformStyle: 'preserve-3d' } : {}">
-                     <div class="absolute -top-2 left-2 text-[8px] font-black uppercase tracking-widest bg-base-100 px-2 opacity-30 z-10">Col {{ i }}</div>
-                     <draggable 
-                        v-model="block.children" 
-                        :group="'blocks'"
-                        item-key="id"
-                        handle=".drag-handle"
-                        ghost-class="ghost-block"
-                        class="min-h-[50px] w-full flex flex-col gap-2"
-                        :style="store.isDepthView ? { transformStyle: 'preserve-3d' } : {}">
-                        <template #item="{ element }">
-                            <DynamicBlock v-if="element.column === i" :block="element" />
-                        </template>
-                    </draggable>
-                 </div>
-             </template>
-             <template v-else>
-                  <div v-for="i in (block.content.count || 2)" :key="i" class="space-y-4" :style="{ transformStyle: 'preserve-3d' }">
-                     <DynamicBlock v-for="child in block.children?.filter(c => c.column === i)" :key="child.id" :block="child" />
-                 </div>
-             </template>
-        </div>
 
-        <div v-else-if="block.type === 'group' || block.type === 'stack'" class="w-full relative transition-colors p-4" 
-             :class="[block.type === 'stack' && !isEditor ? 'flex flex-col gap-4' : '', {'min-h-[50px] border border-dashed editor-dashed-frame': isEditor}]"
-             :style="{ transformStyle: 'preserve-3d' }">
-            <template v-if="isEditor">
-                <div class="absolute -top-3 left-4 text-[10px] font-black uppercase tracking-widest bg-base-100 px-2 opacity-50 z-10 transition-opacity"
-                     :class="{'!opacity-100': store.hoveredBlockId === block.id || store.activeBlockId === block.id}"
-                     :style="{ color: store.hoveredBlockId === block.id || store.activeBlockId === block.id ? 'var(--admin-p)' : '' }">{{ block.type }}</div>
-                <draggable 
-                    v-model="block.children" 
-                    :group="'blocks'"
-                    item-key="id"
-                        handle=".drag-handle"
-                        ghost-class="ghost-block"
-                        class="min-h-[50px] w-full"
-                        :class="block.type === 'stack' ? 'flex flex-col gap-4' : ''"
-                        :style="{ transformStyle: 'preserve-3d' }">
-                    <template #item="{ element }">
-                        <DynamicBlock :block="element" />
-                    </template>
-                </draggable>
-                <div v-if="!block.children?.length" class="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none text-xs font-bold uppercase tracking-widest border border-dashed border-base-content/10 m-2 rounded-lg bg-base-100/30 backdrop-blur-sm">Drop here</div>
-            </template>
-            <template v-else>
-                <div class="w-full" :class="block.type === 'stack' ? 'flex flex-col gap-4' : ''" :style="{ transformStyle: 'preserve-3d' }">
-                    <DynamicBlock v-for="child in block.children" :key="child.id" :block="child" />
-                </div>
-            </template>
-        </div>
     </div>
 </template>
