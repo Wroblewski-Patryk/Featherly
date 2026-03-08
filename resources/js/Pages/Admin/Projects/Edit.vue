@@ -1,7 +1,7 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
-import { Head, useForm, Link } from '@inertiajs/vue3';
-import { PhCamera, PhCards } from '@phosphor-icons/vue';
+import { onMounted, computed, watch } from 'vue';
+import { Head, useForm } from '@inertiajs/vue3';
+import { PhArrowsClockwise, PhArrowSquareOut, PhFingerprint } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
 import DatePicker from '@/Components/DatePicker.vue';
@@ -9,7 +9,7 @@ import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 
 const props = defineProps({
     project: Object,
-    templates: Array
+    templates: [Array, Object]
 });
 
 const store = useBlockBuilderStore();
@@ -31,15 +31,25 @@ const form = useForm({
 
 const previewUrl = computed(() => form.slug ? `/projects/${form.slug}` : null);
 
-onMounted(() => {
-    store.init(props.project?.content || []);
+const generateSlug = (text) => {
+    if (!text) return '';
+    return text.toString().toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9 -]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim()
+        .replace(/^-+/, '')
+        .replace(/-+$/, '');
+};
+
+watch(() => form.title.pl, (newTitle) => {
+    form.slug = generateSlug(newTitle);
 });
 
-// Auto-slug generation
-watch(() => form.title.pl, (newTitle) => {
-    if (!props.project?.id || !form.slug) {
-        form.slug = newTitle ? newTitle.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') : '';
-    }
+onMounted(() => {
+    store.init(props.project?.content || []);
 });
 
 function submit() {
@@ -69,42 +79,93 @@ function submit() {
         >
             <template #info>
                 <div class="flex flex-col gap-6">
-                    <div class="form-control">
-                        <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug</span></label>
-                        <input type="text" v-model="form.slug" class="input input-bordered input-sm focus:border-primary/50 transition-all" placeholder="project-slug" />
-                    </div>
+                    <div class="space-y-4">
                         <div class="form-control">
-                            <label class="label"><span class="label-text text-xs opacity-60">Client</span></label>
-                            <input type="text" v-model="form.client" class="input input-bordered input-sm focus:border-primary/50" placeholder="Client Name" />
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug</span></label>
+                            <div class="join w-full">
+                                <input type="text" v-model="form.slug" class="input input-bordered input-sm join-item focus:border-primary/50 transition-all font-mono text-xs w-full" placeholder="project-slug" />
+                                <button @click="form.slug = generateSlug(form.title.pl)" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
+                                    <PhArrowsClockwise weight="bold" class="w-3 h-3" />
+                                </button>
+                            </div>
                         </div>
+
                         <div class="form-control">
-                            <label class="label"><span class="label-text text-xs opacity-60">Category</span></label>
-                            <input type="text" v-model="form.category" class="input input-bordered input-sm focus:border-primary/50" placeholder="e.g. Residential" />
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Generated URL</span></label>
+                            <div class="join w-full">
+                                <input
+                                    type="text"
+                                    :value="previewUrl || ''"
+                                    readonly
+                                    class="input input-bordered input-sm join-item w-full font-mono text-[10px]"
+                                    :placeholder="form.slug ? '' : 'Slug required for URL'"
+                                />
+                                <a
+                                    v-if="previewUrl"
+                                    :href="previewUrl"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="btn btn-sm btn-ghost join-item"
+                                    title="Open Preview URL"
+                                >
+                                    <PhArrowSquareOut weight="bold" class="w-3 h-3" />
+                                </a>
+                                <button v-else type="button" class="btn btn-sm btn-ghost join-item" disabled title="URL unavailable">
+                                    <PhArrowSquareOut weight="bold" class="w-3 h-3 opacity-40" />
+                                </button>
+                            </div>
                         </div>
+
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Status</span></label>
-                            <select v-model="form.status" class="select select-bordered select-sm text-xs bg-base-100/50 hover:bg-base-200/50 transition-all border-white/10 focus:border-primary/50">
+                            <select v-model="form.status" class="select select-bordered select-sm focus:select-primary transition-all w-full">
                                 <option value="draft">Draft</option>
                                 <option value="published">Published</option>
                                 <option value="planned">Planned</option>
                                 <option value="archived">Archived</option>
                             </select>
                         </div>
-                        <DatePicker 
-                            v-if="form.status === 'planned' || form.status === 'published'"
-                            v-model="form.published_at" 
-                            label="Publish Date & Time"
-                        />
-                    </div>
-        </template>
 
-            <template #canvas-header>
-                <div class="h-80 bg-base-200/20 flex flex-col items-center justify-center border-b border-black/5">
-                    <div class="text-center group cursor-pointer">
-                        <div class="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <PhCamera weight="regular" class="w-8 h-8 opacity-20" />
+                        <div v-if="form.status === 'planned' || form.status === 'published'" class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Publish Date & Time</span></label>
+                            <DatePicker v-model="form.published_at" />
                         </div>
-                        <p class="text-[10px] font-black uppercase tracking-widest opacity-30">Upload Showcase Visual</p>
+                    </div>
+
+                    <div class="divider opacity-10 my-0"></div>
+
+                    <div class="space-y-4">
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Client</span></label>
+                            <input type="text" v-model="form.client" class="input input-bordered input-sm focus:border-primary/50" placeholder="Client Name" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Category</span></label>
+                            <input type="text" v-model="form.category" class="input input-bordered input-sm focus:border-primary/50" placeholder="e.g. Residential" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">External URL</span></label>
+                            <input type="text" v-model="form.url" class="input input-bordered input-sm focus:border-primary/50 font-mono text-xs" placeholder="https://..." />
+                        </div>
+                    </div>
+
+                    <div class="divider opacity-10 my-0"></div>
+
+                    <div class="space-y-3 bg-base-200/30 p-4 rounded-xl border border-base-content/10">
+                        <div class="flex items-center justify-between text-[10px] uppercase tracking-wider opacity-60 font-bold px-1">
+                            <span>Metadata</span>
+                            <PhFingerprint weight="bold" class="w-3 h-3 text-primary" />
+                        </div>
+                        <div class="flex flex-col gap-2 text-[11px]">
+                            <div class="flex justify-between items-center bg-base-100/50 p-2 rounded-lg border border-base-content/5">
+                                <span class="opacity-60">Created</span>
+                                <span class="font-mono">{{ project?.created_at ? new Date(project.created_at).toLocaleString() : 'New Content' }}</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-base-100/50 p-2 rounded-lg border border-base-content/5">
+                                <span class="opacity-60">Last Edit</span>
+                                <span class="font-mono">{{ project?.updated_at ? new Date(project.updated_at).toLocaleString() : 'N/A' }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </template>

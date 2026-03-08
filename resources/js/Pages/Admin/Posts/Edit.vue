@@ -10,65 +10,88 @@
         >
             <template #info>
                 <div class="flex flex-col gap-6">
-                    <!-- Slug Section -->
                     <div class="space-y-4">
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug</span></label>
-                            <div class="flex items-center gap-2">
-                                <input type="text" v-model="form.slug.pl" class="input input-bordered input-sm focus:input-primary transition-all flex-1 font-mono text-xs" placeholder="post-slug" />
-                                <button @click="form.slug.pl = generateSlug(form.title.pl)" type="button" class="btn btn-square btn-sm btn-ghost opacity-40 hover:opacity-100" title="Regenerate Slug"><PhArrowsClockwise weight="bold" class="w-4 h-4"/></button>
+                            <div class="join w-full">
+                                <input type="text" v-model="form.slug.pl" class="input input-bordered input-sm join-item focus:input-primary transition-all flex-1 font-mono text-xs" placeholder="post-slug" />
+                                <button @click="form.slug.pl = generateSlug(form.title.pl)" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
+                                    <PhArrowsClockwise weight="bold" class="w-3 h-3" />
+                                </button>
                             </div>
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Generated URL</span></label>
+                            <div class="join w-full">
+                                <input
+                                    type="text"
+                                    :value="previewUrl || ''"
+                                    readonly
+                                    class="input input-bordered input-sm join-item w-full font-mono text-[10px]"
+                                    :placeholder="form.slug?.pl ? '' : 'Slug required for URL'"
+                                />
+                                <a
+                                    v-if="previewUrl"
+                                    :href="previewUrl"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="btn btn-sm btn-ghost join-item"
+                                    title="Open Preview URL"
+                                >
+                                    <PhArrowSquareOut weight="bold" class="w-3 h-3" />
+                                </a>
+                                <button v-else type="button" class="btn btn-sm btn-ghost join-item" disabled title="URL unavailable">
+                                    <PhArrowSquareOut weight="bold" class="w-3 h-3 opacity-40" />
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Status</span></label>
+                            <select v-model="form.status" class="select select-bordered select-sm focus:select-primary transition-all w-full">
+                                <option value="draft">Draft (Private)</option>
+                                <option value="published">Published (Public)</option>
+                                <option value="planned">Planned (Scheduled)</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                        </div>
+
+                        <div v-if="form.status === 'planned' || form.status === 'published'" class="form-control animate-in slide-in-from-top-2">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Publish Date & Time</span></label>
+                            <DatePicker v-model="form.published_at" />
                         </div>
                     </div>
 
-                    <!-- Status Selection (Out of container) -->
-                    <div class="form-control">
-                        <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Status</span></label>
-                        <select v-model="form.status" class="select select-bordered select-sm focus:select-primary transition-all w-full">
-                            <option value="draft">Draft (Private)</option>
-                            <option value="published">Published (Public)</option>
-                            <option value="planned">Planned (Scheduled)</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Publish Date & Time (Out of container) -->
-                    <div v-if="form.status === 'planned'" class="form-control animate-in slide-in-from-top-2">
-                        <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Publish Date & Time</span></label>
-                        <DatePicker v-model="form.published_at" />
-                    </div>
+                    <div class="divider opacity-10 my-0"></div>
 
-                    <!-- Metadata Section (Between status/date and media) -->
-                    <div class="space-y-3 bg-base-200/20 p-3 rounded-xl border border-base-content/5">
-                        <div class="flex items-center justify-between text-[10px] uppercase tracking-wider opacity-50 font-bold px-1">
-                            <span>Metadata</span>
-                            <PhFingerprint weight="bold" class="w-3 h-3 text-primary" />
-                        </div>
-                        <div class="flex flex-col gap-2 text-[11px]">
-                            <div class="flex justify-between items-center bg-base-100/30 p-2 rounded-lg">
-                                <span class="opacity-50">Created:</span>
-                                <span class="font-mono">{{ post?.created_at ? new Date(post.created_at).toLocaleString() : 'New Content' }}</span>
-                            </div>
-                            <div class="flex justify-between items-center bg-base-100/30 p-2 rounded-lg">
-                                <span class="opacity-50">Last Edit:</span>
-                                <span class="font-mono">{{ post?.updated_at ? new Date(post.updated_at).toLocaleString() : 'N/A' }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Media Section -->
                     <div class="space-y-4">
-                        <div class="flex items-center gap-2 px-1">
-                            <div class="h-[1px] flex-1 bg-base-content/10"></div>
-                            <span class="text-[10px] font-bold uppercase tracking-widest opacity-30">Featured Media</span>
-                            <div class="h-[1px] flex-1 bg-base-content/10"></div>
-                        </div>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Featured Image URL</span></label>
                             <div class="flex flex-col gap-2">
                                 <input type="text" v-model="form.featured_image.pl" class="input input-bordered input-sm focus:input-primary transition-all w-full" placeholder="Image URL" />
-                                <div v-if="form.featured_image.pl" class="mt-2 rounded-lg overflow-hidden border border-base-content/10 aspect-video bg-base-200 shadow-inner group">
+                                <div v-if="form.featured_image.pl" class="rounded-lg overflow-hidden border border-base-content/10 aspect-video bg-base-200 shadow-inner group">
                                     <img :src="form.featured_image.pl" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="divider opacity-10 my-0"></div>
+
+                    <div class="space-y-3 bg-base-200/30 p-4 rounded-xl border border-base-content/10">
+                        <div class="flex items-center justify-between text-[10px] uppercase tracking-wider opacity-60 font-bold px-1">
+                            <span>Metadata</span>
+                            <PhFingerprint weight="bold" class="w-3 h-3 text-primary" />
+                        </div>
+                        <div class="flex flex-col gap-2 text-[11px]">
+                            <div class="flex justify-between items-center bg-base-100/50 p-2 rounded-lg border border-base-content/5">
+                                <span class="opacity-60">Created</span>
+                                <span class="font-mono">{{ post?.created_at ? new Date(post.created_at).toLocaleString() : 'New Content' }}</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-base-100/50 p-2 rounded-lg border border-base-content/5">
+                                <span class="opacity-60">Last Edit</span>
+                                <span class="font-mono">{{ post?.updated_at ? new Date(post.updated_at).toLocaleString() : 'N/A' }}</span>
                             </div>
                         </div>
                     </div>
@@ -144,13 +167,12 @@
 </template>
 
 <script setup>
-import { 
-    PhEye, 
-    PhFloppyDisk, 
-    PhFingerprint, 
+import {
+    PhFingerprint,
     PhShareNetwork,
     PhArrowsClockwise,
-    PhClockCounterClockwise
+    PhClockCounterClockwise,
+    PhArrowSquareOut
 } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
