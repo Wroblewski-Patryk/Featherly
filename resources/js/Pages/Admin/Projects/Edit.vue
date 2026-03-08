@@ -23,10 +23,13 @@ const form = useForm({
     mobile_image: props.project?.mobile_image || '',
     url: props.project?.url || '',
     category: props.project?.category || '',
+    client: props.project?.client || '',
     order: props.project?.order || 0,
     status: props.project?.status || 'draft',
     published_at: props.project?.published_at ? props.project.published_at.substring(0, 19).replace('T', ' ') : '',
 });
+
+const previewUrl = computed(() => form.slug ? `/projects/${form.slug}` : null);
 
 onMounted(() => {
     store.init(props.project?.content || []);
@@ -57,47 +60,43 @@ function submit() {
     <Head :title="project ? 'Edit Project' : 'Add Project'" />
     <AdminLayout :full-width="true">
         <BlockBuilder 
-            title="Project" 
-            save-label="Save Project"
-            back-label="Back"
-            :back-route="route('admin.projects.index')"
+            v-model:title="form.title.pl"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"
+            :preview-url="previewUrl"
             @save="submit"
         >
             <template #info>
-                <div class="form-control">
-                    <label class="label"><span class="label-text text-xs opacity-60">Project Title (PL)</span></label>
-                    <input type="text" v-model="form.title.pl" class="input input-bordered input-sm" placeholder="e.g. Modern Villa" />
-                </div>
-                <div class="form-control">
-                    <label class="label"><span class="label-text text-xs opacity-60">Slug</span></label>
-                    <input type="text" v-model="form.slug" class="input input-bordered input-sm" placeholder="project-slug" />
-                </div>
-                <div class="form-control">
-                    <label class="label"><span class="label-text text-xs opacity-60">Client</span></label>
-                    <input type="text" v-model="form.client" class="input input-bordered input-sm" placeholder="Client Name" />
-                </div>
-                <div class="form-control">
-                    <label class="label"><span class="label-text text-xs opacity-60">Category</span></label>
-                    <input type="text" v-model="form.category" class="input input-bordered input-sm" placeholder="e.g. Residential" />
-                </div>
-                <div class="form-control">
-                    <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Status</span></label>
-                    <select v-model="form.status" class="select select-bordered select-sm text-xs bg-base-100/50 hover:bg-base-200/50 transition-all border-white/10 focus:border-primary/50">
-                        <option value="draft">Draft</option>
-                        <option value="published">Published</option>
-                        <option value="planned">Planned</option>
-                        <option value="archived">Archived</option>
-                    </select>
-                </div>
-                <DatePicker 
-                    v-if="form.status === 'planned' || form.status === 'published'"
-                    v-model="form.published_at" 
-                    label="Publish Date & Time"
-                />
-            </template>
+                <div class="flex flex-col gap-6">
+                    <div class="form-control">
+                        <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug</span></label>
+                        <input type="text" v-model="form.slug" class="input input-bordered input-sm focus:border-primary/50 transition-all" placeholder="project-slug" />
+                    </div>
+                        <div class="form-control">
+                            <label class="label"><span class="label-text text-xs opacity-60">Client</span></label>
+                            <input type="text" v-model="form.client" class="input input-bordered input-sm focus:border-primary/50" placeholder="Client Name" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label"><span class="label-text text-xs opacity-60">Category</span></label>
+                            <input type="text" v-model="form.category" class="input input-bordered input-sm focus:border-primary/50" placeholder="e.g. Residential" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Status</span></label>
+                            <select v-model="form.status" class="select select-bordered select-sm text-xs bg-base-100/50 hover:bg-base-200/50 transition-all border-white/10 focus:border-primary/50">
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                                <option value="planned">Planned</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                        </div>
+                        <DatePicker 
+                            v-if="form.status === 'planned' || form.status === 'published'"
+                            v-model="form.published_at" 
+                            label="Publish Date & Time"
+                        />
+                    </div>
+        </template>
 
             <template #canvas-header>
                 <div class="h-80 bg-base-200/20 flex flex-col items-center justify-center border-b border-black/5">
@@ -128,9 +127,4 @@ function submit() {
     background: rgba(255, 255, 255, 0.1);
 }
 
-.ghost-block {
-    opacity: 0.5;
-    background: #c8ebfb;
-    border: 2px dashed #000;
-}
 </style>

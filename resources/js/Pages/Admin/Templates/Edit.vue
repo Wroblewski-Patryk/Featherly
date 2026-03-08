@@ -1,35 +1,30 @@
 <template>
     <AdminLayout :full-width="true">
         <BlockBuilder 
-            title="Template" 
-            save-label="Save Template"
-            back-label="Back"
-            :back-route="route('admin.templates.index')"
+            v-model:title="form.name"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"
             @save="save"
         >
             <template #info>
-                <div class="form-control">
-                    <label class="label"><span class="label-text">Template Name</span></label>
-                    <input type="text" v-model="form.name" class="input input-bordered input-sm" placeholder="e.g. Main Header" />
-                </div>
-                <div class="form-control">
-                    <label class="label"><span class="label-text">Type</span></label>
-                    <select v-model="form.type" class="select select-bordered select-sm">
-                        <option value="header">Header</option>
-                        <option value="footer">Footer</option>
-                        <option value="sidebar">Sidebar</option>
-                        <option value="page">Page Template</option>
-                    </select>
-                </div>
-                <div class="form-control flex-row items-center gap-3 p-4 bg-base-200 rounded-2xl border border-white/5">
-                    <input type="checkbox" v-model="form.is_default" class="checkbox checkbox-primary" id="is_default" />
-                    <label for="is_default" class="cursor-pointer">
-                        <span class="text-sm font-bold">Set as Default</span>
-                        <p class="text-[10px] opacity-50">Applies to all pages without override</p>
-                    </label>
+                <div class="flex flex-col gap-6">
+                    <div class="form-control">
+                        <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Template Type</span></label>
+                        <select v-model="form.type" class="select select-bordered select-sm focus:select-primary w-full">
+                            <option value="header">Header</option>
+                            <option value="footer">Footer</option>
+                            <option value="sidebar">Sidebar</option>
+                            <option value="page">Page Template</option>
+                        </select>
+                    </div>
+                    <div class="form-control flex-row items-center gap-3 p-4 bg-base-200 rounded-2xl border border-white/5">
+                        <input type="checkbox" v-model="form.is_default" class="checkbox checkbox-primary" id="is_default" />
+                        <label for="is_default" class="cursor-pointer">
+                            <span class="text-sm font-bold">Set as Default</span>
+                            <p class="text-[10px] opacity-50">Applies to all pages without override</p>
+                        </label>
+                    </div>
                 </div>
             </template>
 
@@ -50,6 +45,23 @@
                     </div>
                 </div>
             </template>
+
+            <!-- History Tab -->
+            <template #history>
+                <div v-if="!template.revisions || template.revisions.length === 0" class="text-center py-10 opacity-30 text-xs italic">
+                    <PhClockCounterClockwise weight="thin" class="w-10 h-10 mx-auto mb-3 opacity-20" />
+                    No history yet. Revisions are created when you save changes.
+                </div>
+                <div v-else class="space-y-3">
+                    <div v-for="rev in template.revisions" :key="rev.id" class="p-3 bg-base-200/50 rounded-xl border border-base-content/5 flex flex-col gap-2 hover:border-primary/30 transition-all group">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold opacity-70">{{ new Date(rev.created_at).toLocaleString() }}</span>
+                            <button @click="restoreRevision(rev)" class="btn btn-xs btn-outline btn-primary opacity-0 group-hover:opacity-100 scale-90 transition-all">Restore</button>
+                        </div>
+                        <span class="text-[10px] opacity-40">{{ rev.content?.length || 0 }} blocks total</span>
+                    </div>
+                </div>
+            </template>
         </BlockBuilder>
     </AdminLayout>
 </template>
@@ -59,7 +71,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
 import { useForm } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
-import { PhFileText, PhLayout } from '@phosphor-icons/vue';
+import { PhFileText, PhLayout, PhClockCounterClockwise } from '@phosphor-icons/vue';
 import { onMounted } from 'vue';
 
 const props = defineProps({
@@ -79,6 +91,13 @@ const form = useForm({
 onMounted(() => {
     store.init(props.template?.content || []);
 });
+
+const restoreRevision = (rev) => {
+    if (confirm('Are you sure you want to restore this version? Current unsaved changes will be lost.')) {
+        store.init(rev.content);
+        store.isDirty = true;
+    }
+};
 
 const save = () => {
     form.content = store.blocks;
@@ -109,9 +128,4 @@ const save = () => {
     background: rgba(255, 255, 255, 0.1);
 }
 
-.ghost-block {
-    opacity: 0.5;
-    background: #c8ebfb;
-    border: 2px dashed #000;
-}
 </style>

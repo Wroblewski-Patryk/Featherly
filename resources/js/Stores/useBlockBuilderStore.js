@@ -338,6 +338,62 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         },
         setActiveBlock(id) {
             this.activeBlockId = id;
+            if (id) this.isEditingBlock = true;
+        },
+        selectBlock(id) {
+            this.setActiveBlock(id);
+        },
+        removeBlock(id) {
+            const findAndRemove = (list) => {
+                for (let i = 0; i < list.length; i++) {
+                    if (list[i].id === id) {
+                        list.splice(i, 1);
+                        return true;
+                    }
+                    if (list[i].children && findAndRemove(list[i].children)) return true;
+                }
+                return false;
+            };
+            findAndRemove(this.blocks);
+
+            if (this.activeBlockId === id) {
+                this.activeBlockId = null;
+                this.isEditingBlock = false;
+            }
+            this.isDirty = true;
+        },
+        deleteBlock(id) {
+            this.removeBlock(id);
+        },
+        toggleBlockVisibility(id) {
+            const findAndToggle = (list) => {
+                for (let i = 0; i < list.length; i++) {
+                    if (list[i].id === id) {
+                        if (!list[i].settings) list[i].settings = {};
+                        list[i].settings.hidden = !list[i].settings.hidden;
+                        return true;
+                    }
+                    if (list[i].children && findAndToggle(list[i].children)) return true;
+                }
+                return false;
+            };
+            findAndToggle(this.blocks);
+            this.isDirty = true;
+        },
+        toggleBlockLock(id) {
+            const findAndToggle = (list) => {
+                for (let i = 0; i < list.length; i++) {
+                    if (list[i].id === id) {
+                        if (!list[i].settings) list[i].settings = {};
+                        list[i].settings.locked = !list[i].settings.locked;
+                        return true;
+                    }
+                    if (list[i].children && findAndToggle(list[i].children)) return true;
+                }
+                return false;
+            };
+            findAndToggle(this.blocks);
+            this.isDirty = true;
         },
         moveBlock(index, delta) {
             const newIndex = index + delta;

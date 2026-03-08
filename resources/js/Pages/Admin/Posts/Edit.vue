@@ -1,33 +1,19 @@
 <template>
     <AdminLayout :full-width="true">
         <BlockBuilder 
+            v-model:title="form.title.pl"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"
+            :preview-url="previewUrl"
             @save="save"
         >
             <template #info>
                 <div class="flex flex-col gap-6">
-                    <!-- Actions Section -->
-                    <div class="flex items-center gap-2 p-1 bg-base-200/50 rounded-box border border-base-content/5">
-                        <a :href="'/blog/' + (form.slug.pl || '')" target="_blank" class="btn btn-ghost btn-sm flex-1 gap-2">
-                            <PhEye weight="bold" class="w-4 h-4" />
-                            Preview
-                        </a>
-                        <button @click="save" class="btn btn-primary btn-sm flex-[2] gap-2 shadow-lg shadow-primary/20" :disabled="form.processing">
-                            <PhFloppyDisk weight="fill" class="w-4 h-4" />
-                            Save Post
-                        </button>
-                    </div>
-
-                    <!-- Post Identity (Out of container) -->
+                    <!-- Slug Section -->
                     <div class="space-y-4">
                         <div class="form-control">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Post Title</span></label>
-                            <input type="text" v-model="form.title.pl" class="input input-bordered input-sm focus:input-primary transition-all" placeholder="Title (PL)" />
-                        </div>
-                        <div class="form-control">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Slug</span></label>
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug</span></label>
                             <div class="flex items-center gap-2">
                                 <input type="text" v-model="form.slug.pl" class="input input-bordered input-sm focus:input-primary transition-all flex-1 font-mono text-xs" placeholder="post-slug" />
                                 <button @click="form.slug.pl = generateSlug(form.title.pl)" type="button" class="btn btn-square btn-sm btn-ghost opacity-40 hover:opacity-100" title="Regenerate Slug"><PhArrowsClockwise weight="bold" class="w-4 h-4"/></button>
@@ -136,6 +122,23 @@
                     </div>
                 </div>
             </template>
+            
+            <!-- History Tab -->
+            <template #history>
+                <div v-if="!post.revisions || post.revisions.length === 0" class="text-center py-10 opacity-30 text-xs italic">
+                    <PhClockCounterClockwise weight="thin" class="w-10 h-10 mx-auto mb-3 opacity-20" />
+                    No history yet. Revisions are created when you save changes.
+                </div>
+                <div v-else class="space-y-3">
+                    <div v-for="rev in post.revisions" :key="rev.id" class="p-3 bg-base-200/50 rounded-xl border border-base-content/5 flex flex-col gap-2 hover:border-primary/30 transition-all group">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold opacity-70">{{ new Date(rev.created_at).toLocaleString() }}</span>
+                            <button @click="restoreRevision(rev)" class="btn btn-xs btn-outline btn-primary opacity-0 group-hover:opacity-100 scale-90 transition-all">Restore</button>
+                        </div>
+                        <span class="text-[10px] opacity-40">{{ rev.content?.length || 0 }} blocks total</span>
+                    </div>
+                </div>
+            </template>
         </BlockBuilder>
     </AdminLayout>
 </template>
@@ -154,7 +157,7 @@ import BlockBuilder from '@/Components/BlockBuilder.vue';
 import DatePicker from '@/Components/DatePicker.vue';
 import { useForm } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
-import { onMounted, watch } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 
 const props = defineProps({
     post: Object,
@@ -180,6 +183,8 @@ const form = useForm({
     seo_follow: props.post?.seo_follow ?? true,
 });
 
+const previewUrl = computed(() => form.slug?.pl ? `/blog/${form.slug.pl}` : null);
+
 onMounted(() => {
     store.init(props.post?.content || []);
 });
@@ -187,20 +192,27 @@ onMounted(() => {
 const generateSlug = (text) => {
     if (!text) return '';
     return text.toString().toLowerCase()
-        .normalize('NFD') // Rozbicie znaków diakrytycznych
-        .replace(/[\u0300-\u036f]/g, '') // Usunięcie ogonków
-        .replace(/[^a-z0-9 -]/g, '') // Usunięcie znaków specjalnych
-        .replace(/\s+/g, '-') // Spacje na myślniki
-        .replace(/-+/g, '-') // Podwójne myślniki na pojedyncze
+        .normalize('NFD') // Rozbicie znakĂłw diakrytycznych
+        .replace(/[\u0300-\u036f]/g, '') // UsuniÄ™cie ogonkĂłw
+        .replace(/[^a-z0-9 -]/g, '') // UsuniÄ™cie znakĂłw specjalnych
+        .replace(/\s+/g, '-') // Spacje na myĹ›lniki
+        .replace(/-+/g, '-') // PodwĂłjne myĹ›lniki na pojedyncze
         .trim()
-        .replace(/^-+/, '') // Usuń myślniki z początku
-        .replace(/-+$/, ''); // Usuń myślniki z końca
+        .replace(/^-+/, '') // UsuĹ„ myĹ›lniki z poczÄ…tku
+        .replace(/-+$/, ''); // UsuĹ„ myĹ›lniki z koĹ„ca
 };
 
 // Auto-slug generation - always update on title change
 watch(() => form.title.pl, (newTitle) => {
     form.slug.pl = generateSlug(newTitle);
 });
+
+const restoreRevision = (rev) => {
+    if (confirm('Are you sure you want to restore this version? Current unsaved changes will be lost.')) {
+        store.init(rev.content);
+        store.isDirty = true;
+    }
+};
 
 const save = () => {
     form.content = store.blocks;
@@ -231,9 +243,4 @@ const save = () => {
     background: rgba(255, 255, 255, 0.1);
 }
 
-.ghost-block {
-    opacity: 0.5;
-    background: #c8ebfb;
-    border: 2px dashed #000;
-}
 </style>

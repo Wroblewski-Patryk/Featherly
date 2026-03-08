@@ -4,11 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Revision;
 
 class Template extends Model
 {
     use HasFactory;
     protected $guarded = [];
+
+    public function revisions(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(Revision::class , 'revisionable')->latest();
+    }
 
     protected $casts = [
         'content' => 'array',
