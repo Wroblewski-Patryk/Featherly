@@ -9,28 +9,28 @@
                     class="btn btn-xs join-item min-h-0 h-6 w-8 border-none text-[10px]" 
                     :class="type === 'none' ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"
                     title="None">
-                    <i class="fas fa-ban"></i>
+                    <PhProhibit weight="bold" class="w-3 h-3" />
                 </button>
                 <button 
                     @click="setType('color')" 
                     class="btn btn-xs join-item min-h-0 h-6 w-8 border-none text-[10px]" 
                     :class="type === 'color' ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"
                     title="Solid Color">
-                    <i class="fas fa-fill-drip"></i>
+                    <PhPaintBucket weight="bold" class="w-3 h-3" />
                 </button>
                 <button 
                     @click="setType('gradient')" 
                     class="btn btn-xs join-item min-h-0 h-6 w-8 border-none text-[10px]" 
                     :class="type === 'gradient' ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"
                     title="Gradient">
-                    <i class="fas fa-swatchbook"></i>
+                    <PhSwatches weight="bold" class="w-3 h-3" />
                 </button>
                 <button 
                     @click="setType('image')" 
                     class="btn btn-xs join-item min-h-0 h-6 w-8 border-none text-[10px]" 
                     :class="type === 'image' ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"
                     title="Image">
-                    <i class="fas fa-image"></i>
+                    <PhImage weight="bold" class="w-3 h-3" />
                 </button>
             </div>
         </div>
@@ -75,17 +75,23 @@
                 </div>
             </div>
 
-            <!-- Image URL Input -->
-            <div v-else-if="type === 'image'" class="w-full form-control gap-2">
-                <input 
-                    type="text" 
-                    v-model="internalImage" 
-                    @input="emitUpdate"
-                    placeholder="https://example.com/image.jpg" 
-                    class="input input-sm input-bordered w-full"
-                />
-                <button @click="openMediaLibrary" class="btn btn-sm btn-outline border-white/10 hover:border-primary/50 text-[10px] uppercase tracking-wider">
-                    <i class="fas fa-image mr-1"></i> Browse Media
+            <!-- Image Selection Area -->
+            <div v-else-if="type === 'image'" class="w-full flex flex-col gap-3">
+                <div v-if="internalImage" class="relative group/img overflow-hidden rounded-xl border border-white/10 bg-base-300 aspect-video w-full">
+                    <img :src="'/storage/' + internalImage" class="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-110" />
+                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[2px]">
+                        <button @click="openMediaLibrary" class="btn btn-circle btn-xs btn-primary shadow-lg" title="Change Image">
+                            <PhImage weight="bold" class="w-3 h-3" />
+                        </button>
+                        <button @click="internalImage = ''; emitUpdate()" class="btn btn-circle btn-xs btn-error shadow-lg" title="Remove Image">
+                            <PhTrash weight="bold" class="w-3 h-3" />
+                        </button>
+                    </div>
+                </div>
+                
+                <button v-else @click="openMediaLibrary" class="btn btn-sm btn-outline border-dashed border-white/10 hover:border-primary/50 text-[10px] uppercase tracking-widest gap-2 w-full h-24 flex flex-col items-center justify-center bg-base-300/30">
+                    <PhImage weight="bold" class="w-6 h-6 opacity-30" /> 
+                    <span>Browse Media</span>
                 </button>
             </div>
 
@@ -96,6 +102,8 @@
 <script setup>
 import { ref, watch } from 'vue';
 import ColorInput from './ColorInput.vue';
+import { useMediaPickerStore } from '@/Stores/useMediaPickerStore';
+import { PhProhibit, PhPaintBucket, PhSwatches, PhImage, PhTrash } from '@phosphor-icons/vue';
 
 const props = defineProps({
     modelValue: {
@@ -106,6 +114,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:modelValue']);
+const mediaPicker = useMediaPickerStore();
 
 // Local state for the UI
 const type = ref('none');
@@ -205,8 +214,16 @@ const emitUpdate = () => {
     emit('update:modelValue', payload);
 };
 
-const openMediaLibrary = () => {
-    // Scaffolded for later integration with a proper media manager modal
-    alert("Media library integration goes here.");
+const openMediaLibrary = async () => {
+    try {
+        const file = await mediaPicker.open({ type: 'image' });
+        if (file) {
+            internalImage.value = file.path;
+            emitUpdate();
+        }
+    } catch (e) {
+        // Cancelled
+    }
 };
 </script>
+

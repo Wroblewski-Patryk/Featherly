@@ -51,13 +51,19 @@ class MediaController extends Controller
             ?MediaFolder::where('parent_id', $request->get('folder_id'))->get()
             : collect([]);
 
-        return Inertia::render('Admin/Media/Index', [
+        $data = [
             'media' => $media,
             'folders' => $folders,
             'subfolders' => $subfolders,
             'currentFolder' => $currentFolder,
             'filters' => $request->only(['search', 'folder_id', 'sort', 'direction', 'view_type'])
-        ]);
+        ];
+
+        if ($request->wantsJson()) {
+            return response()->json($data);
+        }
+
+        return Inertia::render('Admin/Media/Index', $data);
     }
 
     public function store(Request $request)
