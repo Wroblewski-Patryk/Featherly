@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue';
+import ToastContainer from '@/Components/ToastContainer.vue';
 import { PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, PhCube, PhLayout, PhList, PhImageSquare, PhGlobe, PhTranslate, PhGearSix, PhBell, PhCaretLeft, PhCaretRight, PhSun, PhMoon, PhPalette, PhUser, PhUsers, PhSignOut, PhLifebuoy, PhPlus, PhCaretDown } from '@phosphor-icons/vue';
 
 defineProps({
@@ -68,6 +69,7 @@ function applyTheme(themeName) {
 
 <template>
     <ThemeStyleProvider />
+    <ToastContainer />
     <div class="min-h-screen bg-base-200 text-base-content font-sans">
         <!-- Top Navbar -->
         <div class="navbar bg-base-100/80 backdrop-blur-md shadow-lg border-b border-base-300 z-50 sticky top-0 px-4">

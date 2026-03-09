@@ -73,6 +73,54 @@
                 </div>
             </template>
 
+            <!-- SEO Tab -->
+            <template #seo>
+                <div class="flex flex-col gap-6">
+                    <div class="space-y-4">
+                         <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">Meta Title</span></label>
+                            <input type="text" v-model="form.meta_title" class="input input-bordered input-sm focus:input-primary transition-all" placeholder="SEO Title" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">Meta Description</span></label>
+                            <textarea v-model="form.meta_description" class="textarea textarea-bordered textarea-sm focus:textarea-primary transition-all h-24" placeholder="SEO Description"></textarea>
+                        </div>
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 transition-colors">Canonical URL</span></label>
+                            <input type="text" v-model="form.canonical_url" class="input input-bordered input-sm focus:input-primary transition-all font-mono text-[10px]" placeholder="https://..." />
+                        </div>
+                    </div>
+
+                    <div class="divider opacity-5 my-0"></div>
+
+                    <!-- Social Sharing (OG) -->
+                    <div class="space-y-4">
+                        <label class="text-[10px] font-bold uppercase tracking-widest opacity-30 flex items-center gap-2">
+                            <PhShareNetwork weight="bold" class="w-3 h-3 text-secondary" /> Social Sharing (OG)
+                        </label>
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">OG Image URL</span></label>
+                            <input type="text" v-model="form.og_image" class="input input-bordered input-sm focus:input-primary transition-all font-mono text-[10px]" placeholder="Image URL for social media" />
+                        </div>
+                    </div>
+
+                    <!-- Robots Settings -->
+                    <div class="space-y-4 bg-base-200/30 p-4 rounded-2xl border border-base-content/5">
+                        <label class="text-[10px] font-bold uppercase tracking-widest opacity-30">Search Engine Visibility</label>
+                        <div class="flex flex-col gap-3">
+                            <label class="flex items-center justify-between cursor-pointer group">
+                                <span class="text-xs group-hover:text-primary transition-colors">Index Page</span>
+                                <input type="checkbox" v-model="form.seo_index" class="toggle toggle-primary toggle-sm" />
+                            </label>
+                            <label class="flex items-center justify-between cursor-pointer group">
+                                <span class="text-xs group-hover:text-primary transition-colors">Follow Links</span>
+                                <input type="checkbox" v-model="form.seo_follow" class="toggle toggle-primary toggle-sm" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
             <!-- History Tab -->
             <template #history>
                 <div v-if="!template.revisions || template.revisions.length === 0" class="text-center py-10 opacity-30 text-xs italic">
@@ -94,11 +142,18 @@
 </template>
 
 <script setup>
+import {
+    PhArrowsClockwise,
+    PhArrowSquareOut,
+    PhFingerprint,
+    PhClockCounterClockwise,
+    PhShareNetwork
+} from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
 import { useForm } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
-import { PhClockCounterClockwise, PhArrowsClockwise, PhArrowSquareOut, PhFingerprint } from '@phosphor-icons/vue';
+import { useToastStore } from '@/Stores/useToastStore';
 import { computed, onMounted, ref, watch } from 'vue';
 
 const props = defineProps({
@@ -107,12 +162,20 @@ const props = defineProps({
 });
 
 const store = useBlockBuilderStore();
+const toast = useToastStore();
 
 const form = useForm({
     name: props.template?.name || '',
     type: props.template?.type || 'header',
     content: props.template?.content || [],
     is_default: props.template?.is_default ?? false,
+    // SEO Fields
+    meta_title: props.template?.meta_title?.pl || (typeof props.template?.meta_title === 'string' ? props.template.meta_title : ''),
+    meta_description: props.template?.meta_description?.pl || (typeof props.template?.meta_description === 'string' ? props.template.meta_description : ''),
+    canonical_url: props.template?.canonical_url || '',
+    og_image: props.template?.og_image?.pl || (typeof props.template?.og_image === 'string' ? props.template.og_image : ''),
+    seo_index: props.template?.seo_index ?? true,
+    seo_follow: props.template?.seo_follow ?? true,
 });
 
 const previewUrl = computed(() => null);
@@ -151,11 +214,27 @@ const save = () => {
     form.content = store.blocks;
     if (props.template?.id) {
         form.put(route('admin.templates.update', props.template.id), {
-            onSuccess: () => store.isDirty = false
+            onSuccess: () => {
+                store.isDirty = false;
+                toast.success('Szablon został pomyślnie zaktualizowany! 🎉');
+            },
+            onError: (errors) => {
+                console.error(errors);
+                toast.error('Wystąpił błąd podczas zapisywania szablonu. ❌');
+            },
+            preserveScroll: true,
+            preserveState: true
         });
     } else {
         form.post(route('admin.templates.store'), {
-            onSuccess: () => store.isDirty = false
+            onSuccess: () => {
+                store.isDirty = false;
+                toast.success('Szablon został pomyślnie utworzony! ✨');
+            },
+            onError: (errors) => {
+                console.error(errors);
+                toast.error('Wystąpił błąd podczas tworzenia szablonu. ❌');
+            }
         });
     }
 };
@@ -175,5 +254,4 @@ const save = () => {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.1);
 }
-
 </style>
