@@ -53,8 +53,22 @@ class TemplateController extends Controller
             'type' => 'required|in:header,footer,sidebar,page',
             'is_active' => 'boolean',
             'is_default' => 'boolean',
-            'content' => 'nullable|array'
+            'content' => 'nullable|array',
+            // SEO Fields
+            'meta_title' => 'nullable|string',
+            'meta_description' => 'nullable|string',
+            'canonical_url' => 'nullable|string',
+            'og_image' => 'nullable|string',
+            'seo_index' => 'nullable|boolean',
+            'seo_follow' => 'nullable|boolean',
         ]);
+
+        // Map flat strings to arrays for JSON storage (consistent with Spatie models)
+        foreach (['meta_title', 'meta_description', 'og_image'] as $field) {
+            if (isset($data[$field])) {
+                $data[$field] = ['pl' => $data[$field]];
+            }
+        }
 
         $template = Template::create($data);
         return redirect()->route('admin.templates.edit', $template->id)->with('success', 'Template created successfully.');
@@ -80,7 +94,14 @@ class TemplateController extends Controller
             'type' => 'required|in:header,footer,sidebar,page',
             'is_active' => 'boolean',
             'is_default' => 'boolean',
-            'content' => 'nullable|array'
+            'content' => 'nullable|array',
+            // SEO Fields
+            'meta_title' => 'nullable|string',
+            'meta_description' => 'nullable|string',
+            'canonical_url' => 'nullable|string',
+            'og_image' => 'nullable|string',
+            'seo_index' => 'nullable|boolean',
+            'seo_follow' => 'nullable|boolean',
         ]);
 
         // Store revision
@@ -89,6 +110,13 @@ class TemplateController extends Controller
                 'content' => $template->content,
                 'user_id' => auth()->id(),
             ]);
+        }
+
+        // Map flat strings to arrays for JSON storage (consistent with Spatie models)
+        foreach (['meta_title', 'meta_description', 'og_image'] as $field) {
+            if (isset($data[$field])) {
+                $data[$field] = ['pl' => $data[$field]];
+            }
         }
 
         $template->update($data);

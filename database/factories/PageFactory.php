@@ -32,7 +32,7 @@ class PageFactory extends Factory
                     'content' => ['text' => fake()->paragraph()]
                 ]
             ],
-            'is_published' => true,
+            'status' => 'published',
             'settings' => [],
         ];
     }

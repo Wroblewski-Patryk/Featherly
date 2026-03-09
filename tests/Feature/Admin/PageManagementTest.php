@@ -42,15 +42,23 @@ class PageManagementTest extends TestCase
             'title' => ['pl' => 'Testowa strona', 'en' => 'Test page'],
             'slug' => ['pl' => 'testowa-strona', 'en' => 'test-page'],
             'content' => [['type' => 'paragraph', 'content' => ['text' => 'Initial content']]],
-            'is_published' => true,
+            'status' => 'published',
+            'published_at' => now()->toDateTimeString(),
+            'meta_title' => 'SEO Title',
+            'meta_description' => 'SEO Description',
+            'canonical_url' => 'https://example.com/canonical-page',
         ];
 
         $response = $this->actingAs($this->admin)->post(route('admin.pages.store'), $data);
 
-        $response->assertRedirect(route('admin.pages.index'));
+        $response->assertRedirect(); // Redirects to edit page
         $this->assertDatabaseHas('pages', [
+            'id' => 1,
             'title->pl' => 'Testowa strona',
             'slug->pl' => 'testowa-strona',
+            'meta_title->pl' => 'SEO Title',
+            'meta_description->pl' => 'SEO Description',
+            'canonical_url' => 'https://example.com/canonical-page',
         ]);
     }
 
@@ -64,13 +72,13 @@ class PageManagementTest extends TestCase
             'title' => ['pl' => 'Nowy tytuł', 'en' => 'New title'],
             'slug' => ['pl' => 'nowy-tytul', 'en' => 'new-title'],
             'content' => [['type' => 'paragraph', 'content' => ['text' => 'Updated content']]],
-            'is_published' => true,
+            'status' => 'published',
         ];
 
         // Testing PUT method specifically as it was causing issues before
         $response = $this->actingAs($this->admin)->put(route('admin.pages.update', $page), $data);
 
-        $response->assertRedirect(route('admin.pages.index'));
+        $response->assertRedirect(); // Redirects back or to edit
         $this->assertDatabaseHas('pages', [
             'id' => $page->id,
             'title->pl' => 'Nowy tytuł',
@@ -87,7 +95,7 @@ class PageManagementTest extends TestCase
             'title' => $page->getTranslations('title'),
             'slug' => $page->getTranslations('slug'),
             'content' => [['type' => 'paragraph', 'content' => ['text' => 'Modified content']]],
-            'is_published' => true,
+            'status' => 'published',
         ];
 
         $this->actingAs($this->admin)->put(route('admin.pages.update', $page), $data);

@@ -22,7 +22,7 @@ class PostFactory extends Factory
             'slug' => \Illuminate\Support\Str::slug($title),
             'content' => ['pl' => fake()->paragraphs(3, true), 'en' => fake()->paragraphs(3, true)],
             'excerpt' => ['pl' => fake()->sentence(), 'en' => fake()->sentence()],
-            'is_published' => true,
+            'status' => 'published',
             'published_at' => now(),
         ];
     }

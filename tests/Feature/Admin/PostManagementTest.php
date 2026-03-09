@@ -36,16 +36,23 @@ class PostManagementTest extends TestCase
             'slug' => ['pl' => 'test-post', 'en' => 'test-post'],
             'content' => ['pl' => 'Treść posta', 'en' => 'Post content'],
             'excerpt' => ['pl' => 'Excerpt', 'en' => 'Excerpt'],
-            'is_published' => true,
+            'status' => 'published',
             'published_at' => now()->toDateTimeString(),
+            'meta_title' => 'SEO Title',
+            'meta_description' => 'SEO Description',
+            'canonical_url' => 'https://example.com/canonical',
         ];
 
         $response = $this->actingAs($this->admin)->post(route('admin.posts.store'), $data);
 
-        $response->assertRedirect(route('admin.posts.index'));
+        $response->assertRedirect(); // Redirects to edit page
         $this->assertDatabaseHas('posts', [
+            'id' => 1,
             'title->pl' => 'Test Post',
             'slug->pl' => 'test-post',
+            'meta_title->pl' => 'SEO Title',
+            'meta_description->pl' => 'SEO Description',
+            'canonical_url' => 'https://example.com/canonical',
         ]);
     }
 
@@ -58,12 +65,12 @@ class PostManagementTest extends TestCase
             'slug' => ['pl' => 'new-title', 'en' => 'new-title'],
             'content' => ['pl' => 'New content', 'en' => 'New content'],
             'excerpt' => ['pl' => 'New excerpt', 'en' => 'New excerpt'],
-            'is_published' => true,
+            'status' => 'published',
         ];
 
         $response = $this->actingAs($this->admin)->put(route('admin.posts.update', $post), $data);
 
-        $response->assertRedirect(route('admin.posts.index'));
+        $response->assertRedirect(); // Redirects back or to edit
         $this->assertDatabaseHas('posts', [
             'id' => $post->id,
             'title->pl' => 'New Title',

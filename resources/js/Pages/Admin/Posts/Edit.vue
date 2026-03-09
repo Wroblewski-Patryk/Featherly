@@ -61,6 +61,11 @@
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Publish Date & Time</span></label>
                             <DatePicker v-model="form.published_at" />
                         </div>
+
+                        <div class="form-control">
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Excerpt / Summary</span></label>
+                            <textarea v-model="form.excerpt.pl" class="textarea textarea-bordered textarea-sm focus:border-primary/50 transition-all h-20 font-sans text-xs" placeholder="Brief summary of the post..."></textarea>
+                        </div>
                     </div>
 
                     <div class="divider opacity-10 my-0"></div>
@@ -179,14 +184,16 @@ import BlockBuilder from '@/Components/BlockBuilder.vue';
 import DatePicker from '@/Components/DatePicker.vue';
 import { useForm } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useToastStore } from '@/Stores/useToastStore';
 import { computed, onMounted, watch } from 'vue';
 
 const props = defineProps({
     post: Object,
-    templates: Array
+    templates: [Array, Object]
 });
 
 const store = useBlockBuilderStore();
+const toast = useToastStore();
 
 const form = useForm({
     title: props.post?.title || { pl: '', en: '' },
@@ -197,10 +204,10 @@ const form = useForm({
     published_at: props.post?.published_at ? props.post.published_at.substring(0, 19).replace('T', ' ') : '',
     featured_image: props.post?.featured_image || { pl: '', en: '' },
     // SEO Fields
-    meta_title: props.post?.meta_title || '',
-    meta_description: props.post?.meta_description || '',
+    meta_title: props.post?.meta_title?.pl || (typeof props.post?.meta_title === 'string' ? props.post.meta_title : ''),
+    meta_description: props.post?.meta_description?.pl || (typeof props.post?.meta_description === 'string' ? props.post.meta_description : ''),
     canonical_url: props.post?.canonical_url || '',
-    og_image: props.post?.og_image || '',
+    og_image: props.post?.og_image?.pl || (typeof props.post?.og_image === 'string' ? props.post.og_image : ''),
     seo_index: props.post?.seo_index ?? true,
     seo_follow: props.post?.seo_follow ?? true,
 });
@@ -214,14 +221,14 @@ onMounted(() => {
 const generateSlug = (text) => {
     if (!text) return '';
     return text.toString().toLowerCase()
-        .normalize('NFD') // Rozbicie znakĂłw diakrytycznych
-        .replace(/[\u0300-\u036f]/g, '') // UsuniÄ™cie ogonkĂłw
-        .replace(/[^a-z0-9 -]/g, '') // UsuniÄ™cie znakĂłw specjalnych
-        .replace(/\s+/g, '-') // Spacje na myĹ›lniki
-        .replace(/-+/g, '-') // PodwĂłjne myĹ›lniki na pojedyncze
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9 -]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
         .trim()
-        .replace(/^-+/, '') // UsuĹ„ myĹ›lniki z poczÄ…tku
-        .replace(/-+$/, ''); // UsuĹ„ myĹ›lniki z koĹ„ca
+        .replace(/^-+/, '')
+        .replace(/-+$/, '');
 };
 
 // Auto-slug generation - always update on title change
@@ -240,11 +247,27 @@ const save = () => {
     form.content = store.blocks;
     if (props.post?.id) {
         form.put(route('admin.posts.update', props.post.id), {
-            onSuccess: () => store.isDirty = false
+            onSuccess: () => {
+                store.isDirty = false;
+                toast.success('Post został pomyślnie zaktualizowany! 🎉');
+            },
+            onError: (errors) => {
+                console.error(errors);
+                toast.error('Wystąpił błąd podczas zapisywania postu. ❌');
+            },
+            preserveScroll: true,
+            preserveState: true
         });
     } else {
         form.post(route('admin.posts.store'), {
-            onSuccess: () => store.isDirty = false
+            onSuccess: () => {
+                store.isDirty = false;
+                toast.success('Post został pomyślnie utworzony! ✨');
+            },
+            onError: (errors) => {
+                console.error(errors);
+                toast.error('Wystąpił błąd podczas tworzenia postu. ❌');
+            }
         });
     }
 };
@@ -264,5 +287,4 @@ const save = () => {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.1);
 }
-
 </style>

@@ -69,7 +69,21 @@ class PostController extends Controller
             'status' => 'nullable|string',
             'published_at' => 'nullable|date',
             'featured_image' => 'nullable|array',
+            // SEO Fields
+            'meta_title' => 'nullable|string',
+            'meta_description' => 'nullable|string',
+            'canonical_url' => 'nullable|string',
+            'og_image' => 'nullable|string',
+            'seo_index' => 'nullable|boolean',
+            'seo_follow' => 'nullable|boolean',
         ]);
+
+        // Map flat strings to translatable arrays (default to pl)
+        foreach (['meta_title', 'meta_description', 'og_image'] as $field) {
+            if (isset($validated[$field])) {
+                $validated[$field] = ['pl' => $validated[$field]];
+            }
+        }
 
         $post = Post::create($validated);
 
@@ -99,7 +113,21 @@ class PostController extends Controller
             'status' => 'nullable|string',
             'published_at' => 'nullable|date',
             'featured_image' => 'nullable|array',
+            // SEO Fields
+            'meta_title' => 'nullable|string',
+            'meta_description' => 'nullable|string',
+            'canonical_url' => 'nullable|string',
+            'og_image' => 'nullable|string',
+            'seo_index' => 'nullable|boolean',
+            'seo_follow' => 'nullable|boolean',
         ]);
+
+        // Map flat strings to translatable arrays (default to pl)
+        foreach (['meta_title', 'meta_description', 'og_image'] as $field) {
+            if (isset($validated[$field])) {
+                $validated[$field] = ['pl' => $validated[$field]];
+            }
+        }
 
         // Store revision
         if ($post->content) {

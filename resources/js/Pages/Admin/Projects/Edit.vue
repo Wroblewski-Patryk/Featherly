@@ -6,6 +6,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
 import DatePicker from '@/Components/DatePicker.vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useToastStore } from '@/Stores/useToastStore';
 
 const props = defineProps({
     project: Object,
@@ -13,6 +14,7 @@ const props = defineProps({
 });
 
 const store = useBlockBuilderStore();
+const toast = useToastStore();
 
 const form = useForm({
     title: props.project?.title || { pl: '', en: '' },
@@ -56,11 +58,25 @@ function submit() {
     form.content = store.blocks;
     if (props.project?.id) {
         form.put(route('admin.projects.update', props.project.id), {
-            onSuccess: () => store.isDirty = false
+            onSuccess: () => {
+                store.isDirty = false;
+                toast.success('Projekt został pomyślnie zaktualizowany! 🎉');
+            },
+            onError: () => {
+                toast.error('Wystąpił błąd podczas zapisywania projektu. ❌');
+            },
+            preserveScroll: true,
+            preserveState: true
         });
     } else {
         form.post(route('admin.projects.store'), {
-            onSuccess: () => store.isDirty = false
+            onSuccess: () => {
+                store.isDirty = false;
+                toast.success('Projekt został pomyślnie utworzony! ✨');
+            },
+            onError: () => {
+                toast.error('Wystąpił błąd podczas tworzenia projektu. ❌');
+            }
         });
     }
 }

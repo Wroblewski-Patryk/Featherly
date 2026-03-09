@@ -205,16 +205,17 @@ import BlockBuilder from '@/Components/BlockBuilder.vue';
 import DatePicker from '@/Components/DatePicker.vue';
 import { useForm } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useToastStore } from '@/Stores/useToastStore';
 import { computed, onMounted, watch } from 'vue';
 
 const props = defineProps({
     page: Object,
-    templates: Object,
+    templates: [Array, Object],
     menus: Array
 });
 
 const store = useBlockBuilderStore();
-
+const toast = useToastStore();
 
 const form = useForm({
     title: props.page?.title || { pl: '', en: '' },
@@ -228,10 +229,10 @@ const form = useForm({
     template_id: props.page?.template_id || null,
     template: props.page?.template || 'default',
     // SEO Fields
-    meta_title: props.page?.meta_title || '',
-    meta_description: props.page?.meta_description || '',
+    meta_title: props.page?.meta_title?.pl || (typeof props.page?.meta_title === 'string' ? props.page.meta_title : ''),
+    meta_description: props.page?.meta_description?.pl || (typeof props.page?.meta_description === 'string' ? props.page.meta_description : ''),
     canonical_url: props.page?.canonical_url || '',
-    og_image: props.page?.og_image || '',
+    og_image: props.page?.og_image?.pl || (typeof props.page?.og_image === 'string' ? props.page.og_image : ''),
     seo_index: props.page?.seo_index ?? true,
     seo_follow: props.page?.seo_follow ?? true,
 });
@@ -271,11 +272,27 @@ const save = () => {
     form.content = store.blocks;
     if (props.page?.id) {
         form.put(route('admin.pages.update', props.page.id), {
-            onSuccess: () => store.isDirty = false
+            onSuccess: () => {
+                store.isDirty = false;
+                toast.success('Strona została pomyślnie zaktualizowana! 🎉');
+            },
+            onError: (errors) => {
+                console.error(errors);
+                toast.error('Wystąpił błąd podczas zapisywania strony. ❌');
+            },
+            preserveScroll: true,
+            preserveState: true
         });
     } else {
         form.post(route('admin.pages.store'), {
-            onSuccess: () => store.isDirty = false
+            onSuccess: () => {
+                store.isDirty = false;
+                toast.success('Strona została pomyślnie utworzona! ✨');
+            },
+            onError: (errors) => {
+                console.error(errors);
+                toast.error('Wystąpił błąd podczas tworzenia strony. ❌');
+            }
         });
     }
 };

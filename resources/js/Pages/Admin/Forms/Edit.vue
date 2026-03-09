@@ -109,6 +109,7 @@ import BlockBuilder from '@/Components/BlockBuilder.vue';
 import DatePicker from '@/Components/DatePicker.vue';
 import { useForm } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useToastStore } from '@/Stores/useToastStore';
 
 const props = defineProps({
     formModel: Object,
@@ -116,6 +117,7 @@ const props = defineProps({
 });
 
 const store = useBlockBuilderStore();
+const toast = useToastStore();
 
 const formModuleCategories = [];
 
@@ -159,11 +161,25 @@ const save = () => {
     form.content = store.blocks;
     if (props.formModel?.id) {
         form.put(route('admin.forms.update', props.formModel.id), {
-            onSuccess: () => store.isDirty = false
+            onSuccess: () => {
+                store.isDirty = false;
+                toast.success('Formularz został pomyślnie zaktualizowany! 🎉');
+            },
+            onError: () => {
+                toast.error('Wystąpił błąd podczas zapisywania formularza. ❌');
+            },
+            preserveScroll: true,
+            preserveState: true
         });
     } else {
         form.post(route('admin.forms.store'), {
-            onSuccess: () => store.isDirty = false
+            onSuccess: () => {
+                store.isDirty = false;
+                toast.success('Formularz został pomyślnie utworzony! ✨');
+            },
+            onError: () => {
+                toast.error('Wystąpił błąd podczas tworzenia formularza. ❌');
+            }
         });
     }
 };

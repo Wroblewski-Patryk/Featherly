@@ -21,10 +21,18 @@ return new class extends Migration
 
         // 2. Add overrides to pages table
         Schema::table('pages', function (Blueprint $table) {
-            $table->foreignId('template_id')->nullable()->constrained('templates')->nullOnDelete();
-            $table->foreignId('header_override_id')->nullable()->constrained('templates')->nullOnDelete();
-            $table->foreignId('footer_override_id')->nullable()->constrained('templates')->nullOnDelete();
-            $table->foreignId('sidebar_override_id')->nullable()->constrained('templates')->nullOnDelete();
+            if (!Schema::hasColumn('pages', 'template_id')) {
+                $table->foreignId('template_id')->nullable()->constrained('templates')->nullOnDelete();
+            }
+            if (!Schema::hasColumn('pages', 'header_override_id')) {
+                $table->foreignId('header_override_id')->nullable()->constrained('templates')->nullOnDelete();
+            }
+            if (!Schema::hasColumn('pages', 'footer_override_id')) {
+                $table->foreignId('footer_override_id')->nullable()->constrained('templates')->nullOnDelete();
+            }
+            if (!Schema::hasColumn('pages', 'sidebar_override_id')) {
+                $table->foreignId('sidebar_override_id')->nullable()->constrained('templates')->nullOnDelete();
+            }
         });
     }
 

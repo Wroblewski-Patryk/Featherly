@@ -20,6 +20,9 @@ class Template extends Model
         'content' => 'array',
         'is_active' => 'boolean',
         'is_default' => 'boolean',
+        'meta_title' => 'array',
+        'meta_description' => 'array',
+        'og_image' => 'array',
     ];
 
     const TYPE_HEADER = 'header';
