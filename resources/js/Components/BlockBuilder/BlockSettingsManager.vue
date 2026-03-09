@@ -1,5 +1,5 @@
 <template>
-    <div v-if="activeBlock" class="p-4 space-y-4">
+    <div v-if="activeBlock" class="p-6 space-y-6">
         <component 
             :is="settingsComponent" 
             v-if="settingsComponent"
