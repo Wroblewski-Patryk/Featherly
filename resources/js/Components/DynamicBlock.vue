@@ -107,7 +107,7 @@ const styleObj = computed(() => {
         minHeight: store.isDepthView ? (l.fullHeight ? '100vh' : (st.height ? `max(${st.height}, 60px)` : '60px')) : (l.fullHeight ? '100vh' : (st.height || '0px')),
         height: st.height,
         width: st.width,
-        backgroundAttachment: l.fixedBg ? 'fixed' : undefined,
+        backgroundAttachment: st.backgroundAttachment || (l.fixedBg ? 'fixed' : undefined),
         
         // Spacing (with theme defaults fallback)
         marginTop: st.marginTop || themeDefaults.marginTop,
@@ -138,16 +138,49 @@ const styleObj = computed(() => {
         borderBottomWidth: st.borderBottomWidth,
         borderLeftWidth: st.borderLeftWidth,
         
-        borderStyle: (st.borderTopWidth || st.borderRightWidth || st.borderBottomWidth || st.borderLeftWidth) ? 'solid' : undefined,
+        borderStyle: st.borderStyle || ((st.borderTopWidth || st.borderRightWidth || st.borderBottomWidth || st.borderLeftWidth) ? 'solid' : undefined),
         
+        // Dimensions & Sizing
+        width: st.width,
+        minWidth: st.minWidth,
+        maxWidth: st.maxWidth,
+        height: st.height,
+        minHeight: st.minHeight,
+        maxHeight: st.maxHeight,
+        aspectRatio: st.aspectRatio,
+        overflow: st.overflow,
+
+        // Flexbox & Grid
+        flexDirection: st.flexDirection,
+        flexWrap: st.flexWrap,
+        justifyContent: st.justifyContent,
+        alignItems: st.alignItems,
+        gridTemplateColumns: st.gridTemplateColumns,
+        gap: st.gap,
+        columnGap: st.columnGap,
+        rowGap: st.rowGap,
+
         // Typography (with theme defaults fallback)
         textAlign: st.textAlign || themeDefaults.textAlign,
         fontWeight: st.fontWeight || themeDefaults.fontWeight,
         fontFamily: st.fontFamily || themeDefaults.fontFamily,
         fontSize: st.fontSize || themeDefaults.fontSize,
+        lineHeight: st.lineHeight || themeDefaults.lineHeight,
         letterSpacing: st.letterSpacing || themeDefaults.letterSpacing,
-        opacity: themeDefaults.opacity || undefined,
+        textTransform: st.textTransform || themeDefaults.textTransform,
         
+        // Effects
+        opacity: st.opacity !== undefined ? st.opacity : themeDefaults.opacity,
+        boxShadow: st.boxShadow,
+        
+        // Filters
+        filter: [
+            st.blur !== undefined ? `blur(${st.blur}px)` : '',
+            st.brightness !== undefined ? `brightness(${st.brightness}%)` : '',
+            st.contrast !== undefined ? `contrast(${st.contrast}%)` : '',
+            st.saturate !== undefined ? `saturate(${st.saturate}%)` : ''
+        ].filter(Boolean).join(' ') || undefined,
+
         // 3D Depth View (CUMULATIVE Z Depth)
         transform: store.isDepthView 
             ? `translate3d(0, 0, ${zValue * 100}px)` 
@@ -156,9 +189,25 @@ const styleObj = computed(() => {
         // Add prominent border in 3D mode for better layer separation
         outline: store.isDepthView ? '2px solid rgba(255,255,255,0.15)' : undefined,
         outlineOffset: store.isDepthView ? '-2px' : undefined,
-        // Use a transparent shadow in 3D to allow for smooth CSS transition back to 2D
-        boxShadow: store.isDepthView ? '0 0 0 0 rgba(0,0,0,0)' : st.boxShadow,
     };
+});
+
+const blockId = computed(() => {
+    return props.block.settings?.style?.htmlId || `block-${props.block.id}`;
+});
+
+const blockClasses = computed(() => {
+    let classes = [props.block.settings?.style?.customClass];
+    // Existing container logic
+    if (props.block.type === 'container') {
+        const c = props.block.content;
+        if (c.isBoxed) classes.push('container mx-auto');
+        if (c.layoutType === 'flex') {
+            classes.push('flex');
+            classes.push(c.flexConfig.direction === 'row' ? 'flex-row' : 'flex-col');
+        }
+    }
+    return classes.filter(Boolean).join(' ');
 });
 
 const containerClasses = computed(() => {
@@ -248,12 +297,12 @@ const contactForm = useForm({
 
 <template>
     <div ref="blockRef" 
-         :id="block.settings?.id"
+         :id="blockId"
          :data-timeline="block.settings?.animations?.timelineId"
          :style="styleObj"
         class="group relative block-wrapper transition-all duration-300"
         :class="[
-            block.settings?.class,
+            blockClasses,
             { 'editor-ring': isEditor && store.activeBlockId === block.id },
             { 'hover-ring': isEditor && !store.isDragging && !block.hidden && !block.locked },
             { 'active-block shadow-lg z-10': isEditor && store.activeBlockId === block.id },
