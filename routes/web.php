@@ -32,7 +32,11 @@ Route::name('admin.')->prefix('admin')->group(function () {
 
                 Route::resource('pages', AdminPageController::class)->except(['show']);
                 Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->except(['show']);
-                Route::resource('media', \App\Http\Controllers\Admin\MediaController::class)->only(['index', 'store', 'destroy']);
+                Route::resource('media', \App\Http\Controllers\Admin\MediaController::class)->only(['index', 'store', 'update', 'destroy']);
+                Route::post('media/folders', [\App\Http\Controllers\Admin\MediaController::class , 'storeFolder'])->name('media.folders.store');
+                Route::patch('media/folders/{folder}', [\App\Http\Controllers\Admin\MediaController::class , 'updateFolder'])->name('media.folders.update');
+                Route::delete('media/folders/{folder}', [\App\Http\Controllers\Admin\MediaController::class , 'destroyFolder'])->name('media.folders.destroy');
+                Route::post('media/bulk-action', [\App\Http\Controllers\Admin\MediaController::class , 'bulkAction'])->name('media.bulk-action');
                 Route::resource('templates', \App\Http\Controllers\Admin\TemplateController::class)->except(['show']);
                 Route::resource('forms', \App\Http\Controllers\Admin\FormController::class)->except(['show']);
                 Route::resource('translations', \App\Http\Controllers\Admin\TranslationController::class)->except(['show']);
