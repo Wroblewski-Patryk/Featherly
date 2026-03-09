@@ -50,7 +50,6 @@ watch(() => store.activeBlock, (newBlock) => {
 
 const closeSidebar = () => {
     store.isEditingBlock = false;
-    store.activeBlockId = null;
 };
 
 const showSeo = computed(() => !!$slots.seo);
