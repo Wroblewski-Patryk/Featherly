@@ -1,11 +1,14 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { useTranslations } from '@/Composables/useTranslations';
 
 const props = defineProps({
     projects: Array,
     settings: Object
 });
+
+const { t } = useTranslations();
 </script>
 
 <template>
@@ -24,8 +27,8 @@ const props = defineProps({
                     
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
                         <div class="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                            <span class="text-xs font-bold uppercase tracking-widest text-primary mb-2 block">{{ project.category }}</span>
-                            <h2 class="text-3xl font-black text-white italic uppercase mb-4">{{ project.title?.pl || project.title?.en || project.title }}</h2>
+                            <span class="text-xs font-bold uppercase tracking-widest text-primary mb-2 block">{{ t(project.category) }}</span>
+                            <h2 class="text-3xl font-black text-white italic uppercase mb-4">{{ t(project.title) }}</h2>
                             <Link :href="`/projects/${project.slug}`" class="btn btn-primary rounded-xl">View Details</Link>
                         </div>
                     </div>

@@ -2,25 +2,28 @@
 import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
+import { useTranslations } from '@/Composables/useTranslations';
 
 const props = defineProps({
     project: Object,
     settings: Object
 });
+
+const { t } = useTranslations();
 </script>
 
 <template>
     <AppLayout :settings="settings">
-        <Head :title="project.title?.pl || project.title?.en || project.title" />
+        <Head :title="t(project.title)" />
         
         <div class="max-w-7xl mx-auto px-6 py-24">
             <div class="mb-12">
-                <span class="text-sm font-bold uppercase tracking-widest text-primary mb-4 block">{{ project.category }}</span>
+                <span class="text-sm font-bold uppercase tracking-widest text-primary mb-4 block">{{ t(project.category) }}</span>
                 <h1 class="text-6xl md:text-8xl font-black italic uppercase tracking-tighter mb-8 leading-none">
-                    {{ project.title?.pl || project.title?.en || project.title }}
+                    {{ t(project.title) }}
                 </h1>
                 <p v-if="project.description" class="text-xl opacity-60 max-w-2xl leading-relaxed">
-                    {{ project.description }}
+                    {{ t(project.description) }}
                 </p>
             </div>
 

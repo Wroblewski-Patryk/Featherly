@@ -101,6 +101,7 @@ Route::get('/blog', function (\Illuminate\Http\Request $request) {
 
     return Inertia::render('Blog/Index', [
     'posts' => $posts,
+    'page' => null, // Explicitly decoupled
     ]);
 });
 
