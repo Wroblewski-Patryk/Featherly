@@ -2,18 +2,21 @@
 import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DynamicBlock from '@/Components/DynamicBlock.vue';
+import { useTranslations } from '@/Composables/useTranslations';
 
 const props = defineProps({
     page: Object,
     settings: Object
 });
+
+const { t } = useTranslations();
 </script>
 
 <template>
     <AppLayout :settings="settings">
-        <Head>
-            <title>{{ page.title[Object.keys(page.title)[0]] }}</title>
-            <meta name="description" :content="page.meta_description?.[Object.keys(page.meta_description)[0]]">
+        <Head v-if="page">
+            <title>{{ t(page.title) }}</title>
+            <meta name="description" :content="t(page.meta_description)">
         </Head>
 
         <div v-if="page.content" class="page-content">
