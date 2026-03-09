@@ -200,6 +200,7 @@
                 </div>
             </div>
         </div>
+        <MediaPickerModal />
     </div>
 </template>
 
@@ -227,6 +228,7 @@ import LayerTreeItem from '@/Components/LayerTreeItem.vue';
 import GsapTimelineEditor from '@/Components/GsapTimelineEditor.vue';
 import AdminCollapse from '@/Components/AdminCollapse.vue';
 import BlockPaletteTile from '@/Components/BlockBuilder/Palette/BlockPaletteTile.vue';
+import MediaPickerModal from '@/Components/Admin/Media/MediaPickerModal.vue';
 import draggable from 'vuedraggable';
 import gsap from 'gsap';
 
