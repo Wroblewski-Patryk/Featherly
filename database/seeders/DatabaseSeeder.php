@@ -123,5 +123,7 @@ class DatabaseSeeder extends Seeder
                 'value' => $value
             ]);
         }
+
+        $this->call(AdminUiTranslationSeeder::class);
     }
 }
