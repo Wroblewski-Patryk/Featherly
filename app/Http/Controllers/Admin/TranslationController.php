@@ -14,21 +14,29 @@ class TranslationController extends Controller
         $query = Translation::query();
 
         $query->when($request->search, function ($q, $search) {
-            $q->where('key', 'like', "%{$search}%")
-                ->orWhere('group', 'like', "%{$search}%");
+            $q->where(function ($sub) use ($search) {
+                $sub->where('key', 'like', "%{$search}%")
+                    ->orWhere('group', 'like', "%{$search}%");
 
-            $activeCodes = \App\Models\Language::where('is_active', true)->pluck('code');
-            foreach ($activeCodes as $code) {
-                $q->orWhere("text->{$code}", 'like', "%{$search}%");
-            }
+                try {
+                    $activeCodes = \App\Models\Language::where('is_active', true)->pluck('code');
+                    foreach ($activeCodes as $code) {
+                        $sub->orWhere("text->{$code}", 'like', "%{$search}%");
+                    }
+                } catch (\Exception $e) {
+                    // Fallback if DB doesn't support JSON search or languages table missing
+                }
+            });
         });
 
-        if ($request->has('sort') && $request->has('direction')) {
-            $sort = str_replace('.', '->', $request->sort);
+        if ($request->filled('sort') && $request->filled('direction')) {
+            $sort = $request->sort;
+            if (str_contains($sort, '.')) {
+                $sort = str_replace('.', '->', $sort);
+            }
             $query->orderBy($sort, $request->direction);
-        }
-        else {
-            $query->latest();
+        } else {
+            $query->orderBy('group')->orderBy('key');
         }
 
         return Inertia::render('Admin/Translations/Index', [
