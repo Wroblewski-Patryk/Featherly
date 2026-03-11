@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, watch, computed, markRaw } from 'vue';
-import { Head, Link, usePage, router } from '@inertiajs/vue3';
-import { useI18n } from 'vue-i18n';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { useTranslations } from '@/Composables/useTranslations';
 import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue';
 import ToastContainer from '@/Components/ToastContainer.vue';
@@ -80,11 +79,9 @@ function applyTheme(themeName) {
     document.documentElement.setAttribute('data-theme', themeName);
 }
 
-const { translate: tObj } = useTranslations();
-const { t } = useI18n();
-
+const { t } = useTranslations();
 const adminTitle = computed(() => {
-    const brand = tObj(page.props.seo_settings?.site_name) || 'Featherly';
+    const brand = t(page.props.seo_settings?.site_name) || 'Featherly';
     const separator = (page.props.seo_settings?.title_separator || ' - ').trim();
     const sep = ` ${separator} `;
     
@@ -97,7 +94,7 @@ const adminTitle = computed(() => {
     const entity = page.props.post || page.props.page || page.props.project || page.props.template || page.props.user || page.props.client;
     if (entity) {
         // Handle translatable title or simple title/name/label
-        entityName = (entity.title && typeof entity.title === 'object' ? tObj(entity.title) : entity.title) 
+        entityName = (entity.title && typeof entity.title === 'object' ? t(entity.title) : entity.title) 
                     || entity.name 
                     || entity.label 
                     || (entity.id && !isNaN(entity.id) ? null : entity.id);
@@ -107,19 +104,11 @@ const adminTitle = computed(() => {
     if (entityName) parts.push(entityName);
     if (actionLabel) parts.push(actionLabel);
     if (moduleLabel) parts.push(moduleLabel);
-    parts.push(t('admin.panel_title'));
+    parts.push('Panel Administracyjny');
     parts.push(brand);
 
     return parts.filter(Boolean).join(sep);
 });
-
-const switchLocale = (code) => {
-    router.post(route('locale.admin.switch'), { locale: code }, {
-        onSuccess: () => {
-            window.location.reload();
-        }
-    });
-};
 </script>
 
 <template>
@@ -142,29 +131,13 @@ const switchLocale = (code) => {
             </div>
             
             <div class="flex-none gap-2">
-                <!-- Language Switcher -->
-                <div class="dropdown dropdown-end">
-                    <label tabindex="0" class="btn btn-ghost btn-circle">
-                        <PhGlobe weight="regular" class="w-5 h-5 text-base-content/70" />
-                        <span class="absolute -top-1 -right-1 badge badge-xs badge-primary uppercase text-[8px] p-1 h-3.5 min-w-[14px]">{{ $page.props.locale_data?.current }}</span>
-                    </label>
-                    <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200">
-                        <li class="menu-title"><span>{{ t('admin.select_language') }}</span></li>
-                        <li v-for="lang in $page.props.locale_data?.available" :key="lang.code">
-                            <a :class="{ 'active': $page.props.locale_data?.current === lang.code }" @click="switchLocale(lang.code)">
-                                <span class="capitalize w-full font-medium">{{ lang.name }} <span class="text-xs opacity-50 uppercase">({{ lang.code }})</span></span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
                 <!-- Color Themes Dropdown -->
                 <div class="dropdown dropdown-end">
                     <label tabindex="0" class="btn btn-ghost btn-circle">
                         <PhPalette weight="regular" class="w-5 h-5 text-base-content/70" />
                     </label>
                     <ul tabindex="0" class="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200">
-                        <li class="menu-title"><span>{{ t('admin.select_theme') }}</span></li>
+                        <li class="menu-title"><span>Wybierz Motyw</span></li>
                         <li v-for="theme in themesList" :key="theme">
                             <a :class="{ 'active': currentTheme === theme }" @click="currentTheme = theme">
                                 <span class="capitalize w-full">{{ theme }}</span>
@@ -185,11 +158,11 @@ const switchLocale = (code) => {
                             <span class="font-bold text-sm text-base-content w-full whitespace-nowrap overflow-hidden text-ellipsis">{{ $page.props.auth?.user?.name || 'Administrator' }}</span>
                             <span class="text-xs font-normal text-base-content/60 w-full whitespace-nowrap overflow-hidden text-ellipsis mt-1">{{ $page.props.auth?.user?.email || 'admin@example.com' }}</span>
                         </li>
-                        <li v-if="$page.props.auth?.user?.id"><Link :href="`/admin/users/${$page.props.auth.user.id}/edit`"><PhUser weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.my_profile') }}</Link></li>
-                        <li><Link href="/admin/settings"><PhGearSix weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.settings') }}</Link></li>
-                        <li><Link href="#"><PhLifebuoy weight="regular" class="w-4 h-4 text-base-content/70" /> {{ t('admin.support') }}</Link></li>
+                        <li v-if="$page.props.auth?.user?.id"><Link :href="`/admin/users/${$page.props.auth.user.id}/edit`"><PhUser weight="regular" class="w-4 h-4 text-base-content/70" /> Mój Profil</Link></li>
+                        <li><Link href="/admin/settings"><PhGearSix weight="regular" class="w-4 h-4 text-base-content/70" /> Ustawienia konta</Link></li>
+                        <li><Link href="#"><PhLifebuoy weight="regular" class="w-4 h-4 text-base-content/70" /> Pomoc techniczna</Link></li>
                         <div class="h-[1px] bg-base-200 my-1 mx-2"></div>
-                        <li><Link href="#" class="text-error hover:bg-error/10 hover:text-error"><PhSignOut weight="regular" class="w-4 h-4" /> {{ t('admin.logout') }}</Link></li>
+                        <li><Link href="#" class="text-error hover:bg-error/10 hover:text-error"><PhSignOut weight="regular" class="w-4 h-4" /> Wyloguj się</Link></li>
                     </ul>
                 </div>
             </div>
@@ -216,7 +189,7 @@ const switchLocale = (code) => {
                             
                             <!-- Sidebar content here -->
                             <li class="menu-title mt-2 mb-2 border-b border-base-200/50 pb-1 pointer-events-none">
-                                <span class="menu-section-title text-[10px] uppercase font-bold tracking-widest text-primary/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
+                                <span class="text-[10px] uppercase font-bold tracking-widest text-primary/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
                                       v-show="!isSidebarCollapsed">Content</span>
                             </li>
 
@@ -226,7 +199,7 @@ const switchLocale = (code) => {
                                      :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/pages'), 'hover:bg-transparent hover:text-primary': !$page.url.startsWith('/admin/pages')}">
                                     <Link href="/admin/pages" class="flex items-center flex-1">
                                         <PhFileText weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/pages')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('menu.pages') }}</span>
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Pages</span>
                                     </Link>
                                     <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <Link href="/admin/pages/create" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
@@ -242,7 +215,7 @@ const switchLocale = (code) => {
                                      :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories'), 'hover:bg-transparent hover:text-primary': !($page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories'))}">
                                     <Link href="/admin/posts" class="flex items-center flex-1">
                                         <PhFeather weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/posts') || $page.url.startsWith('/admin/categories')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('menu.posts') }}</span>
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Posts</span>
                                     </Link>
                                     <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button @click="menuOpen.posts = !menuOpen.posts" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
@@ -254,7 +227,7 @@ const switchLocale = (code) => {
                                     </div>
                                 </div>
                                 <ul v-show="menuOpen.posts && !isSidebarCollapsed" class="mt-0.5 ml-4 border-l border-base-300 pl-2 space-y-0.5">
-                                    <li><Link href="/admin/categories" class="py-1 px-3 text-xs hover:text-primary hover:bg-transparent transition-colors block" :class="{'text-primary font-medium': $page.url.startsWith('/admin/categories')}">{{ t('menu.categories') }}</Link></li>
+                                    <li><Link href="/admin/categories" class="py-1 px-3 text-xs hover:text-primary hover:bg-transparent transition-colors block" :class="{'text-primary font-medium': $page.url.startsWith('/admin/categories')}">Categories</Link></li>
                                 </ul>
                             </li>
 
@@ -264,7 +237,7 @@ const switchLocale = (code) => {
                                      :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/projects') || $page.url.startsWith('/admin/clients'), 'hover:bg-transparent hover:text-primary': !($page.url.startsWith('/admin/projects') || $page.url.startsWith('/admin/clients'))}">
                                     <Link href="/admin/projects" class="flex items-center flex-1">
                                         <PhCards weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/projects') || $page.url.startsWith('/admin/clients')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('menu.projects') }}</span>
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Projects</span>
                                     </Link>
                                     <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button @click="menuOpen.projects = !menuOpen.projects" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
@@ -276,7 +249,7 @@ const switchLocale = (code) => {
                                     </div>
                                 </div>
                                 <ul v-show="menuOpen.projects && !isSidebarCollapsed" class="mt-0.5 ml-4 border-l border-base-300 pl-2 space-y-0.5">
-                                    <li><Link href="/admin/clients" class="py-1 px-3 text-xs hover:text-primary hover:bg-transparent transition-colors block" :class="{'text-primary font-medium': $page.url.startsWith('/admin/clients')}">{{ t('menu.clients') }}</Link></li>
+                                    <li><Link href="/admin/clients" class="py-1 px-3 text-xs hover:text-primary hover:bg-transparent transition-colors block" :class="{'text-primary font-medium': $page.url.startsWith('/admin/clients')}">Clients</Link></li>
                                 </ul>
                             </li>
 
@@ -286,7 +259,7 @@ const switchLocale = (code) => {
                                      :class="{'bg-primary/5 text-primary font-medium border-l-2 border-primary': $page.url.startsWith('/admin/forms'), 'hover:bg-transparent hover:text-primary': !$page.url.startsWith('/admin/forms')}">
                                     <Link href="/admin/forms" class="flex items-center flex-1">
                                         <PhTextbox weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-primary': $page.url.startsWith('/admin/forms')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('menu.forms') }}</span>
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Forms</span>
                                     </Link>
                                     <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <Link href="/admin/forms/create" class="p-1.5 hover:bg-primary/10 hover:text-primary transition-all">
@@ -298,37 +271,35 @@ const switchLocale = (code) => {
 
                             <!-- Library Title -->
                             <li class="menu-title mt-6 mb-2 border-b border-base-200/50 pb-1 pointer-events-none">
-                                <span class="menu-section-title text-[10px] uppercase font-bold tracking-widest text-secondary/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
+                                <span class="text-[10px] uppercase font-bold tracking-widest text-secondary/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
                                       v-show="!isSidebarCollapsed">Library</span>
                             </li>
 
-                            <!-- Library / Content - Media -->
+                            <!-- Media -->
                             <li class="relative group/menu-item">
                                 <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
                                      :class="{'bg-secondary/5 text-secondary font-medium border-l-2 border-secondary': $page.url.startsWith('/admin/media'), 'hover:bg-transparent hover:text-secondary': !$page.url.startsWith('/admin/media')}">
                                     <Link href="/admin/media" class="flex items-center flex-1">
                                         <PhImageSquare weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url.startsWith('/admin/media')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('menu.media') }}</span>
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Media</span>
                                     </Link>
                                 </div>
                             </li>
 
-                            <!-- Library / Design - Templates -->
+                            <!-- Templates -->
                             <li class="relative group/menu-item">
                                 <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
                                      :class="{'bg-secondary/5 text-secondary font-medium border-l-2 border-secondary': $page.url.startsWith('/admin/templates'), 'hover:bg-transparent hover:text-secondary': !$page.url.startsWith('/admin/templates')}">
                                     <Link href="/admin/templates" class="flex items-center flex-1">
                                         <PhLayout weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-secondary': $page.url.startsWith('/admin/templates')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('menu.templates') }}</span>
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Templates</span>
                                     </Link>
                                 </div>
                             </li>
-                            
-                            
-                            
+
                             <!-- Design Title -->
                             <li class="menu-title mt-6 mb-2 border-b border-base-200/50 pb-1 pointer-events-none">
-                                <span class="menu-section-title text-[10px] uppercase font-bold tracking-widest text-accent/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
+                                <span class="text-[10px] uppercase font-bold tracking-widest text-accent/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
                                       v-show="!isSidebarCollapsed">Design</span>
                             </li>
 
@@ -338,7 +309,7 @@ const switchLocale = (code) => {
                                      :class="{'bg-accent/5 text-accent font-medium border-l-2 border-accent': $page.url.startsWith('/admin/theme'), 'hover:bg-transparent hover:text-accent': !$page.url.startsWith('/admin/theme')}">
                                     <Link href="/admin/theme" class="flex items-center flex-1">
                                         <PhPaintRoller weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-accent': $page.url.startsWith('/admin/theme')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('menu.theme') }}</span>
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Theme</span>
                                     </Link>
                                     <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button @click="menuOpen.theme = !menuOpen.theme" class="p-1.5 hover:bg-accent/10 hover:text-accent transition-all">
@@ -361,12 +332,13 @@ const switchLocale = (code) => {
                                      :class="{'bg-accent/5 text-accent font-medium border-l-2 border-accent': $page.url.startsWith('/admin/blocks'), 'hover:bg-transparent hover:text-accent': !$page.url.startsWith('/admin/blocks')}">
                                     <Link href="/admin/blocks" class="flex items-center flex-1">
                                         <PhCube weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-accent': $page.url.startsWith('/admin/blocks')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('menu.blocks') }}</span>
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Blocks</span>
                                     </Link>
                                 </div>
                             </li>
+
                             <li class="menu-title mt-6 mb-2 border-b border-base-200/50 pb-1 pointer-events-none">
-                                <span class="menu-section-title text-[10px] uppercase font-bold tracking-widest text-info/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
+                                <span class="text-[10px] uppercase font-bold tracking-widest text-info/60 whitespace-nowrap overflow-hidden transition-all duration-300" 
                                       v-show="!isSidebarCollapsed">Settings</span>
                             </li>
                             <!-- Translations -->
@@ -375,7 +347,7 @@ const switchLocale = (code) => {
                                      :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/admin/translations' || $page.url.startsWith('/admin/translations/'), 'hover:bg-transparent hover:text-info': !($page.url === '/admin/translations' || $page.url.startsWith('/admin/translations/'))}">
                                     <Link href="/admin/translations" class="flex items-center flex-1">
                                         <PhTranslate weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-info': $page.url.startsWith('/admin/translations')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('menu.translations') }}</span>
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Translations</span>
                                     </Link>
                                 </div>
                             </li>
@@ -386,7 +358,7 @@ const switchLocale = (code) => {
                                      :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/admin/languages' || $page.url.startsWith('/admin/languages/'), 'hover:bg-transparent hover:text-info': !($page.url === '/admin/languages' || $page.url.startsWith('/admin/languages/'))}">
                                     <Link href="/admin/languages" class="flex items-center flex-1">
                                         <PhGlobe weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-info': $page.url.startsWith('/admin/languages')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('menu.languages') }}</span>
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Languages</span>
                                     </Link>
                                 </div>
                             </li>
@@ -397,7 +369,7 @@ const switchLocale = (code) => {
                                      :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/admin/users' || $page.url.startsWith('/admin/users/'), 'hover:bg-transparent hover:text-info': !($page.url === '/admin/users' || $page.url.startsWith('/admin/users/'))}">
                                     <Link href="/admin/users" class="flex items-center flex-1">
                                         <PhUsers weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-info': $page.url.startsWith('/admin/users')}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('menu.users') }}</span>
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Users</span>
                                     </Link>
                                 </div>
                             </li>
@@ -408,7 +380,7 @@ const switchLocale = (code) => {
                                      :class="{'bg-info/5 text-info font-medium border-l-2 border-info': $page.url === '/admin/settings' || $page.url.startsWith('/admin/settings/'), 'hover:bg-transparent hover:text-info': !($page.url === '/admin/settings' || $page.url.startsWith('/admin/settings/'))}">
                                     <Link href="/admin/settings" class="flex items-center flex-1">
                                         <PhGearSix weight="regular" class="w-5 h-5 shrink-0 transition-colors" :class="{'text-info': $page.url === '/admin/settings'}" />
-                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ t('menu.settings') }}</span>
+                                        <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">Settings</span>
                                     </Link>
                                 </div>
                             </li>
@@ -448,8 +420,5 @@ const switchLocale = (code) => {
     background: hsl(var(--bc) / 0.2);
 }
 
-.menu-section-title {
-    text-shadow: 0 1px 2px hsl(var(--b1) / 0.55);
-}
 /* Tooltip replacement for collapsed state icons if needed */
 </style>
