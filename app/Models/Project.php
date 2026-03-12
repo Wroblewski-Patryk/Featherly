@@ -20,5 +20,5 @@ class Project extends Model
         'seo_follow' => 'boolean',
     ];
 
-    public $translatable = ['title', 'description', 'meta_title', 'meta_description', 'og_image'];
+    public $translatable = ['title', 'slug', 'description', 'meta_title', 'meta_description', 'og_image'];
 }

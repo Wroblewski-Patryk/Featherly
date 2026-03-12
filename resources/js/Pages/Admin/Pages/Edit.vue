@@ -1,7 +1,7 @@
 <template>
     <AdminLayout :full-width="true">
         <BlockBuilder 
-            v-model:title="form.title.pl"
+            v-model:title="form.title[activeLocale]"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"
@@ -14,10 +14,10 @@
                 <div class="flex flex-col gap-6">
                     <div class="space-y-4">
                         <div class="form-control">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug (PL)</span></label>
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug</span></label>
                             <div class="join w-full">
-                                <input type="text" v-model="form.slug.pl" class="input input-bordered input-sm join-item focus:border-primary/50 transition-all font-mono text-xs w-full" placeholder="page-slug" />
-                                <button @click="form.slug.pl = generateSlug(form.title.pl)" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
+                                <input type="text" v-model="form.slug[activeLocale]" class="input input-bordered input-sm join-item focus:border-primary/50 transition-all font-mono text-xs w-full" placeholder="page-slug" />
+                                <button @click="form.slug[activeLocale] = generateSlug(form.title[activeLocale])" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
                                     <PhArrowsClockwise weight="bold" class="w-3 h-3" />
                                 </button>
                             </div>
@@ -31,7 +31,7 @@
                                     :value="previewUrl || ''"
                                     readonly
                                     class="input input-bordered input-sm join-item w-full font-mono text-[10px]"
-                                    :placeholder="form.slug?.pl ? '' : 'Slug required for URL'"
+                                    :placeholder="form.slug?.[activeLocale] ? '' : 'Slug required for URL'"
                                 />
                                 <a
                                     v-if="previewUrl"
@@ -128,13 +128,13 @@
                     <div class="space-y-4">
                          <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">Meta Title</span></label>
-                            <input type="text" v-model="form.meta_title" class="input input-bordered input-sm focus:input-primary transition-all" placeholder="SEO Title" />
-                            <label class="label"><span class="label-text-alt opacity-40">{{ form.meta_title?.length || 0 }}/60 chars</span></label>
+                            <input type="text" v-model="form.meta_title[activeLocale]" class="input input-bordered input-sm focus:input-primary transition-all" placeholder="SEO Title" />
+                            <label class="label"><span class="label-text-alt opacity-40">{{ form.meta_title[activeLocale]?.length || 0 }}/60 chars</span></label>
                         </div>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">Meta Description</span></label>
-                            <textarea v-model="form.meta_description" class="textarea textarea-bordered textarea-sm focus:textarea-primary transition-all h-24" placeholder="SEO Description"></textarea>
-                            <label class="label"><span class="label-text-alt opacity-40">{{ form.meta_description?.length || 0 }}/160 chars</span></label>
+                            <textarea v-model="form.meta_description[activeLocale]" class="textarea textarea-bordered textarea-sm focus:textarea-primary transition-all h-24" placeholder="SEO Description"></textarea>
+                            <label class="label"><span class="label-text-alt opacity-40">{{ form.meta_description[activeLocale]?.length || 0 }}/160 chars</span></label>
                         </div>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Canonical URL</span></label>
@@ -151,7 +151,7 @@
                         </label>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">OG Image URL</span></label>
-                            <input type="text" v-model="form.og_image" class="input input-bordered input-sm focus:input-primary transition-all font-mono text-[10px]" placeholder="Image URL for social media" />
+                            <input type="text" v-model="form.og_image[activeLocale]" class="input input-bordered input-sm focus:input-primary transition-all font-mono text-[10px]" placeholder="Image URL for social media" />
                         </div>
                     </div>
 
@@ -203,10 +203,13 @@ import {
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
 import DatePicker from '@/Components/DatePicker.vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import { useToastStore } from '@/Stores/useToastStore';
 import { computed, onMounted, watch } from 'vue';
+
+const pageProps = usePage().props;
+const activeLocale = computed(() => pageProps.locale);
 
 const props = defineProps({
     page: Object,
@@ -229,15 +232,15 @@ const form = useForm({
     template_id: props.page?.template_id || null,
     template: props.page?.template || 'default',
     // SEO Fields
-    meta_title: props.page?.meta_title?.pl || (typeof props.page?.meta_title === 'string' ? props.page.meta_title : ''),
-    meta_description: props.page?.meta_description?.pl || (typeof props.page?.meta_description === 'string' ? props.page.meta_description : ''),
+    meta_title: props.page?.meta_title || { pl: '', en: '' },
+    meta_description: props.page?.meta_description || { pl: '', en: '' },
     canonical_url: props.page?.canonical_url || '',
-    og_image: props.page?.og_image?.pl || (typeof props.page?.og_image === 'string' ? props.page.og_image : ''),
+    og_image: props.page?.og_image || { pl: '', en: '' },
     seo_index: props.page?.seo_index ?? true,
     seo_follow: props.page?.seo_follow ?? true,
 });
 
-const previewUrl = computed(() => form.slug?.pl ? `/${form.slug.pl}` : null);
+const previewUrl = computed(() => form.slug?.[activeLocale.value] ? `/${form.slug[activeLocale.value]}` : null);
 
 onMounted(() => {
     store.init(props.page?.content || []);
@@ -257,8 +260,8 @@ const generateSlug = (text) => {
 };
 
 // Auto-slug generation - always update on title change
-watch(() => form.title.pl, (newTitle) => {
-    form.slug.pl = generateSlug(newTitle);
+watch(() => form.title[activeLocale.value], (newTitle) => {
+    form.slug[activeLocale.value] = generateSlug(newTitle);
 });
 
 const restoreRevision = (rev) => {

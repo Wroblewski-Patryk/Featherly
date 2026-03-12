@@ -15,10 +15,9 @@ class PostController extends Controller
 
         $query->when($request->search, function ($q, $search) {
             $q->where(function ($sq) use ($search) {
-                    $sq->where('title->pl', 'like', "%{$search}%")
-                        ->orWhere('title->en', 'like', "%{$search}%")
-                        ->orWhere('slug->pl', 'like', "%{$search}%")
-                        ->orWhere('slug->en', 'like', "%{$search}%");
+                    $locale = app()->getLocale();
+                    $sq->where("title->{$locale}", 'like', "%{$search}%")
+                        ->orWhere("slug->{$locale}", 'like', "%{$search}%");
                 }
                 );
             });
@@ -26,7 +25,7 @@ class PostController extends Controller
         if ($request->has('sort') && $request->has('direction')) {
             $sort = $request->sort;
             if (in_array($sort, ['title', 'slug'])) {
-                $sort .= '->pl'; // Default to PL for sorting translatable fields
+                $sort .= '->' . app()->getLocale();
             }
             $query->orderBy($sort, $request->direction);
         }
@@ -63,27 +62,29 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|array',
+            'title.*' => 'nullable|string',
             'slug' => 'required|array',
+            'slug.*' => 'nullable|string',
             'excerpt' => 'nullable|array',
+            'excerpt.*' => 'nullable|string',
             'content' => 'required|array',
             'status' => 'nullable|string',
             'published_at' => 'nullable|date',
             'featured_image' => 'nullable|array',
+            'featured_image.*' => 'nullable|string',
             // SEO Fields
-            'meta_title' => 'nullable|string',
-            'meta_description' => 'nullable|string',
+            'meta_title' => 'nullable|array',
+            'meta_title.*' => 'nullable|string',
+            'meta_description' => 'nullable|array',
+            'meta_description.*' => 'nullable|string',
             'canonical_url' => 'nullable|string',
-            'og_image' => 'nullable|string',
+            'og_image' => 'nullable|array',
+            'og_image.*' => 'nullable|string',
             'seo_index' => 'nullable|boolean',
             'seo_follow' => 'nullable|boolean',
         ]);
 
-        // Map flat strings to translatable arrays (default to pl)
-        foreach (['meta_title', 'meta_description', 'og_image'] as $field) {
-            if (isset($validated[$field])) {
-                $validated[$field] = ['pl' => $validated[$field]];
-            }
-        }
+
 
         $post = Post::create($validated);
 
@@ -92,8 +93,15 @@ class PostController extends Controller
 
     public function edit(Post $post)
     {
+        $postData = $post->load('revisions')->toArray();
+        $translatable = ['title', 'slug', 'excerpt', 'featured_image', 'meta_title', 'meta_description', 'og_image'];
+        
+        foreach ($translatable as $field) {
+            $postData[$field] = $post->getTranslations($field);
+        }
+
         return Inertia::render('Admin/Posts/Edit', [
-            'post' => $post->load('revisions'),
+            'post' => $postData,
             'templates' => [
                 'header' => \App\Models\Template::where('type', 'header')->get(),
                 'footer' => \App\Models\Template::where('type', 'footer')->get(),
@@ -107,27 +115,29 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|array',
+            'title.*' => 'nullable|string',
             'slug' => 'required|array',
+            'slug.*' => 'nullable|string',
             'excerpt' => 'nullable|array',
+            'excerpt.*' => 'nullable|string',
             'content' => 'required|array',
             'status' => 'nullable|string',
             'published_at' => 'nullable|date',
             'featured_image' => 'nullable|array',
+            'featured_image.*' => 'nullable|string',
             // SEO Fields
-            'meta_title' => 'nullable|string',
-            'meta_description' => 'nullable|string',
+            'meta_title' => 'nullable|array',
+            'meta_title.*' => 'nullable|string',
+            'meta_description' => 'nullable|array',
+            'meta_description.*' => 'nullable|string',
             'canonical_url' => 'nullable|string',
-            'og_image' => 'nullable|string',
+            'og_image' => 'nullable|array',
+            'og_image.*' => 'nullable|string',
             'seo_index' => 'nullable|boolean',
             'seo_follow' => 'nullable|boolean',
         ]);
 
-        // Map flat strings to translatable arrays (default to pl)
-        foreach (['meta_title', 'meta_description', 'og_image'] as $field) {
-            if (isset($validated[$field])) {
-                $validated[$field] = ['pl' => $validated[$field]];
-            }
-        }
+
 
         // Store revision
         if ($post->content) {

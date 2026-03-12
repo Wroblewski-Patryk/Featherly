@@ -1,7 +1,10 @@
 <script setup>
 import { PhImageSquare } from '@phosphor-icons/vue';
+import { useTranslations } from '@/Composables/useTranslations';
 import GridItem from './GridItem.vue';
 import ListItem from './ListItem.vue';
+
+const { t } = useTranslations();
 
 const props = defineProps({
     viewMode: { type: String, default: 'grid' },
@@ -29,8 +32,8 @@ defineEmits([
             <div class="w-32 h-32 rounded-full bg-base-200 flex items-center justify-center mb-8 border border-base-300 group-hover:scale-110 transition-transform duration-700 group-hover:rotate-12 group-hover:bg-primary/5">
                 <PhImageSquare weight="thin" class="w-16 h-16 opacity-10 group-hover:opacity-30 group-hover:text-primary transition-all duration-700" />
             </div>
-            <p class="text-2xl font-black italic opacity-20 uppercase tracking-[0.3em]">Brak plików</p>
-            <p class="text-sm opacity-30 mt-2 font-medium">Zacznij przesyłać swoje zasoby</p>
+            <p class="text-2xl font-black italic opacity-20 uppercase tracking-[0.3em]">{{ t('admin.media.empty_title', 'No files') }}</p>
+            <p class="text-sm opacity-30 mt-2 font-medium">{{ t('admin.media.empty_desc', 'Start uploading your assets') }}</p>
         </div>
 
         <!-- Content rendering -->
@@ -69,12 +72,12 @@ defineEmits([
                     <thead>
                         <tr class="bg-base-200/50 border-b border-base-300">
                             <th class="w-12 bg-transparent"></th>
-                            <th class="w-16 bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest pl-6">Podgląd</th>
-                            <th class="bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest">Nazwa</th>
-                            <th class="bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest">Typ</th>
-                            <th class="bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest">Rozmiar</th>
-                            <th class="bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest">Data</th>
-                            <th class="bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest text-right pr-6">Akcje</th>
+                            <th class="w-16 bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest pl-6">{{ t('admin.common.preview', 'Preview') }}</th>
+                            <th class="bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest">{{ t('admin.common.name', 'Name') }}</th>
+                            <th class="bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest">{{ t('admin.common.type', 'Type') }}</th>
+                            <th class="bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest">{{ t('admin.common.size', 'Size') }}</th>
+                            <th class="bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest">{{ t('admin.common.date', 'Date') }}</th>
+                            <th class="bg-transparent text-[10px] uppercase font-black opacity-30 tracking-widest text-right pr-6">{{ t('admin.common.actions', 'Actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-base-200">

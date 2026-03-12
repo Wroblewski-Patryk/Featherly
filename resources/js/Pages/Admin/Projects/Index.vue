@@ -1,29 +1,33 @@
 <script setup>
-import { ref, markRaw } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { ref, markRaw, computed } from 'vue';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { PhPencilSimple, PhTrash, PhHouse, PhCards, PhEye, PhCircle, PhClock, PhCheckCircle, PhFileText, PhArchive } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ResourceTable from '@/Components/ResourceTable.vue';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const props = defineProps(['projects']);
+const activeLocale = computed(() => usePage().props.locale);
 const tableRef = ref(null);
 const deleteForm = useForm({});
 
 const breadcrumbs = [
-    { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
-    { label: 'Projects' }
+    { label: t('admin.dashboard.title', 'Dashboard'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
+    { label: t('admin.menu.projects', 'Projects') }
 ];
 
 const columns = [
     { key: 'id', label: 'ID', sortable: true },
-    { key: 'title', label: 'Title', sortable: true },
-    { key: 'slug', label: 'Slug', sortable: true, optional: true },
-    { key: 'status', label: 'Status', sortable: true },
-    { key: 'category', label: 'Category', sortable: true, optional: true },
-    { key: 'created_at', label: 'Created', sortable: true, optional: true },
-    { key: 'updated_at', label: 'Edited', sortable: true, optional: true },
-    { key: 'published_at', label: 'Published', sortable: true, optional: true },
-    { key: 'actions', label: 'Actions', sortable: false, align: 'right' }
+    { key: 'title', label: t('admin.projects.title_field', 'Title'), sortable: true },
+    { key: 'slug', label: t('admin.projects.slug_field', 'Slug'), sortable: true, optional: true },
+    { key: 'status', label: t('admin.projects.status_field', 'Status'), sortable: true },
+    { key: 'category', label: t('admin.projects.category_field', 'Category'), sortable: true, optional: true },
+    { key: 'created_at', label: t('admin.common.created', 'Created'), sortable: true, optional: true },
+    { key: 'updated_at', label: t('admin.common.edited', 'Edited'), sortable: true, optional: true },
+    { key: 'published_at', label: t('admin.common.published', 'Published'), sortable: true, optional: true },
+    { key: 'actions', label: t('admin.common.actions', 'Actions'), sortable: false, align: 'right' }
 ];
 
 function deleteProject(item) {
@@ -32,53 +36,53 @@ function deleteProject(item) {
 </script>
 
 <template>
-    <Head title="Manage Projects" />
+    <Head :title="t('admin.projects.management_title', 'Manage Projects')" />
     <AdminLayout>
         <ResourceTable
-            title="Projects"
-            description="Showcase your best work in a curated portfolio."
+            :title="t('admin.menu.projects', 'Projects')"
+            :description="t('admin.projects.description', 'Showcase your portfolio and creative work.')"
             :icon="markRaw(PhCards)"
             :breadcrumbs="breadcrumbs"
             :resources="projects"
             :columns="columns"
             :create-route="route('admin.projects.create')"
-            create-label="Add Project"
+            :create-label="t('admin.projects.create_btn', 'Create Project')"
             persistence-key="projects"
             ref="tableRef"
             @delete-confirmed="deleteProject"
         >
             <template #cell-title="{ item }">
                 <Link :href="route('admin.projects.edit', item.id)" class="font-medium hover:text-primary transition-colors">
-                    {{ item.title?.pl || item.title?.en || item.title }}
+                    {{ t(item.title) }}
                 </Link>
             </template>
 
             <template #cell-slug="{ item }">
-                <span class="text-xs font-mono opacity-50">{{ item.slug }}</span>
+                <span class="text-xs font-mono opacity-50">{{ t(item.slug) }}</span>
             </template>
 
             <template #cell-category="{ item }">
                 <div class="badge badge-outline opacity-50 uppercase text-[10px] font-black tracking-wider">
-                    {{ item.category || 'Uncategorized' }}
+                    {{ item.category || t('admin.common.uncategorized', 'Uncategorized') }}
                 </div>
             </template>
 
             <template #cell-status="{ item }">
                 <div v-if="item.status === 'published'" class="flex items-center gap-2 text-success text-xs">
                     <PhCheckCircle weight="fill" class="w-3.5 h-3.5" />
-                    Published
+                    {{ t('admin.common.published', 'Published') }}
                 </div>
                 <div v-else-if="item.status === 'planned'" class="flex items-center gap-2 text-info text-xs">
                     <PhClock weight="fill" class="w-3.5 h-3.5" />
-                    Planned
+                    {{ t('admin.common.planned', 'Planned') }}
                 </div>
                 <div v-else-if="item.status === 'archived'" class="flex items-center gap-2 text-error text-xs">
                     <PhArchive weight="fill" class="w-3.5 h-3.5" />
-                    Archived
+                    {{ t('admin.common.archived', 'Archived') }}
                 </div>
                 <div v-else class="flex items-center gap-2 opacity-40 text-xs text-base-content">
                     <PhFileText weight="fill" class="w-3.5 h-3.5" />
-                    Draft
+                    {{ t('admin.common.draft', 'Draft') }}
                 </div>
             </template>
 
@@ -91,13 +95,13 @@ function deleteProject(item) {
 
             <template #cell-actions="{ item }">
                 <div class="flex justify-end gap-2">
-                    <a :href="`/projects/${item.slug}`" target="_blank" class="btn btn-sm btn-ghost btn-square hover:bg-info/10 hover:text-info transition-all" title="View Public Project">
+                    <a :href="`/projects/${t(item.slug)}`" target="_blank" class="btn btn-sm btn-ghost btn-square hover:bg-info/10 hover:text-info transition-all" :title="t('admin.common.preview', 'Preview')">
                         <PhEye weight="regular" class="w-4 h-4" />
                     </a>
-                    <Link :href="route('admin.projects.edit', item.id)" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all">
+                    <Link :href="route('admin.projects.edit', item.id)" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all" :title="t('admin.common.edit', 'Edit')">
                         <PhPencilSimple weight="regular" class="w-4 h-4" />
                     </Link>
-                    <button @click="tableRef?.openDeleteModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all">
+                    <button @click="tableRef?.openDeleteModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all" :title="t('admin.common.delete', 'Delete')">
                         <PhTrash weight="regular" class="w-4 h-4" />
                     </button>
                 </div>

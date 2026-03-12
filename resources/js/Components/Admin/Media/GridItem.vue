@@ -6,6 +6,9 @@ import {
     PhSquare, PhCheckSquare
 } from '@phosphor-icons/vue';
 import { computed } from 'vue';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const props = defineProps({
     item: Object,
@@ -88,7 +91,7 @@ const formatSize = (bytes) => {
                 <button 
                     @click="$emit('rename')" 
                     class="btn btn-circle btn-xs h-8 w-8 bg-base-100/90 backdrop-blur-md border-white/20 shadow-lg hover:bg-base-100 hover:text-primary transition-all"
-                    title="Zmień nazwę"
+                    :title="t('admin.common.rename', 'Rename')"
                 >
                     <PhPencilSimple weight="bold" class="w-4 h-4" />
                 </button>
@@ -97,7 +100,7 @@ const formatSize = (bytes) => {
                 <button 
                     @click="$emit('preview')" 
                     class="btn btn-circle btn-xs h-8 w-8 bg-base-100/90 backdrop-blur-md border-white/20 shadow-lg hover:bg-base-100 hover:text-primary transition-all"
-                    title="Podgląd"
+                    :title="t('admin.common.preview', 'Preview')"
                 >
                     <PhEye weight="bold" class="w-4 h-4" />
                 </button>
@@ -106,14 +109,14 @@ const formatSize = (bytes) => {
             <button 
                 @click="$emit('move')" 
                 class="btn btn-circle btn-xs h-8 w-8 bg-base-100/90 backdrop-blur-md border-white/20 shadow-lg hover:bg-base-100 hover:text-primary transition-all"
-                title="Przenieś"
+                :title="t('admin.common.move', 'Move')"
             >
                 <PhCaretRight weight="bold" class="w-4 h-4" />
             </button>
             <button 
                 @click="$emit('delete')" 
                 class="btn btn-circle btn-xs h-8 w-8 bg-base-100/90 backdrop-blur-md border-white/20 shadow-lg hover:bg-error hover:text-white hover:border-error text-error transition-all"
-                title="Usuń"
+                :title="t('admin.common.delete', 'Delete')"
             >
                 <PhTrash weight="bold" class="w-4 h-4" />
             </button>
@@ -129,7 +132,7 @@ const formatSize = (bytes) => {
                     {{ formatSize(item.size) }}
                 </p>
                 <p v-else class="text-[9px] opacity-40 font-bold uppercase tracking-tighter">
-                    Folder
+                    {{ t('admin.media.folder', 'Folder') }}
                 </p>
             </div>
         </div>

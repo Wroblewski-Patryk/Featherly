@@ -1,7 +1,7 @@
 <template>
     <AdminLayout :full-width="true">
         <BlockBuilder 
-            v-model:title="form.title"
+            v-model:title="form.title[activeLocale]"
             :categories="store.categories"
             :module-categories="formModuleCategories"
             :saving="form.processing"
@@ -16,7 +16,7 @@
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug</span></label>
                             <div class="join w-full">
                                 <input type="text" v-model="form.settings.slug" class="input input-bordered input-sm join-item focus:border-primary/50 transition-all font-mono text-xs w-full" placeholder="form-slug" />
-                                <button @click="form.settings.slug = generateSlug(form.title)" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
+                                <button @click="form.settings.slug = generateSlug(form.title[activeLocale])" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
                                     <PhArrowsClockwise weight="bold" class="w-3 h-3" />
                                 </button>
                             </div>
@@ -107,9 +107,12 @@ import { PhArrowsClockwise, PhArrowSquareOut, PhFingerprint } from '@phosphor-ic
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
 import DatePicker from '@/Components/DatePicker.vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import { useToastStore } from '@/Stores/useToastStore';
+
+const pageProps = usePage().props;
+const activeLocale = computed(() => pageProps.locale);
 
 const props = defineProps({
     formModel: Object,
@@ -137,7 +140,7 @@ const generateSlug = (text) => {
 };
 
 const form = useForm({
-    title: props.formModel?.title || '',
+    title: props.formModel?.title || { pl: '', en: '' },
     content: props.formModel?.content || [],
     settings: {
         success_message: props.formModel?.settings?.success_message || 'Message sent!',
@@ -149,7 +152,7 @@ const form = useForm({
     published_at: props.formModel?.published_at ? props.formModel.published_at.substring(0, 19).replace('T', ' ') : '',
 });
 
-watch(() => form.title, (newTitle) => {
+watch(() => form.title[activeLocale.value], (newTitle) => {
     form.settings.slug = generateSlug(newTitle);
 });
 

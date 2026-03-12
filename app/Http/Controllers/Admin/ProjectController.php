@@ -16,8 +16,8 @@ class ProjectController extends Controller
 
         $query->when($request->search, function ($q, $search) {
             $q->where(function ($sq) use ($search) {
-                    $sq->where('title->pl', 'like', "%{$search}%")
-                        ->orWhere('title->en', 'like', "%{$search}%")
+                    $locale = app()->getLocale();
+                    $sq->where("title->{$locale}", 'like', "%{$search}%")
                         ->orWhere('category', 'like', "%{$search}%");
                 }
                 );
@@ -26,7 +26,7 @@ class ProjectController extends Controller
         if ($request->has('sort') && $request->has('direction')) {
             $sort = $request->sort;
             if (in_array($sort, ['title'])) {
-                $sort .= '->pl'; // Default to PL for sorting translatable fields
+                $sort .= '->' . app()->getLocale();
             }
             $query->orderBy($sort, $request->direction);
         }
@@ -60,9 +60,11 @@ class ProjectController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|array',
-            'title.pl' => 'required|string',
+            'title.*' => 'nullable|string',
             'description' => 'nullable|array',
-            'slug' => 'nullable|string|unique:projects',
+            'description.*' => 'nullable|string',
+            'slug' => 'nullable|array',
+            'slug.*' => 'nullable|string',
             'desktop_image' => 'nullable|string',
             'mobile_image' => 'nullable|string',
             'url' => 'nullable|string',
@@ -72,23 +74,19 @@ class ProjectController extends Controller
             'status' => 'nullable|string',
             'published_at' => 'nullable|date',
             // SEO Fields
-            'meta_title' => 'nullable|string',
-            'meta_description' => 'nullable|string',
+            'meta_title' => 'nullable|array',
+            'meta_title.*' => 'nullable|string',
+            'meta_description' => 'nullable|array',
+            'meta_description.*' => 'nullable|string',
             'canonical_url' => 'nullable|string',
-            'og_image' => 'nullable|string',
+            'og_image' => 'nullable|array',
+            'og_image.*' => 'nullable|string',
             'seo_index' => 'nullable|boolean',
             'seo_follow' => 'nullable|boolean',
         ]);
 
-        // Map flat strings to translatable arrays (default to pl)
-        foreach (['meta_title', 'meta_description', 'og_image'] as $field) {
-            if (isset($validated[$field])) {
-                $validated[$field] = ['pl' => $validated[$field]];
-            }
-        }
-
         if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['title']['pl']);
+            $validated['slug'] = [app()->getLocale() => Str::slug($validated['title'][app()->getLocale()] ?? $validated['title']['pl'] ?? '')];
         }
 
         $project = Project::create($validated);
@@ -97,8 +95,15 @@ class ProjectController extends Controller
 
     public function edit(Project $project)
     {
+        $projectData = $project->toArray();
+        $translatable = ['title', 'slug', 'description', 'meta_title', 'meta_description', 'og_image'];
+        
+        foreach ($translatable as $field) {
+            $projectData[$field] = $project->getTranslations($field);
+        }
+
         return Inertia::render('Admin/Projects/Edit', [
-            'project' => $project,
+            'project' => $projectData,
             'templates' => [
                 'header' => \App\Models\Template::where('type', 'header')->get(),
                 'footer' => \App\Models\Template::where('type', 'footer')->get(),
@@ -112,8 +117,11 @@ class ProjectController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|array',
+            'title.*' => 'nullable|string',
             'description' => 'nullable|array',
-            'slug' => 'required|string|unique:projects,slug,' . $project->id,
+            'description.*' => 'nullable|string',
+            'slug' => 'required|array',
+            'slug.*' => 'nullable|string',
             'desktop_image' => 'nullable|string',
             'mobile_image' => 'nullable|string',
             'url' => 'nullable|string',
@@ -123,20 +131,18 @@ class ProjectController extends Controller
             'status' => 'nullable|string',
             'published_at' => 'nullable|date',
             // SEO Fields
-            'meta_title' => 'nullable|string',
-            'meta_description' => 'nullable|string',
+            'meta_title' => 'nullable|array',
+            'meta_title.*' => 'nullable|string',
+            'meta_description' => 'nullable|array',
+            'meta_description.*' => 'nullable|string',
             'canonical_url' => 'nullable|string',
-            'og_image' => 'nullable|string',
+            'og_image' => 'nullable|array',
+            'og_image.*' => 'nullable|string',
             'seo_index' => 'nullable|boolean',
             'seo_follow' => 'nullable|boolean',
         ]);
 
-        // Map flat strings to translatable arrays (default to pl)
-        foreach (['meta_title', 'meta_description', 'og_image'] as $field) {
-            if (isset($validated[$field])) {
-                $validated[$field] = ['pl' => $validated[$field]];
-            }
-        }
+
 
         $project->update($validated);
         return redirect()->back()->with('message', 'Project updated');

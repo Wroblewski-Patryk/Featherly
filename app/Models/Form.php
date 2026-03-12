@@ -5,9 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+use Spatie\Translatable\HasTranslations;
+
 class Form extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
+
+    public $translatable = ['title'];
     protected $guarded = [];
 
     protected $fillable = [

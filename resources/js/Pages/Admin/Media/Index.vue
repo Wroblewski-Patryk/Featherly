@@ -8,6 +8,7 @@ import {
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
 import { useToastStore } from '@/Stores/useToastStore';
+import { useTranslations } from '@/Composables/useTranslations';
 
 // Media Components
 import Uploader from '@/Components/Admin/Media/Uploader.vue';
@@ -18,14 +19,15 @@ import MoveModal from '@/Components/Admin/Media/MoveModal.vue';
 import FolderModal from '@/Components/Admin/Media/FolderModal.vue';
 
 const props = defineProps(['media', 'folders', 'subfolders', 'currentFolder', 'filters']);
+const { t } = useTranslations();
 const toastStore = useToastStore();
 const uploaderRef = ref(null);
 
 // Dynamic Breadcrumbs
 const breadcrumbs = computed(() => {
     const crumbs = [
-        { label: 'Dashboard', url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
-        { label: 'Biblioteka mediów', url: route('admin.media.index') }
+        { label: t('admin.dashboard.title', 'Dashboard'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
+        { label: t('admin.media.title', 'Media Library'), url: route('admin.media.index') }
     ];
 
     if (props.currentFolder) {
@@ -62,8 +64,8 @@ const isFolderModalOpen = ref(false);
 const isMoveModalOpen = ref(false);
 const editingFolder = ref(null); // When renaming
 
-const sort = ref(props.filters?.sort || 'created_at');
-const direction = ref(props.filters?.direction || 'desc');
+const sortBy = ref(props.filters?.sort || 'created_at');
+const sortDirection = ref(props.filters?.direction || 'desc');
 const viewMode = ref('grid'); 
 const viewType = ref(props.filters?.view_type || 'nested');
 const selectedMediaForPreview = ref(null);
@@ -87,7 +89,7 @@ const allCurrentSelected = computed(() => {
 const currentFolderId = computed(() => props.currentFolder?.id || null);
 
 // Watch filters - Auto update
-watch([sort, direction, currentFolderId, viewType], () => {
+watch([sortBy, sortDirection, currentFolderId, viewType], () => {
     fetchMedia();
 });
 
@@ -95,8 +97,8 @@ const fetchMedia = () => {
     router.reload({
         data: {
             folder_id: viewType.value === 'flat' ? null : currentFolderId.value,
-            sort: sort.value,
-            direction: direction.value,
+            sort: sortBy.value,
+            direction: sortDirection.value,
             view_type: viewType.value
         },
         only: ['media', 'subfolders', 'breadcrumbs', 'currentFolder'],
@@ -144,7 +146,7 @@ function handleUpload(payload) {
             uploadForm.reset();
             uploaderRef.value?.clearFiles();
             isUploaderOpen.value = false;
-            toastStore.success('Files uploaded! 🚀');
+            toastStore.success(t('admin.media.upload_success', 'Files uploaded! 🚀'));
         },
         onError: (errors) => Object.values(errors).forEach(err => toastStore.error(err))
     });
@@ -156,7 +158,7 @@ function handleFolderSubmit(name) {
             onSuccess: () => {
                 isFolderModalOpen.value = false;
                 editingFolder.value = null;
-                toastStore.success('Folder renamed.');
+                toastStore.success(t('admin.media.folder_renamed', 'Folder renamed.'));
             }
         });
     } else {
@@ -165,7 +167,7 @@ function handleFolderSubmit(name) {
         folderForm.post(route('admin.media.folders.store'), {
             onSuccess: () => {
                 isFolderModalOpen.value = false;
-                toastStore.success('Folder created.');
+                toastStore.success(t('admin.media.folder_created', 'Folder created.'));
             }
         });
     }
@@ -185,7 +187,7 @@ function openMoveModal(type = null, id = null) {
 }
 
 function bulkAction(action) {
-    if (action === 'delete' && !confirm('Are you sure? This cannot be undone.')) return;
+    if (action === 'delete' && !confirm(t('admin.common.confirm_delete_permanent', 'Are you sure? This cannot be undone.'))) return;
     
     router.post(route('admin.media.bulk-action'), {
         action,
@@ -197,7 +199,7 @@ function bulkAction(action) {
             selectedMediaIds.value = [];
             selectedFolderIds.value = [];
             isMoveModalOpen.value = false;
-            toastStore.success(`Action: ${action} processed.`);
+            toastStore.success(t('admin.media.action_processed', 'Action: {action} processed.', { action }));
         }
     });
 }
@@ -208,16 +210,16 @@ function updateMedia(id, data) {
 
 function deleteSingle(type, id) {
     if (type === 'media') {
-        router.delete(route('admin.media.destroy', id), { onSuccess: () => toastStore.success('Deleted.') });
+        router.delete(route('admin.media.destroy', id), { onSuccess: () => toastStore.success(t('admin.common.deleted', 'Deleted.')) });
     } else {
-        router.delete(route('admin.media.folders.destroy', id), { onSuccess: () => toastStore.success('Deleted.') });
+        router.delete(route('admin.media.folders.destroy', id), { onSuccess: () => toastStore.success(t('admin.common.deleted', 'Deleted.')) });
     }
 }
 
 function copyUrl(path) {
     const url = window.location.origin + '/storage/' + path;
     navigator.clipboard.writeText(url);
-    toastStore.info('URL copied to clipboard!');
+    toastStore.info(t('admin.media.url_copied', 'URL copied to clipboard!'));
 }
 
 // Helpers
@@ -248,55 +250,29 @@ const folderTree = computed(() => {
 </script>
 
 <template>
-    <Head title="Media Library" />
+
     <AdminLayout>
         <div class="space-y-8 animate-in fade-in duration-500">
             <!-- Header Section -->
             <div class="bg-base-100 p-6 rounded-box shadow-sm border border-base-300">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <!-- Title, Description, and Breadcrumbs -->
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-xl shadow-inner">
-                            <PhImageSquare weight="regular" class="w-6 h-6" />
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-3">
-                                <h1 class="text-2xl font-black tracking-tight flex items-center gap-2">Biblioteka mediów</h1>
-                                <span class="text-base-content/30 text-xl font-light">|</span>
-                                <p class="text-sm opacity-60 m-0 pt-1">Zarządzaj swoimi plikami i folderami.</p>
-                            </div>
-                            <div class="flex flex-col gap-1 mt-0.5">
-                                <!-- Breadcrumbs stacked below title/description -->
-                                <div class="breadcrumbs text-xs text-base-content/50 m-0 pt-2 p-0">
-                                    <ul>
-                                        <li v-for="(crumb, index) in breadcrumbs" :key="index">
-                                            <Link v-if="crumb.url" :href="crumb.url" class="hover:text-primary transition-colors flex items-center gap-1">
-                                                <component :is="crumb.icon" v-if="crumb.icon" weight="regular" class="w-4 h-4" />
-                                                {{ crumb.label }}
-                                            </Link>
-                                            <span v-else class="text-base-content/70 font-medium tracking-wide flex items-center gap-1">
-                                                {{ crumb.label }}
-                                            </span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Actions Slot -->
-                    <div class="flex items-center gap-3">
+                <ModuleHeader 
+                    :title="t('admin.media.title', 'Media Library')" 
+                    :description="t('admin.media.desc', 'Manage your files and folders.')" 
+                    :breadcrumbs="breadcrumbs"
+                    :icon="markRaw(PhImageSquare)">
+                    <template #actions>
                         <div class="flex items-center gap-3">
                             <button @click="editingFolder = null; isFolderModalOpen = true" class="btn btn-ghost gap-2 font-bold group">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="1em" height="1em" fill="currentColor" class="w-5 h-5 group-hover:scale-110 transition-transform"><g><path d="M216,68H133.39l-26-29.29a20,20,0,0,0-15-6.71H40A20,20,0,0,0,20,52V200.62A19.41,19.41,0,0,0,39.38,220H216.89A19.13,19.13,0,0,0,236,200.89V88A20,20,0,0,0,216,68ZM90.61,56l10.67,12H44V56ZM212,196H44V92H212Zm-72-76v12h12a12,12,0,0,1,0,24H140v12a12,12,0,0,1-24,0V156H104a12,12,0,0,1,0-24h12V120a12,12,0,0,1,24,0Z"></path></g></svg>
-                                Nowy folder
+                                <PhFolderPlus weight="regular" class="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                {{ t('admin.media.new_folder', 'New folder') }}
                             </button>
                             <button @click="isUploaderOpen = !isUploaderOpen" class="btn btn-primary px-6 gap-2 font-black shadow-lg shadow-primary/20">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="1em" height="1em" fill="currentColor" class="w-5 h-5"><g><path d="M188,184a16,16,0,1,1,16-16A16,16,0,0,1,188,184Zm36-68H180a12,12,0,0,0,0,24h40v56H36V140H76a12,12,0,0,0,0-24H32a20,20,0,0,0-20,20v64a20,20,0,0,0,20,20H224a20,20,0,0,0,20-20V136A20,20,0,0,0,224,116ZM88.49,80.49,116,53v75a12,12,0,0,0,24,0V53l27.51,27.52a12,12,0,1,0,17-17l-48-48a12,12,0,0,0-17,0l-48,48a12,12,0,1,0,17,17Z"></path></g></svg>
-                                Prześlij pliki
+                                <PhUpload weight="bold" class="w-5 h-5" />
+                                {{ t('admin.media.upload_files', 'Upload files') }}
                             </button>
                         </div>
-                    </div>
-                </div>
+                    </template>
+                </ModuleHeader>
             </div>
 
             <!-- Main Content Area -->
@@ -313,8 +289,8 @@ const folderTree = computed(() => {
 
                 <!-- Toolbar & Bulk Actions -->
                 <Toolbar 
-                    v-model:sort="sort"
-                    v-model:direction="direction"
+                    v-model:sort="sortBy"
+                    v-model:direction="sortDirection"
                     v-model:view-mode="viewMode"
                     v-model:view-type="viewType"
                     :selected-count="selectedMediaIds.length + selectedFolderIds.length"

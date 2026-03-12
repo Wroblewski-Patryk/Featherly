@@ -4,6 +4,9 @@ import {
     PhGridFour, PhList, PhCaretRight, PhTrash,
     PhFolders, PhStack, PhSquare, PhCheckSquare, PhMinusSquare
 } from '@phosphor-icons/vue';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const props = defineProps({
     sort: String,
@@ -41,20 +44,20 @@ defineEmits([
 
                 <div v-if="selectedCount > 0" class="flex items-center gap-3 animate-in slide-in-from-left duration-300">
                     <div class="h-4 w-px bg-primary/20 mx-1"></div>
-                    <span class="text-xs font-black text-primary uppercase tracking-wider">{{ selectedCount }} wybrano</span>
+                    <span class="text-xs font-black text-primary uppercase tracking-wider">{{ selectedCount }} {{ t('admin.common.selected', 'selected') }}</span>
                     
                     <div class="flex items-center gap-1 ml-2">
                         <button 
                             @click="$emit('bulk-move')" 
                             class="btn btn-ghost btn-sm h-9 px-3 gap-2 text-xs font-bold hover:bg-primary/10"
                         >
-                            <PhCaretRight weight="bold" class="w-3.5 h-3.5" /> Przenieś
+                            <PhCaretRight weight="bold" class="w-3.5 h-3.5" /> {{ t('admin.common.move', 'Move') }}
                         </button>
                         <button 
                             @click="$emit('bulk-delete')" 
                             class="btn btn-ghost btn-sm h-9 px-3 gap-2 text-xs font-bold text-error hover:bg-error/10"
                         >
-                            <PhTrash weight="bold" class="w-3.5 h-3.5" /> Usuń
+                            <PhTrash weight="bold" class="w-3.5 h-3.5" /> {{ t('admin.common.delete', 'Delete') }}
                         </button>
                     </div>
                 </div>
@@ -68,19 +71,19 @@ defineEmits([
                         @click="$emit('update:viewType', 'nested')"
                         class="btn btn-xs h-8 px-3 gap-2 border-0 transition-all duration-300 rounded-lg text-xs font-bold"
                         :class="viewType === 'nested' ? 'bg-base-100 text-primary shadow-sm' : 'text-base-content/40 hover:text-base-content'"
-                        title="Widok folderów"
+                        :title="t('admin.media.folders_view', 'Folders view')"
                     >
                         <PhFolders weight="bold" class="w-3.5 h-3.5" />
-                        <span class="hidden sm:inline">Foldery</span>
+                        <span class="hidden sm:inline">{{ t('admin.media.folders', 'Folders') }}</span>
                     </button>
                     <button 
                         @click="$emit('update:viewType', 'flat')"
                         class="btn btn-xs h-8 px-3 gap-2 border-0 transition-all duration-300 rounded-lg text-xs font-bold"
                         :class="viewType === 'flat' ? 'bg-base-100 text-primary shadow-sm' : 'text-base-content/40 hover:text-base-content'"
-                        title="Wszystkie pliki"
+                        :title="t('admin.media.all_files_view', 'All files view')"
                     >
                         <PhStack weight="bold" class="w-3.5 h-3.5" />
-                        <span class="hidden sm:inline">Wszystkie</span>
+                        <span class="hidden sm:inline">{{ t('admin.media.all', 'All') }}</span>
                     </button>
                 </div>
 
@@ -93,9 +96,9 @@ defineEmits([
                         @change="$emit('update:sort', $event.target.value)"
                         class="select select-sm select-bordered h-9 text-[10px] font-black uppercase tracking-widest bg-base-200/50 border-0 focus:ring-0"
                     >
-                        <option value="created_at">Data</option>
-                        <option value="path">Nazwa</option>
-                        <option value="size">Rozmiar</option>
+                        <option value="created_at">{{ t('admin.common.date', 'Date') }}</option>
+                        <option value="path">{{ t('admin.common.name', 'Name') }}</option>
+                        <option value="size">{{ t('admin.common.size', 'Size') }}</option>
                     </select>
                     
                     <button 

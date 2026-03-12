@@ -1,7 +1,7 @@
 <template>
     <AdminLayout :full-width="true">
         <BlockBuilder 
-            v-model:title="form.title.pl"
+            v-model:title="form.title[activeLocale]"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"
@@ -14,8 +14,8 @@
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug</span></label>
                             <div class="join w-full">
-                                <input type="text" v-model="form.slug.pl" class="input input-bordered input-sm join-item focus:input-primary transition-all flex-1 font-mono text-xs" placeholder="post-slug" />
-                                <button @click="form.slug.pl = generateSlug(form.title.pl)" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
+                                <input type="text" v-model="form.slug[activeLocale]" class="input input-bordered input-sm join-item focus:input-primary transition-all flex-1 font-mono text-xs" placeholder="post-slug" />
+                                <button @click="form.slug[activeLocale] = generateSlug(form.title[activeLocale])" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
                                     <PhArrowsClockwise weight="bold" class="w-3 h-3" />
                                 </button>
                             </div>
@@ -29,7 +29,7 @@
                                     :value="previewUrl || ''"
                                     readonly
                                     class="input input-bordered input-sm join-item w-full font-mono text-[10px]"
-                                    :placeholder="form.slug?.pl ? '' : 'Slug required for URL'"
+                                    :placeholder="form.slug?.[activeLocale] ? '' : 'Slug required for URL'"
                                 />
                                 <a
                                     v-if="previewUrl"
@@ -64,7 +64,7 @@
 
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Excerpt / Summary</span></label>
-                            <textarea v-model="form.excerpt.pl" class="textarea textarea-bordered textarea-sm focus:border-primary/50 transition-all h-20 font-sans text-xs" placeholder="Brief summary of the post..."></textarea>
+                            <textarea v-model="form.excerpt[activeLocale]" class="textarea textarea-bordered textarea-sm focus:border-primary/50 transition-all h-20 font-sans text-xs" placeholder="Brief summary of the post..."></textarea>
                         </div>
                     </div>
 
@@ -74,9 +74,9 @@
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Featured Image URL</span></label>
                             <div class="flex flex-col gap-2">
-                                <input type="text" v-model="form.featured_image.pl" class="input input-bordered input-sm focus:input-primary transition-all w-full" placeholder="Image URL" />
-                                <div v-if="form.featured_image.pl" class="rounded-lg overflow-hidden border border-base-content/10 aspect-video bg-base-200 shadow-inner group">
-                                    <img :src="form.featured_image.pl" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                <input type="text" v-model="form.featured_image[activeLocale]" class="input input-bordered input-sm focus:input-primary transition-all w-full" placeholder="Image URL" />
+                                <div v-if="form.featured_image[activeLocale]" class="rounded-lg overflow-hidden border border-base-content/10 aspect-video bg-base-200 shadow-inner group">
+                                    <img :src="form.featured_image[activeLocale]" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 </div>
                             </div>
                         </div>
@@ -109,11 +109,11 @@
                     <div class="space-y-4">
                          <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">Meta Title</span></label>
-                            <input type="text" v-model="form.meta_title" class="input input-bordered input-sm focus:input-primary transition-all" placeholder="SEO Title" />
+                            <input type="text" v-model="form.meta_title[activeLocale]" class="input input-bordered input-sm focus:input-primary transition-all" placeholder="SEO Title" />
                         </div>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">Meta Description</span></label>
-                            <textarea v-model="form.meta_description" class="textarea textarea-bordered textarea-sm focus:textarea-primary transition-all h-24" placeholder="SEO Description"></textarea>
+                            <textarea v-model="form.meta_description[activeLocale]" class="textarea textarea-bordered textarea-sm focus:textarea-primary transition-all h-24" placeholder="SEO Description"></textarea>
                         </div>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 transition-colors">Canonical URL</span></label>
@@ -130,7 +130,7 @@
                         </label>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">OG Image URL</span></label>
-                            <input type="text" v-model="form.og_image" class="input input-bordered input-sm focus:input-primary transition-all font-mono text-[10px]" placeholder="Image URL for social media" />
+                            <input type="text" v-model="form.og_image[activeLocale]" class="input input-bordered input-sm focus:input-primary transition-all font-mono text-[10px]" placeholder="Image URL for social media" />
                         </div>
                     </div>
 
@@ -182,10 +182,13 @@ import {
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
 import DatePicker from '@/Components/DatePicker.vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import { useToastStore } from '@/Stores/useToastStore';
 import { computed, onMounted, watch } from 'vue';
+
+const pageProps = usePage().props;
+const activeLocale = computed(() => pageProps.locale);
 
 const props = defineProps({
     post: Object,
@@ -204,15 +207,15 @@ const form = useForm({
     published_at: props.post?.published_at ? props.post.published_at.substring(0, 19).replace('T', ' ') : '',
     featured_image: props.post?.featured_image || { pl: '', en: '' },
     // SEO Fields
-    meta_title: props.post?.meta_title?.pl || (typeof props.post?.meta_title === 'string' ? props.post.meta_title : ''),
-    meta_description: props.post?.meta_description?.pl || (typeof props.post?.meta_description === 'string' ? props.post.meta_description : ''),
+    meta_title: props.post?.meta_title || { pl: '', en: '' },
+    meta_description: props.post?.meta_description || { pl: '', en: '' },
     canonical_url: props.post?.canonical_url || '',
-    og_image: props.post?.og_image?.pl || (typeof props.post?.og_image === 'string' ? props.post.og_image : ''),
+    og_image: props.post?.og_image || { pl: '', en: '' },
     seo_index: props.post?.seo_index ?? true,
     seo_follow: props.post?.seo_follow ?? true,
 });
 
-const previewUrl = computed(() => form.slug?.pl ? `/blog/${form.slug.pl}` : null);
+const previewUrl = computed(() => form.slug?.[activeLocale.value] ? `/blog/${form.slug[activeLocale.value]}` : null);
 
 onMounted(() => {
     store.init(props.post?.content || []);
@@ -232,8 +235,8 @@ const generateSlug = (text) => {
 };
 
 // Auto-slug generation - always update on title change
-watch(() => form.title.pl, (newTitle) => {
-    form.slug.pl = generateSlug(newTitle);
+watch(() => form.title[activeLocale.value], (newTitle) => {
+    form.slug[activeLocale.value] = generateSlug(newTitle);
 });
 
 const restoreRevision = (rev) => {
