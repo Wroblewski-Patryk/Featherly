@@ -1,25 +1,20 @@
-# Modul bloga
+# Modul bloga (stan kodu)
 
-## Stan obecny
+## Dane i admin
 
-- Blog dziala na modelu `Post`.
-- Wpisy sa wielojezyczne (`title`, `slug`, `excerpt`, `featured_image`, pola SEO).
-- Tresc wpisu jest budowana blokowo (`content` JSON).
-- Rewizje sa zapisywane przed aktualizacja.
+- Model: `Post`.
+- Pola translatable: `title`, `slug`, `excerpt`, `featured_image`, pola SEO.
+- Tresc wpisu: `content` (JSON, blokowo).
+- Rewizje tresci: morph relation `revisions`.
 
-## Operacje admin
+Admin ma CRUD dla `posts`.
 
-- Lista wpisow
-- Tworzenie/edycja/usuwanie
-- Statusy (`draft`, `published`, `planned`, `archived`)
-- Pola SEO
+## Routing publiczny
 
-## Publiczny widok
+Aktualnie publiczne trasy bloga nie sa finalnie wystawione w `routes/public.php`.
 
-- Lista wpisow (strona blogowa)
-- Szczegoly wpisu po slug
+Kod `PageController` zawiera logike `showPost(...)`, ale aktualne route wiring jest jeszcze porzadkowane po refaktorze locale.
 
-## Kategorie i tagi
+## Kategorie/tagi
 
-- Na tym etapie brak osobnego modulu kategorii/tagow dla bloga.
-- Rozszerzenie o kategorie/tagi jest planowane.
+W `routes/admin.php` jest zarejestrowany resource `categories`, ale brak implementacji kontrolera/modelu.

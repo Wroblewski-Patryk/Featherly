@@ -1,20 +1,31 @@
-# Lokalizacja i tlumaczenia
+# Lokalizacja i tlumaczenia (stan kodu)
 
-## Aktualne zalozenia (2026-03-12)
-- Aplikacja uzywa jednego aktywnego locale dla calego requestu.
-- Nie rozdzielamy locale na osobne scope admin/public.
-- Zrodlem dostepnych jezykow jest tabela `languages` (`is_active`, `is_default`).
+## Routing i middleware locale
 
-## Regula wyboru jezyka
-1. Jesli URL zawiera prefiks jezyka (`/{locale}/...`), to ten jezyk jest nadrzedny.
-2. Jesli URL nie zawiera jezyka, aplikacja probuje autodetekcji z naglowka `Accept-Language`.
-3. Jesli autodetekcja nie znajdzie dopasowania, aplikacja uzywa jezyka domyslnego.
+- Trasy auth/admin/public dzialaja pod prefiksem `/{locale}`.
+- `LocaleMiddleware` ustala jezyk w kolejnosci:
+  1. parametr trasy `locale`
+  2. pierwszy segment URL
+  3. sesja
+  4. `config('app.locale')`
+- Middleware waliduje locale na podstawie aktywnych jezykow z tabeli `languages`.
+- Middleware ustawia `URL::defaults(['locale' => ...])`.
 
 ## Przelaczanie jezyka
-- Przelaczniki jezyka (admin i public) powinny operowac na tej samej liscie aktywnych jezykow z `languages`.
-- Zmiana jezyka prowadzi do URL z odpowiednim prefiksem locale.
 
-## Tlumaczenia tresci i UI
-- Tresci modeli (`Page`, `Post`, `Project`) korzystaja z pol translatable (JSON).
-- Tlumaczenia UI korzystaja z tabeli `translations` (`group`, `key`, `text`).
-- Fallback tlumaczen jest oparty o aktualne locale i jezyk domyslny.
+- Trasa switchera: `GET /lang/{lang}` (nazwa: `lang.switch`).
+- `LocaleController` akceptuje tylko jezyki aktywne z tabeli `languages`.
+
+## Shared i18n przez Inertia
+
+`HandleInertiaRequests` udostepnia:
+
+- `locale`
+- `languages` (aktywne jezyki)
+- `translations` (flat mapa `group.key -> text`)
+
+## Aktualne ograniczenia
+
+- Frontendowy `LanguageSwitcher.vue` ma obecnie hardcoded opcje `pl` i `en`.
+- `LanguageSwitcher.vue` odwoluje sie do `route('locale.switch', ...)`, podczas gdy backend rejestruje `lang.switch`.
+- W dokumentacji i kodzie trwaja dalsze porzadki i18n po refaktorze.

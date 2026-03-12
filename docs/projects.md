@@ -1,28 +1,19 @@
-# Modul projektow (portfolio)
+# Modul projektow (stan kodu)
 
-## Stan obecny
+## Dane i admin
 
-Projekty sa edytowane blokowo, analogicznie do pages/posts.
+- Model: `Project`.
+- Tresc projektu jest blokowa (`content` JSON), analogicznie do pages/posts.
+- Dodatkowe pola: `desktop_image`, `mobile_image`, `url`, `category`, `client`, `order`.
+- Pola SEO i status publikacji sa wspierane.
 
-## Struktura danych
+Admin ma CRUD dla `projects`.
 
-- `title` (json)
-- `slug` (string)
-- `description` (json)
-- `content` (json)
-- `desktop_image`, `mobile_image`
-- `url`, `category`, `client`, `order`
-- `status`, `published_at`, `archived_at`
-- pola SEO
+## Routing publiczny
 
-## Operacje admin
+Kod `PageController` zawiera `showProject(...)`, ale aktualne publiczne route wiring po refaktorze locale jest jeszcze dopinane w `routes/public.php`.
 
-- Lista
-- Tworzenie/edycja/usuwanie
-- Ustalanie kolejnosci (`order`)
-- Edycja przez Block Builder
+## Uwaga o slug
 
-## Publiczny runtime
-
-- Lista projektow
-- Szczegoly projektu po slug
+Model zaklada translatable pola `title/description/SEO`, ale `slug` w tabeli nadal jest stringiem.
+Jednoczesnie logika wyszukiwania projektu po slug jest juz przygotowywana pod locale (`slug->{locale}`).
