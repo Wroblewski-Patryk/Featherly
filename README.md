@@ -1,10 +1,10 @@
 # Featherly CMS
 
-Custom CMS oparty o Laravel 12 + Vue 3 + Inertia, z wizualnym edytorem blokowym.
+Custom CMS oparty o Laravel 12 + Vue 3 + Inertia.
 
 ## Uruchamianie lokalnie
 
-Mozesz pracowac na dwa sposoby:
+Masz dwie poprawne opcje:
 
 1. Dwa terminale:
 - `php artisan serve`
@@ -13,17 +13,28 @@ Mozesz pracowac na dwa sposoby:
 2. Jeden terminal:
 - `composer run dev`
 
-`composer run dev` uruchamia caly zestaw developerski (server, queue listener, logi i Vite).
+`composer run dev` uruchamia server + queue + pail + vite.
 
-## Stan projektu (HEAD)
+## Aktualna architektura routingu
 
-- Dziala panel admina: pages, posts, projects, forms, templates, media, settings, translations, languages, users, theme.
-- Dziala publiczny routing dla stron, bloga, projektow i preview formularzy.
-- Dziala SEO (`sitemap.xml`, `robots.txt`, SEO meta per model).
-- Czesci i18n sa w trakcie dalszych prac.
+Routing jest modularny i lokalizowany:
 
-## Uwagi
+- `routes/auth.php` pod prefiksem `/{locale}`
+- `routes/admin.php` pod prefiksem `/{locale}/admin`
+- `routes/public.php` pod prefiksem `/{locale}`
+- techniczne trasy bez prefiksu: `sitemap.xml`, `robots.txt`, `lang/{lang}`
 
-- Modul menu jako osobna sekcja admina nie jest aktywny.
-- Nawigacja jest budowana przez bloki i szablony.
-- Runtime submit dla dynamicznych formularzy jest do dopiecia w kolejnym etapie.
+Konfiguracja jest spinana w `bootstrap/app.php` (middleware `locale`, alias i redirecti auth).
+
+## Co aktualnie dziala
+
+- Panel admin: pages, posts, media, projects, forms, templates, translations, languages, users, settings, theme, blocks.
+- i18n backend: tabela `languages`, tabela `translations`, share tlumaczen przez Inertia.
+- SEO techniczne: `sitemap.xml`, `robots.txt`.
+
+## Co jest jeszcze do dopiecia
+
+- W `routes/admin.php` sa zarejestrowane `categories` i `clients`, ale brak odpowiadajacych kontrolerow/modeli.
+- W `routes/public.php` obecnie aktywne sa tylko: `/{locale}` i `/{locale}/forms/{id}/preview`.
+  Logika dynamicznych podstron/blog/projekty jest w `PageController`, ale ekspozycja tras publicznych jest jeszcze w trakcie porzadkowania.
+- Dynamiczny submit dla formularzy z modulu `forms` nie jest jeszcze domkniety.

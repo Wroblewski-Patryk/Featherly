@@ -1,34 +1,38 @@
-# Zakres MVP (stan faktyczny HEAD)
+# Zakres MVP (aktualny stan kodu)
 
 ## Panel admin
 
-Dostepne sekcje:
+Sekcje aktywne i routowane:
 
 1. Auth
-2. Pages
-3. Posts
-4. Projects
-5. Forms
-6. Templates
-7. Media (z folderami)
-8. Settings
+2. Dashboard
+3. Pages
+4. Posts
+5. Media
+6. Projects
+7. Forms
+8. Templates
 9. Translations
 10. Languages
 11. Users
-12. Theme
-13. Blocks
+12. Settings
+13. Theme
+14. Blocks
 
-## Publiczny runtime
+Sekcje zarejestrowane routami, ale niezamkniete implementacyjnie:
 
-- `GET /` i `GET /{slug}` dla stron
-- `GET /blog/{slug}` dla wpisow
-- `GET /projects/{slug}` dla projektow
-- `GET /forms/{id}/preview` dla podgladu formularza
+- Categories
+- Clients
+
+## Publiczny runtime (obecnie wystawione trasy)
+
+- `GET /{locale}`
+- `GET /{locale}/forms/{id}/preview`
 - `GET /sitemap.xml`
 - `GET /robots.txt`
+- `GET /lang/{lang}`
 
-## Co jeszcze nie jest domkniete
+## W toku
 
-- Osobny modul menu (CRUD) nie jest aktywny.
-- Dynamiczny submit formularzy z definicji `forms` jest do implementacji.
-- Lokalizacja runtime jest aktualnie rozwijana.
+- Finalne wystawienie dynamicznych routow page/blog/project.
+- Domkniecie submit runtime dla formularzy.

@@ -1,6 +1,6 @@
-# Model danych (stan HEAD)
+# Model danych (aktualny kod)
 
-## Najwazniejsze tabele
+## Kluczowe tabele
 
 ### `pages`
 - `status`
@@ -33,6 +33,8 @@
 - `published_at`, `archived_at`
 - SEO: `meta_title` (json), `meta_description` (json), `og_image` (json), `canonical_url`, `seo_index`, `seo_follow`
 
+Uwaga: logika routingu projektow jest juz przygotowana pod slug translatable (`slug->{locale}`), ale schema `projects.slug` nadal jest stringiem.
+
 ### `forms`
 - `status`
 - `title`
@@ -47,17 +49,17 @@
 - `content` (json)
 - SEO: `meta_title` (json), `meta_description` (json), `og_image` (json), `canonical_url`, `seo_index`, `seo_follow`
 
-### Pozostale
-- `media`, `media_folders`
-- `translations`, `languages`
+### `translations` i `languages`
+- `translations`: `group`, `key`, `text` (json)
+- `languages`: `code`, `name`, `is_default`, `is_active`
+
+### pozostale
 - `settings` (key-value)
 - `revisions` (morph)
+- `media`, `media_folders`
 - `contact_messages`
-- `menus` (tabela istnieje, ale modul nie jest aktywny)
+- `menus` (tabela historyczna, bez aktywnego modulu CRUD)
 
-## Relacje
+## Istotna uwaga o zgodnosci domenowej
 
-- `pages`, `posts`, `templates` -> `morphMany(revisions)`
-- `pages` -> `belongsTo(templates)` przez pola override/template
-- `media` -> `belongsTo(media_folders)`
-- `media_folders` -> self-tree (`parent`, `children`)
+W `routes/admin.php` sa trasy `categories` i `clients`, ale w aktualnym kodzie brak odpowiadajacych modeli/migracji/kontrolerow.
