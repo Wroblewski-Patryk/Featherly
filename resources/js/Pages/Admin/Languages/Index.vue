@@ -29,7 +29,7 @@ const breadcrumbs = [
 ];
 
 const columns = [
-    { key: 'id', label: 'ID', sortable: true },
+    { key: 'id', label: t('admin.common.id', 'ID'), sortable: true },
     { key: 'name', label: t('admin.languages.name', 'Name'), sortable: true },
     { key: 'code', label: t('admin.languages.code', 'Code'), sortable: true },
     { key: 'is_active', label: t('admin.languages.status', 'Status'), sortable: true },
@@ -139,7 +139,7 @@ function deleteLanguage(item) {
             </template>
 
             <template #cell-code="{ item }">
-                <span class="text-xs font-mono bg-base-200 p-1 px-2 rounded-lg opacity-70">
+                <span class="text-xs font-mono bg-base-200 p-1 px-2 rounded-lg opacity-70" :title="t('admin.languages.code_raw', 'Raw Language Code')">
                     {{ item.code }}
                 </span>
             </template>

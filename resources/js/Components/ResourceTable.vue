@@ -15,7 +15,7 @@
                         <!-- Search Input -->
                         <div class="relative group flex-1 md:flex-none">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-base-content/30 group-focus-within:text-primary transition-colors z-10">
-                                <i class="fas fa-search text-sm"></i>
+                                <PhMagnifyingGlass class="text-sm" />
                             </div>
                             <input 
                                 v-model="search" 
@@ -31,12 +31,12 @@
                         <!-- Column Toggle -->
                         <div class="dropdown dropdown-end">
                             <label tabindex="0" class="btn btn-square bg-base-100 border-base-200 shadow-sm hover:shadow-md hover:border-primary/40 text-base-content/60 hover:text-primary transition-all">
-                                <i class="fas fa-sliders-h text-lg"></i>
+                                <PhSlidersHorizontal class="text-lg" />
                             </label>
                             <div tabindex="0" class="dropdown-content z-[20] p-4 shadow-2xl bg-base-100 rounded-box w-64 mt-3 border border-base-200">
                                 <div class="flex items-center gap-3 mb-4 pb-3 border-b border-base-200">
                                     <div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                                        <i class="fas fa-columns text-sm"></i>
+                                        <PhColumns class="text-sm" />
                                     </div>
                                     <div>
                                         <h3 class="font-bold text-sm leading-tight text-base-content">{{ t('admin.common.layout', 'Layout') }}</h3>
@@ -60,7 +60,7 @@
                         <slot name="header-actions"></slot>
 
                         <Link v-if="createRoute" :href="createRoute" class="btn btn-primary shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                            <i class="fas fa-plus mr-1"></i> {{ createLabel || t('admin.common.create', 'Create') }}
+                            <PhPlus weight="bold" class="mr-1" /> {{ createLabel || t('admin.common.create', 'Create') }}
                         </Link>
                     </div>
                 </template>
@@ -85,8 +85,8 @@
                                 ]">
                                     <span class="text-[10px] font-black uppercase tracking-widest opacity-40">{{ col.label }}</span>
                                     <span v-if="col.sortable !== false" class="opacity-20 flex flex-col text-[8px] leading-[4px]">
-                                        <i class="fas fa-caret-up" :class="{ 'text-primary opacity-100': sortField === col.key && sortDirection === 'asc' }"></i>
-                                        <i class="fas fa-caret-down" :class="{ 'text-primary opacity-100': sortField === col.key && sortDirection === 'desc' }"></i>
+                                        <PhCaretUp weight="bold" :class="{ 'text-primary opacity-100': sortField === col.key && sortDirection === 'asc' }" />
+                                        <PhCaretDown weight="bold" :class="{ 'text-primary opacity-100': sortField === col.key && sortDirection === 'desc' }" />
                                     </span>
                                 </div>
                             </th>
@@ -114,7 +114,7 @@
                         <tr v-if="resources.data.length === 0">
                             <td :colspan="activeColumns.length" class="py-20 text-center">
                                 <div class="flex flex-col items-center opacity-20">
-                                    <i class="fas fa-folder-open text-6xl mb-4"></i>
+                                    <PhFolderOpen class="text-6xl mb-4" />
                                     <p class="text-xs font-black uppercase tracking-widest">{{ t('admin.common.no_records', 'No matching records found') }}</p>
                                 </div>
                             </td>
@@ -136,7 +136,8 @@
                         :href="link.url || '#'" 
                         class="join-item btn btn-xs h-10 px-4 min-w-[40px] bg-base-100 border-base-300 hover:bg-base-200 transition-all font-bold"
                         :class="{'btn-active bg-primary/10 text-primary border-primary/20': link.active, 'btn-disabled opacity-30': !link.url}"
-                        v-html="link.label" 
+                        @click.prevent="link.url ? router.get(link.url, { search, sort: sortField, direction: sortDirection }, { preserveState: true, replace: true, preserveScroll: true }) : null"
+                        v-html="cleanPaginationLabel(link.label)" 
                     />
                 </div>
             </div>
@@ -146,7 +147,7 @@
         <div v-if="showDeleteModal" class="modal modal-open z-[100]">
             <div class="modal-box rounded-3xl border border-white/10 shadow-2xl p-8 bg-base-100 max-w-sm text-center">
                 <div class="w-16 h-16 bg-error/10 text-error rounded-full flex items-center justify-center mx-auto mb-6 text-2xl animate-bounce">
-                    <i class="fas fa-exclamation-triangle"></i>
+                    <PhWarning class="w-8 h-8" />
                 </div>
                 <h3 class="font-black text-2xl mb-2 text-base-content">{{ t('admin.common.are_you_sure', 'Are you sure?') }}</h3>
                 <p class="text-sm opacity-50 mb-8">{{ t('admin.common.delete_warning', 'This action cannot be undone. All data associated with this record will be permanently removed.') }}</p>
@@ -165,12 +166,28 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, onMounted } from 'vue';
+import { ref, watch, computed, onMounted, markRaw } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
+import { PhPlus, PhMagnifyingGlass, PhSlidersHorizontal, PhColumns, PhCaretUp, PhCaretDown, PhFolderOpen, PhWarning } from '@phosphor-icons/vue';
 import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
 import { useTranslations } from '@/Composables/useTranslations';
 
 const { t } = useTranslations();
+
+const cleanPaginationLabel = (label) => {
+    if (!label) return '';
+    
+    // Replace standard Laravel pagination strings
+    let cleaned = label;
+    if (cleaned.includes('Previous')) {
+        cleaned = cleaned.replace('Previous', t('admin.common.previous', 'Previous'));
+    }
+    if (cleaned.includes('Next')) {
+        cleaned = cleaned.replace('Next', t('admin.common.next', 'Next'));
+    }
+    
+    return cleaned;
+};
 
 // Simple debounce implementation to avoid lodash dependency
 function debounce(fn, delay) {
@@ -325,14 +342,16 @@ function toggleSort(field) {
 }
 
 function getFieldValue(item, key) {
-    // Handle nested keys or translatable objects
+    // Handle nested keys
     if (key.includes('.')) {
         return key.split('.').reduce((o, i) => o?.[i], item);
     }
     
     const val = item[key];
-    if (val && typeof val === 'object' && (val.pl || val.en)) {
-        return val.pl || val.en;
+    
+    // Use the translate helper for objects (handles pl/en and fallbacks)
+    if (val && typeof val === 'object') {
+        return t(val);
     }
     
     return val;

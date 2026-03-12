@@ -56,29 +56,31 @@ const saveConfig = () => {
 
 <template>
     <AdminLayout>
-        <template #header>
-            <ModuleHeader 
-                :title="title" 
-                :description="description" 
-                :breadcrumbs="breadcrumbs"
-                :icon="markRaw(PhPaintRoller)">
-                <template #actions>
-                    <span v-if="savedMessage" class="text-success text-sm font-semibold flex items-center gap-1 mr-4">
-                        <PhCheckCircle weight="regular" class="w-4 h-4" /> 
-                        {{ t('admin.theme.saved', 'Saved') }}
-                    </span>
-                    <button @click="saveConfig" class="btn btn-primary shadow-lg shadow-primary/20" :disabled="isSaving">
-                        <span v-if="isSaving" class="loading loading-spinner loading-xs"></span>
-                        <PhFloppyDisk weight="regular" class="w-4 h-4" v-else /> 
-                        {{ t('admin.theme.save_btn', 'Save') }}
-                    </button>
-                </template>
-            </ModuleHeader>
-        </template>
+        <div class="space-y-6">
+            <div class="bg-base-100 p-6 rounded-box shadow-sm border border-base-300">
+                <ModuleHeader 
+                    :title="title" 
+                    :description="description" 
+                    :icon="markRaw(PhPaintRoller)"
+                    :breadcrumbs="breadcrumbs">
+                    <template #actions>
+                        <span v-if="savedMessage" class="text-success text-sm font-semibold flex items-center gap-1 mr-4">
+                            <PhCheckCircle weight="regular" class="w-4 h-4" /> 
+                            {{ t('admin.theme.saved', 'Saved') }}
+                        </span>
+                        <button @click="saveConfig" class="btn btn-primary shadow-lg shadow-primary/20" :disabled="isSaving">
+                            <span v-if="isSaving" class="loading loading-spinner loading-xs"></span>
+                            <PhFloppyDisk weight="regular" class="w-4 h-4" v-else /> 
+                            {{ t('admin.theme.save_btn', 'Save') }}
+                        </button>
+                    </template>
+                </ModuleHeader>
+            </div>
 
-        <div class="space-y-6 mt-6">
+            <div class="space-y-6 mt-6">
             <!-- Content Slot where specific forms will be injected -->
             <slot :form="form"></slot>
+            </div>
         </div>
     </AdminLayout>
 </template>

@@ -14,11 +14,16 @@ class FormController extends Controller
         $query = Form::query();
 
         $query->when($request->search, function ($q, $search) {
-            $q->where('title', 'like', "%{$search}%");
+            $locale = app()->getLocale();
+            $q->where("title->{$locale}", 'like', "%{$search}%");
         });
 
         if ($request->has('sort') && $request->has('direction')) {
-            $query->orderBy($request->sort, $request->direction);
+            $sort = $request->sort;
+            if ($sort === 'title') {
+                $sort .= '->' . app()->getLocale();
+            }
+            $query->orderBy($sort, $request->direction);
         }
         else {
             $query->latest();
@@ -45,7 +50,8 @@ class FormController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'required|array',
+            'title.*' => 'nullable|string',
             'content' => 'nullable|array',
             'settings' => 'nullable|array',
             'status' => 'nullable|string',
@@ -59,8 +65,15 @@ class FormController extends Controller
 
     public function edit(Form $form)
     {
+        $formData = $form->toArray();
+        $translatable = ['title'];
+        
+        foreach ($translatable as $field) {
+            $formData[$field] = $form->getTranslations($field);
+        }
+
         return Inertia::render('Admin/Forms/Edit', [
-            'formModel' => $form,
+            'formModel' => $formData,
             'templates' => [
                 'header' => \App\Models\Template::where('type', 'header')->get(),
                 'footer' => \App\Models\Template::where('type', 'footer')->get(),
@@ -73,7 +86,8 @@ class FormController extends Controller
     public function update(Request $request, Form $form)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'required|array',
+            'title.*' => 'nullable|string',
             'content' => 'nullable|array',
             'settings' => 'nullable|array',
             'status' => 'nullable|string',

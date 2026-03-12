@@ -15,14 +15,19 @@ class TemplateController extends Controller
 
         $query->when($request->search, function ($q, $search) {
             $q->where(function ($sq) use ($search) {
-                    $sq->where('name', 'like', "%{$search}%")
+                    $locale = app()->getLocale();
+                    $sq->where("title->{$locale}", 'like', "%{$search}%")
                         ->orWhere('type', 'like', "%{$search}%");
                 }
                 );
             });
 
         if ($request->has('sort') && $request->has('direction')) {
-            $query->orderBy($request->sort, $request->direction);
+            $sort = $request->sort;
+            if ($sort === 'title' || $sort === 'name') {
+                $sort = 'title->' . app()->getLocale();
+            }
+            $query->orderBy($sort, $request->direction);
         }
         else {
             $query->latest();
@@ -49,26 +54,25 @@ class TemplateController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
+            'title' => 'required|array',
+            'title.*' => 'nullable|string',
             'type' => 'required|in:header,footer,sidebar,page',
             'is_active' => 'boolean',
             'is_default' => 'boolean',
             'content' => 'nullable|array',
             // SEO Fields
-            'meta_title' => 'nullable|string',
-            'meta_description' => 'nullable|string',
+            'meta_title' => 'nullable|array',
+            'meta_title.*' => 'nullable|string',
+            'meta_description' => 'nullable|array',
+            'meta_description.*' => 'nullable|string',
             'canonical_url' => 'nullable|string',
-            'og_image' => 'nullable|string',
+            'og_image' => 'nullable|array',
+            'og_image.*' => 'nullable|string',
             'seo_index' => 'nullable|boolean',
             'seo_follow' => 'nullable|boolean',
         ]);
 
-        // Map flat strings to arrays for JSON storage (consistent with Spatie models)
-        foreach (['meta_title', 'meta_description', 'og_image'] as $field) {
-            if (isset($data[$field])) {
-                $data[$field] = ['pl' => $data[$field]];
-            }
-        }
+
 
         $template = Template::create($data);
         return redirect()->route('admin.templates.edit', $template->id)->with('success', 'Template created successfully.');
@@ -76,8 +80,15 @@ class TemplateController extends Controller
 
     public function edit(Template $template)
     {
+        $templateData = $template->load('revisions')->toArray();
+        $translatable = ['title', 'meta_title', 'meta_description', 'og_image'];
+        
+        foreach ($translatable as $field) {
+            $templateData[$field] = $template->getTranslations($field);
+        }
+
         return Inertia::render('Admin/Templates/Edit', [
-            'template' => $template->load('revisions'),
+            'template' => $templateData,
             'templates' => [
                 'header' => \App\Models\Template::where('type', 'header')->get(),
                 'footer' => \App\Models\Template::where('type', 'footer')->get(),
@@ -90,16 +101,20 @@ class TemplateController extends Controller
     public function update(Request $request, Template $template)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
+            'title' => 'required|array',
+            'title.*' => 'nullable|string',
             'type' => 'required|in:header,footer,sidebar,page',
             'is_active' => 'boolean',
             'is_default' => 'boolean',
             'content' => 'nullable|array',
             // SEO Fields
-            'meta_title' => 'nullable|string',
-            'meta_description' => 'nullable|string',
+            'meta_title' => 'nullable|array',
+            'meta_title.*' => 'nullable|string',
+            'meta_description' => 'nullable|array',
+            'meta_description.*' => 'nullable|string',
             'canonical_url' => 'nullable|string',
-            'og_image' => 'nullable|string',
+            'og_image' => 'nullable|array',
+            'og_image.*' => 'nullable|string',
             'seo_index' => 'nullable|boolean',
             'seo_follow' => 'nullable|boolean',
         ]);
@@ -112,12 +127,7 @@ class TemplateController extends Controller
             ]);
         }
 
-        // Map flat strings to arrays for JSON storage (consistent with Spatie models)
-        foreach (['meta_title', 'meta_description', 'og_image'] as $field) {
-            if (isset($data[$field])) {
-                $data[$field] = ['pl' => $data[$field]];
-            }
-        }
+
 
         $template->update($data);
         return redirect()->back()->with('success', 'Template updated successfully.');

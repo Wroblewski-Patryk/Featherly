@@ -1,6 +1,9 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { PhLink, PhX, PhCaretRight, PhTrash, PhImageSquare, PhFile } from '@phosphor-icons/vue';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const props = defineProps({
     item: Object,
@@ -54,33 +57,33 @@ watch(() => props.item, (newItem) => {
                         
                         <div class="grid grid-cols-2 gap-4">
                             <div class="bg-base-200/50 p-4 rounded-xl border border-base-300/50">
-                                <p class="text-[10px] uppercase font-black opacity-30 tracking-widest mb-1">Utworzono</p>
+                                <p class="text-[10px] uppercase font-black opacity-30 tracking-widest mb-1">{{ t('admin.common.created_at', 'Created At') }}</p>
                                 <p class="text-xs font-bold">{{ new Date(item.created_at).toLocaleDateString() }}</p>
                             </div>
                             <div class="bg-base-200/50 p-4 rounded-xl border border-base-300/50">
-                                <p class="text-[10px] uppercase font-black opacity-30 tracking-widest mb-1">Wymiary</p>
-                                <p class="text-xs font-bold">{{ isImage ? 'Oryginalne' : '-' }}</p>
+                                <p class="text-[10px] uppercase font-black opacity-30 tracking-widest mb-1">{{ t('admin.media.dimensions', 'Dimensions') }}</p>
+                                <p class="text-xs font-bold">{{ isImage ? t('admin.media.original', 'Original') : '-' }}</p>
                             </div>
                         </div>
                         
                         <div class="space-y-6">
                             <div class="form-control group">
-                                <label class="label"><span class="label-text text-[10px] uppercase font-black opacity-30 tracking-widest">Nazwa pliku (SEO)</span></label>
+                                <label class="label"><span class="label-text text-[10px] uppercase font-black opacity-30 tracking-widest">{{ t('admin.media.filename_seo', 'Filename (SEO)') }}</span></label>
                                 <input 
                                     v-model="editFilename" 
                                     type="text"
                                     class="input input-bordered focus:input-primary bg-base-100 transition-all"
-                                    placeholder="Wprowadź nową nazwę..."
+                                    :placeholder="t('admin.media.enter_new_filename', 'Enter new filename...')"
                                     @blur="$emit('update-filename', editFilename)"
                                 />
                             </div>
 
                             <div class="form-control group">
-                                <label class="label"><span class="label-text text-[10px] uppercase font-black opacity-30 tracking-widest">Tekst alternatywny (Alt)</span></label>
+                                <label class="label"><span class="label-text text-[10px] uppercase font-black opacity-30 tracking-widest">{{ t('admin.media.alt_text', 'Alternative Text (Alt)') }}</span></label>
                                 <textarea 
                                     v-model="editAlt" 
                                     class="textarea textarea-bordered h-32 focus:textarea-primary bg-base-100 transition-all leading-relaxed" 
-                                    placeholder="Opisz obraz dla lepszego SEO i dostępności..."
+                                    :placeholder="t('admin.media.alt_desc_placeholder', 'Describe image for better SEO and accessibility...')"
                                     @blur="$emit('update-alt', editAlt)"
                                 ></textarea>
                             </div>
@@ -89,11 +92,11 @@ watch(() => props.item, (newItem) => {
                     
                     <div class="mt-10 flex flex-col gap-3">
                         <button @click="$emit('copy-link')" class="btn btn-primary h-14 gap-3 shadow-lg shadow-primary/20 transition-transform">
-                            <PhLink weight="bold" class="w-5 h-5" /> Kopiuj URL pliku
+                            <PhLink weight="bold" class="w-5 h-5" /> {{ t('admin.media.copy_url', 'Copy URL') }}
                         </button>
                         <div class="flex gap-3">
                             <button @click="$emit('move')" class="btn btn-ghost flex-1 h-14 gap-3 bg-base-200/50 hover:bg-primary hover:text-white border-0 transition-all">
-                                <PhCaretRight weight="bold" class="w-5 h-5" /> Przenieś
+                                <PhCaretRight weight="bold" class="w-5 h-5" /> {{ t('admin.common.move', 'Move') }}
                             </button>
                             <button @click="$emit('delete')" class="btn btn-error btn-outline h-14 w-14 border-2 hover:bg-error hover:text-white transition-all">
                                 <PhTrash weight="bold" class="w-5 h-5" />

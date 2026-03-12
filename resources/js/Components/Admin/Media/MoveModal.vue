@@ -1,7 +1,10 @@
 <script setup>
 import { ref } from 'vue';
 import { PhCaretRight, PhHouse, PhCheck, PhX } from '@phosphor-icons/vue';
+import { useTranslations } from '@/Composables/useTranslations';
 import FolderTreeItem from './FolderTreeItem.vue';
+
+const { t } = useTranslations();
 
 const props = defineProps({
     isOpen: Boolean,
@@ -23,8 +26,8 @@ const emit = defineEmits(['close', 'update:targetFolderId', 'confirm']);
                     <PhCaretRight weight="bold" class="w-7 h-7" />
                 </div>
                 <div>
-                    <h3 class="font-black text-2xl tracking-tight">Przenieś do folderu</h3>
-                    <p class="text-[10px] opacity-40 uppercase font-black tracking-widest mt-1">Wybierz katalog docelowy</p>
+                    <h3 class="font-black text-2xl tracking-tight">{{ t('admin.media.move_to_folder', 'Move to folder') }}</h3>
+                    <p class="text-[10px] opacity-40 uppercase font-black tracking-widest mt-1">{{ t('admin.media.select_destination', 'Select destination directory') }}</p>
                 </div>
             </div>
             
@@ -39,11 +42,11 @@ const emit = defineEmits(['close', 'update:targetFolderId', 'confirm']);
                         <div class="w-10 h-10 rounded-lg bg-base-200 group-hover:bg-primary/10 flex items-center justify-center transition-colors shadow-sm">
                             <PhHouse :weight="targetFolderId === null ? 'fill' : 'bold'" class="w-5 h-5" />
                         </div>
-                        <div class="flex-1 font-black uppercase tracking-widest text-xs">Katalog główny</div>
+                        <div class="flex-1 font-black uppercase tracking-widest text-xs">{{ t('admin.media.root_folder', 'Root folder') }}</div>
                         <PhCheck v-if="targetFolderId === null" weight="bold" class="w-5 h-5 animate-in zoom-in-50 duration-300" />
                     </div>
 
-                    <div class="divider text-[10px] uppercase font-black tracking-[0.3em] opacity-20 py-6">Lub wybierz podfolder</div>
+                    <div class="divider text-[10px] uppercase font-black tracking-[0.3em] opacity-20 py-6">{{ t('admin.media.or_select_subfolder', 'Or select a subfolder') }}</div>
 
                     <!-- Recursive Tree -->
                     <div class="bg-base-200/30 rounded-xl p-6 border border-base-300/50 space-y-2">
@@ -59,13 +62,13 @@ const emit = defineEmits(['close', 'update:targetFolderId', 'confirm']);
             </div>
             
             <div class="flex gap-3 justify-end mt-10 pt-6 border-t border-base-200">
-                <button type="button" @click="$emit('close')" class="btn btn-ghost h-14 px-8 font-bold">Anuluj</button>
+                <button type="button" @click="$emit('close')" class="btn btn-ghost h-14 px-8 font-bold">{{ t('admin.common.cancel', 'Cancel') }}</button>
                 <button 
                     @click="$emit('confirm')" 
                     class="btn btn-primary h-14 px-10 font-bold shadow-xl shadow-primary/20" 
                     :disabled="!isAnySelected"
                 >
-                    Przenieś tutaj
+                    {{ t('admin.media.move_here', 'Move here') }}
                 </button>
             </div>
         </div>

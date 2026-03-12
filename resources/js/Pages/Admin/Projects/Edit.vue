@@ -1,12 +1,15 @@
 <script setup>
 import { onMounted, computed, watch } from 'vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
 import { PhArrowsClockwise, PhArrowSquareOut, PhFingerprint, PhShareNetwork } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
 import DatePicker from '@/Components/DatePicker.vue';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import { useToastStore } from '@/Stores/useToastStore';
+
+const pageProps = usePage().props;
+const activeLocale = computed(() => pageProps.locale);
 
 const props = defineProps({
     project: Object,
@@ -18,7 +21,7 @@ const toast = useToastStore();
 
 const form = useForm({
     title: props.project?.title || { pl: '', en: '' },
-    slug: props.project?.slug || '',
+    slug: props.project?.slug || { pl: '', en: '' },
     description: props.project?.description || { pl: '', en: '' },
     content: props.project?.content || [],
     desktop_image: props.project?.desktop_image || '',
@@ -30,15 +33,15 @@ const form = useForm({
     status: props.project?.status || 'draft',
     published_at: props.project?.published_at ? props.project.published_at.substring(0, 19).replace('T', ' ') : '',
     // SEO Fields
-    meta_title: props.project?.meta_title?.pl || (typeof props.project?.meta_title === 'string' ? props.project.meta_title : ''),
-    meta_description: props.project?.meta_description?.pl || (typeof props.project?.meta_description === 'string' ? props.project.meta_description : ''),
+    meta_title: props.project?.meta_title || { pl: '', en: '' },
+    meta_description: props.project?.meta_description || { pl: '', en: '' },
     canonical_url: props.project?.canonical_url || '',
-    og_image: props.project?.og_image?.pl || (typeof props.project?.og_image === 'string' ? props.project.og_image : ''),
+    og_image: props.project?.og_image || { pl: '', en: '' },
     seo_index: props.project?.seo_index ?? true,
     seo_follow: props.project?.seo_follow ?? true,
 });
 
-const previewUrl = computed(() => form.slug ? `/projects/${form.slug}` : null);
+const previewUrl = computed(() => form.slug?.[activeLocale.value] ? `/projects/${form.slug[activeLocale.value]}` : null);
 
 const generateSlug = (text) => {
     if (!text) return '';
@@ -53,8 +56,8 @@ const generateSlug = (text) => {
         .replace(/-+$/, '');
 };
 
-watch(() => form.title.pl, (newTitle) => {
-    form.slug = generateSlug(newTitle);
+watch(() => form.title[activeLocale.value], (newTitle) => {
+    form.slug[activeLocale.value] = generateSlug(newTitle);
 });
 
 onMounted(() => {
@@ -93,7 +96,7 @@ function submit() {
     <Head :title="project ? 'Edit Project' : 'Add Project'" />
     <AdminLayout :full-width="true">
         <BlockBuilder 
-            v-model:title="form.title.pl"
+            v-model:title="form.title[activeLocale]"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"
@@ -104,24 +107,24 @@ function submit() {
                 <div class="flex flex-col gap-6">
                     <div class="space-y-4">
                         <div class="form-control">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug</span></label>
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.common.url_slug', 'URL Slug') }}</span></label>
                             <div class="join w-full">
-                                <input type="text" v-model="form.slug" class="input input-bordered input-sm join-item focus:border-primary/50 transition-all font-mono text-xs w-full" placeholder="project-slug" />
-                                <button @click="form.slug = generateSlug(form.title.pl)" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
+                                <input type="text" v-model="form.slug[activeLocale]" class="input input-bordered input-sm join-item focus:border-primary/50 transition-all font-mono text-xs w-full" placeholder="project-slug" />
+                                <button @click="form.slug[activeLocale] = generateSlug(form.title[activeLocale])" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
                                     <PhArrowsClockwise weight="bold" class="w-3 h-3" />
                                 </button>
                             </div>
                         </div>
 
                         <div class="form-control">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Generated URL</span></label>
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.common.generated_url', 'Generated URL') }}</span></label>
                             <div class="join w-full">
                                 <input
                                     type="text"
                                     :value="previewUrl || ''"
                                     readonly
                                     class="input input-bordered input-sm join-item w-full font-mono text-[10px]"
-                                    :placeholder="form.slug ? '' : 'Slug required for URL'"
+                                    :placeholder="form.slug?.[activeLocale] ? '' : 'Slug required for URL'"
                                 />
                                 <a
                                     v-if="previewUrl"
@@ -140,17 +143,17 @@ function submit() {
                         </div>
 
                         <div class="form-control">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Status</span></label>
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.common.status', 'Status') }}</span></label>
                             <select v-model="form.status" class="select select-bordered select-sm focus:select-primary transition-all w-full">
-                                <option value="draft">Draft</option>
-                                <option value="published">Published</option>
-                                <option value="planned">Planned</option>
-                                <option value="archived">Archived</option>
+                                <option value="draft">{{ t('admin.common.status_draft', 'Draft') }}</option>
+                                <option value="published">{{ t('admin.common.status_published', 'Published') }}</option>
+                                <option value="planned">{{ t('admin.common.status_planned', 'Planned') }}</option>
+                                <option value="archived">{{ t('admin.common.status_archived', 'Archived') }}</option>
                             </select>
                         </div>
 
                         <div v-if="form.status === 'planned' || form.status === 'published'" class="form-control">
-                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">Publish Date & Time</span></label>
+                            <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.common.publish_date', 'Publish Date & Time') }}</span></label>
                             <DatePicker v-model="form.published_at" />
                         </div>
                     </div>
@@ -199,11 +202,11 @@ function submit() {
                     <div class="space-y-4">
                          <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">Meta Title</span></label>
-                            <input type="text" v-model="form.meta_title" class="input input-bordered input-sm focus:input-primary transition-all" placeholder="SEO Title" />
+                            <input type="text" v-model="form.meta_title[activeLocale]" class="input input-bordered input-sm focus:input-primary transition-all" placeholder="SEO Title" />
                         </div>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">Meta Description</span></label>
-                            <textarea v-model="form.meta_description" class="textarea textarea-bordered textarea-sm focus:textarea-primary transition-all h-24" placeholder="SEO Description"></textarea>
+                            <textarea v-model="form.meta_description[activeLocale]" class="textarea textarea-bordered textarea-sm focus:textarea-primary transition-all h-24" placeholder="SEO Description"></textarea>
                         </div>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 transition-colors">Canonical URL</span></label>
@@ -220,7 +223,7 @@ function submit() {
                         </label>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">OG Image URL</span></label>
-                            <input type="text" v-model="form.og_image" class="input input-bordered input-sm focus:input-primary transition-all font-mono text-[10px]" placeholder="Image URL for social media" />
+                            <input type="text" v-model="form.og_image[activeLocale]" class="input input-bordered input-sm focus:input-primary transition-all font-mono text-[10px]" placeholder="Image URL for social media" />
                         </div>
                     </div>
 

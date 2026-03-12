@@ -1,7 +1,7 @@
 <template>
     <AdminLayout :full-width="true">
         <BlockBuilder 
-            v-model:title="form.name"
+            v-model:title="form.title[activeLocale]"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"
@@ -15,7 +15,7 @@
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">URL Slug</span></label>
                             <div class="join w-full">
                                 <input type="text" v-model="templateSlug" class="input input-bordered input-sm join-item focus:border-primary/50 transition-all font-mono text-xs w-full" placeholder="template-slug" />
-                                <button @click="templateSlug = generateSlug(form.name)" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
+                                <button @click="templateSlug = generateSlug(form.title[activeLocale])" type="button" class="btn btn-sm btn-ghost join-item" title="Regenerate Slug">
                                     <PhArrowsClockwise weight="bold" class="w-3 h-3" />
                                 </button>
                             </div>
@@ -79,11 +79,11 @@
                     <div class="space-y-4">
                          <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">Meta Title</span></label>
-                            <input type="text" v-model="form.meta_title" class="input input-bordered input-sm focus:input-primary transition-all" placeholder="SEO Title" />
+                            <input type="text" v-model="form.meta_title[activeLocale]" class="input input-bordered input-sm focus:input-primary transition-all" placeholder="SEO Title" />
                         </div>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 text-primary">Meta Description</span></label>
-                            <textarea v-model="form.meta_description" class="textarea textarea-bordered textarea-sm focus:textarea-primary transition-all h-24" placeholder="SEO Description"></textarea>
+                            <textarea v-model="form.meta_description[activeLocale]" class="textarea textarea-bordered textarea-sm focus:textarea-primary transition-all h-24" placeholder="SEO Description"></textarea>
                         </div>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60 transition-colors">Canonical URL</span></label>
@@ -100,7 +100,7 @@
                         </label>
                         <div class="form-control">
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">OG Image URL</span></label>
-                            <input type="text" v-model="form.og_image" class="input input-bordered input-sm focus:input-primary transition-all font-mono text-[10px]" placeholder="Image URL for social media" />
+                            <input type="text" v-model="form.og_image[activeLocale]" class="input input-bordered input-sm focus:input-primary transition-all font-mono text-[10px]" placeholder="Image URL for social media" />
                         </div>
                     </div>
 
@@ -151,10 +151,13 @@ import {
 } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BlockBuilder from '@/Components/BlockBuilder.vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
 import { useToastStore } from '@/Stores/useToastStore';
 import { computed, onMounted, ref, watch } from 'vue';
+
+const pageProps = usePage().props;
+const activeLocale = computed(() => pageProps.locale);
 
 const props = defineProps({
     template: Object,
@@ -165,15 +168,15 @@ const store = useBlockBuilderStore();
 const toast = useToastStore();
 
 const form = useForm({
-    name: props.template?.name || '',
+    title: props.template?.title || { pl: '', en: '' },
     type: props.template?.type || 'header',
     content: props.template?.content || [],
     is_default: props.template?.is_default ?? false,
     // SEO Fields
-    meta_title: props.template?.meta_title?.pl || (typeof props.template?.meta_title === 'string' ? props.template.meta_title : ''),
-    meta_description: props.template?.meta_description?.pl || (typeof props.template?.meta_description === 'string' ? props.template.meta_description : ''),
+    meta_title: props.template?.meta_title || { pl: '', en: '' },
+    meta_description: props.template?.meta_description || { pl: '', en: '' },
     canonical_url: props.template?.canonical_url || '',
-    og_image: props.template?.og_image?.pl || (typeof props.template?.og_image === 'string' ? props.template.og_image : ''),
+    og_image: props.template?.og_image || { pl: '', en: '' },
     seo_index: props.template?.seo_index ?? true,
     seo_follow: props.template?.seo_follow ?? true,
 });
@@ -193,10 +196,10 @@ const generateSlug = (text) => {
         .replace(/-+$/, '');
 };
 
-const templateSlug = ref(generateSlug(form.name));
+const templateSlug = ref(generateSlug(form.title[activeLocale.value]));
 
-watch(() => form.name, (newName) => {
-    templateSlug.value = generateSlug(newName);
+watch(() => form.title[activeLocale.value], (newTitle) => {
+    templateSlug.value = generateSlug(newTitle);
 });
 
 onMounted(() => {

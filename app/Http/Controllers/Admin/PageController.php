@@ -15,10 +15,9 @@ class PageController extends Controller
 
         $query->when($request->search, function ($q, $search) {
             $q->where(function ($sq) use ($search) {
-                    $sq->where('title->pl', 'like', "%{$search}%")
-                        ->orWhere('title->en', 'like', "%{$search}%")
-                        ->orWhere('slug->pl', 'like', "%{$search}%")
-                        ->orWhere('slug->en', 'like', "%{$search}%");
+                    $locale = app()->getLocale();
+                    $sq->where("title->{$locale}", 'like', "%{$search}%")
+                        ->orWhere("slug->{$locale}", 'like', "%{$search}%");
                 }
                 );
             });
@@ -26,7 +25,7 @@ class PageController extends Controller
         if ($request->has('sort') && $request->has('direction')) {
             $sort = $request->sort;
             if (in_array($sort, ['title', 'slug'])) {
-                $sort .= '->pl'; // Default to PL for sorting translatable fields
+                $sort .= '->' . app()->getLocale(); 
             }
             $query->orderBy($sort, $request->direction);
         }
@@ -56,7 +55,9 @@ class PageController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|array',
+            'title.*' => 'nullable|string',
             'slug' => 'required|array',
+            'slug.*' => 'nullable|string',
             'content' => 'required|array',
             'status' => 'nullable|string',
             'published_at' => 'nullable|date',
@@ -65,20 +66,18 @@ class PageController extends Controller
             'sidebar_override_id' => 'nullable|exists:templates,id',
             'template_id' => 'nullable|exists:templates,id',
             // SEO Fields
-            'meta_title' => 'nullable|string',
-            'meta_description' => 'nullable|string',
+            'meta_title' => 'nullable|array',
+            'meta_title.*' => 'nullable|string',
+            'meta_description' => 'nullable|array',
+            'meta_description.*' => 'nullable|string',
             'canonical_url' => 'nullable|string',
-            'og_image' => 'nullable|string',
+            'og_image' => 'nullable|array',
+            'og_image.*' => 'nullable|string',
             'seo_index' => 'nullable|boolean',
             'seo_follow' => 'nullable|boolean',
         ]);
 
-        // Map flat strings to translatable arrays (default to pl)
-        foreach (['meta_title', 'meta_description', 'og_image'] as $field) {
-            if (isset($validated[$field])) {
-                $validated[$field] = ['pl' => $validated[$field]];
-            }
-        }
+
 
         $page = Page::create($validated);
 
@@ -87,8 +86,17 @@ class PageController extends Controller
 
     public function edit(Page $page)
     {
+        $page->getTranslations(); // This might prime them if using specific traits, but let's be explicit
+        
+        $pageData = $page->load('revisions')->toArray();
+        $translatable = ['title', 'slug', 'meta_title', 'meta_description', 'og_image'];
+        
+        foreach ($translatable as $field) {
+            $pageData[$field] = $page->getTranslations($field);
+        }
+
         return Inertia::render('Admin/Pages/Edit', [
-            'page' => $page->load('revisions'),
+            'page' => $pageData,
             'templates' => [
                 'page' => \App\Models\Template::where('type', 'page')->get(),
                 'header' => \App\Models\Template::where('type', 'header')->get(),
@@ -102,7 +110,9 @@ class PageController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|array',
+            'title.*' => 'nullable|string',
             'slug' => 'required|array',
+            'slug.*' => 'nullable|string',
             'content' => 'required|array',
             'status' => 'nullable|string',
             'published_at' => 'nullable|date',
@@ -111,20 +121,18 @@ class PageController extends Controller
             'sidebar_override_id' => 'nullable|exists:templates,id',
             'template_id' => 'nullable|exists:templates,id',
             // SEO Fields
-            'meta_title' => 'nullable|string',
-            'meta_description' => 'nullable|string',
+            'meta_title' => 'nullable|array',
+            'meta_title.*' => 'nullable|string',
+            'meta_description' => 'nullable|array',
+            'meta_description.*' => 'nullable|string',
             'canonical_url' => 'nullable|string',
-            'og_image' => 'nullable|string',
+            'og_image' => 'nullable|array',
+            'og_image.*' => 'nullable|string',
             'seo_index' => 'nullable|boolean',
             'seo_follow' => 'nullable|boolean',
         ]);
 
-        // Map flat strings to translatable arrays (default to pl)
-        foreach (['meta_title', 'meta_description', 'og_image'] as $field) {
-            if (isset($validated[$field])) {
-                $validated[$field] = ['pl' => $validated[$field]];
-            }
-        }
+
 
         // Store revision of OLD content before update
         if ($page->content) {

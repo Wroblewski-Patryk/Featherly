@@ -5,6 +5,9 @@ import {
     PhFilePdf, PhFileZip 
 } from '@phosphor-icons/vue';
 import { computed } from 'vue';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const props = defineProps({
     item: Object,
@@ -64,20 +67,20 @@ const formatSize = (bytes) => {
         </td>
         <td>
             <span class="badge badge-sm opacity-60 uppercase text-[10px]" :class="type === 'folder' ? 'badge-ghost' : 'badge-outline'">
-                {{ type === 'folder' ? 'Folder' : (item.mime?.split('/')[1] || 'Plik') }}
+                {{ type === 'folder' ? t('admin.media.folder', 'Folder') : (item.mime?.split('/')[1] || t('admin.media.file', 'File')) }}
             </span>
         </td>
         <td class="text-xs opacity-60">{{ type === 'folder' ? '-' : formatSize(item.size) }}</td>
         <td class="text-xs opacity-60">{{ new Date(item.created_at).toLocaleDateString() }}</td>
         <td class="text-right">
             <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity" @click.stop="">
-                <button v-if="type === 'media'" @click="$emit('preview')" class="btn btn-ghost btn-xs btn-square" title="Podgląd"><PhEye class="w-4 h-4" /></button>
-                <button v-if="type === 'media'" @click="$emit('copy-link')" class="btn btn-ghost btn-xs btn-square" title="Kopiuj link"><PhLink class="w-4 h-4" /></button>
-                <button @click="$emit('rename')" class="btn btn-ghost btn-xs btn-square" title="Zmień nazwę">
+                <button v-if="type === 'media'" @click="$emit('preview')" class="btn btn-ghost btn-xs btn-square" :title="t('admin.common.preview', 'Preview')"><PhEye class="w-4 h-4" /></button>
+                <button v-if="type === 'media'" @click="$emit('copy-link')" class="btn btn-ghost btn-xs btn-square" :title="t('admin.media.copy_link', 'Copy link')"><PhLink class="w-4 h-4" /></button>
+                <button @click="$emit('rename')" class="btn btn-ghost btn-xs btn-square" :title="t('admin.common.rename', 'Rename')">
                     <PhPencilSimple weight="bold" class="w-4 h-4" />
                 </button>
-                <button @click="$emit('move')" class="btn btn-ghost btn-xs btn-square" title="Przenieś"><PhCaretRight class="w-4 h-4" /></button>
-                <button @click="$emit('delete')" class="btn btn-ghost btn-xs btn-square text-error" title="Usuń"><PhTrash class="w-4 h-4" /></button>
+                <button @click="$emit('move')" class="btn btn-ghost btn-xs btn-square" :title="t('admin.common.move', 'Move')"><PhCaretRight class="w-4 h-4" /></button>
+                <button @click="$emit('delete')" class="btn btn-ghost btn-xs btn-square text-error" :title="t('admin.common.delete', 'Delete')"><PhTrash class="w-4 h-4" /></button>
             </div>
         </td>
     </tr>

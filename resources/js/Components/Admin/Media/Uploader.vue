@@ -1,6 +1,9 @@
 <script setup>
 import { ref } from 'vue';
 import { PhUpload, PhX } from '@phosphor-icons/vue';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const props = defineProps({
     isOpen: Boolean,
@@ -63,8 +66,8 @@ defineExpose({ clearFiles, altText });
                     <PhUpload weight="bold" class="w-10 h-10" />
                 </div>
                 <div class="text-center">
-                    <h3 class="text-xl font-bold">Przeciągnij pliki lub kliknij, aby przeglądać</h3>
-                    <p class="text-sm opacity-50">Możesz wybrać wiele plików jednocześnie</p>
+                    <h3 class="text-xl font-bold">{{ t('admin.media.drop_files_title', 'Drag files or click to browse') }}</h3>
+                    <p class="text-sm opacity-50">{{ t('admin.media.drop_files_desc', 'You can select multiple files at once') }}</p>
                 </div>
             </div>
             
@@ -79,14 +82,14 @@ defineExpose({ clearFiles, altText });
                 
                 <div v-if="files.length > 0" class="flex flex-col items-center gap-4 w-full">
                     <div class="text-xs font-bold uppercase tracking-widest opacity-50">
-                        Wybrano {{ files.length }} plik(ów)
+                        {{ t('admin.media.files_selected', 'Selected {count} file(s)', { count: files.length }) }}
                     </div>
                     
                     <div class="flex gap-2 w-full">
-                        <input v-model="altText" type="text" placeholder="Globalny tekst alternatywny (dla wszystkich)" class="input input-bordered flex-1 focus:input-primary" />
+                        <input v-model="altText" type="text" :placeholder="t('admin.media.global_alt_placeholder', 'Global alt text (for all)')" class="input input-bordered flex-1 focus:input-primary" />
                         <button type="submit" class="btn btn-primary px-8 shadow-lg shadow-primary/20" :disabled="processing">
                             <span v-if="processing" class="loading loading-spinner"></span>
-                            Prześlij teraz
+                            {{ t('admin.media.upload_now', 'Upload now') }}
                         </button>
                     </div>
                 </div>

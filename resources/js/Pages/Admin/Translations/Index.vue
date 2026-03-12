@@ -108,7 +108,9 @@ const deleteTranslation = (item) => {
             </template>
 
             <template #cell-group="{ item }">
-                <span class="badge badge-xs badge-neutral opacity-50 uppercase font-black px-2">{{ item.group }}</span>
+                <span class="badge badge-xs badge-neutral opacity-50 uppercase font-black px-2">
+                    {{ t(`admin.translations.group_${item.group}`, item.group) }}
+                </span>
             </template>
             <template #cell-key="{ item }">
                 <span class="font-bold font-mono text-sm text-primary/80">{{ item.key }}</span>
@@ -140,10 +142,10 @@ const deleteTranslation = (item) => {
                     <div class="form-control">
                         <label class="label"><span class="label-text font-bold opacity-50">{{ t('admin.translations.group', 'Group') }}</span></label>
                         <select v-model="addForm.group" class="select select-bordered w-full rounded-xl bg-base-200/50">
-                            <option value="frontend">Frontend</option>
-                            <option value="admin">Admin</option>
-                            <option value="emails">Emails</option>
-                            <option value="default">Default</option>
+                            <option value="frontend">{{ t('admin.translations.group_frontend', 'Frontend') }}</option>
+                            <option value="admin">{{ t('admin.translations.group_admin', 'Admin') }}</option>
+                            <option value="emails">{{ t('admin.translations.group_emails', 'Emails') }}</option>
+                            <option value="default">{{ t('admin.translations.group_default', 'Default') }}</option>
                         </select>
                     </div>
                     <div class="form-control">

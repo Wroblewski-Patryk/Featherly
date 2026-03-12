@@ -6,10 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Revision;
 
+use Spatie\Translatable\HasTranslations;
+
 class Template extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
+    protected $fillable = ['title', 'type', 'is_active', 'is_default', 'content', 'meta_title', 'meta_description', 'canonical_url', 'og_image', 'seo_index', 'seo_follow'];
     protected $guarded = [];
+
+    public $translatable = ['title', 'meta_title', 'meta_description', 'og_image'];
 
     public function revisions(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
@@ -20,9 +25,6 @@ class Template extends Model
         'content' => 'array',
         'is_active' => 'boolean',
         'is_default' => 'boolean',
-        'meta_title' => 'array',
-        'meta_description' => 'array',
-        'og_image' => 'array',
     ];
 
     const TYPE_HEADER = 'header';

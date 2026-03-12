@@ -1,6 +1,9 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { PhFolderPlus, PhX, PhPencilSimple } from '@phosphor-icons/vue';
+import { useTranslations } from '@/Composables/useTranslations';
+
+const { t } = useTranslations();
 
 const props = defineProps({
     isOpen: Boolean,
@@ -33,18 +36,18 @@ const handleSubmit = () => {
                     <PhFolderPlus v-else weight="fill" class="w-6 h-6" />
                 </div>
                 <div>
-                    <h3 class="font-black text-xl tracking-tight">{{ folder ? 'Zmień nazwę' : 'Nowy folder' }}</h3>
-                    <p class="text-[9px] opacity-40 uppercase font-black tracking-widest mt-0.5">Uporządkuj swoje pliki</p>
+                    <h3 class="font-black text-xl tracking-tight">{{ folder ? t('admin.common.rename', 'Rename') : t('admin.media.new_folder', 'New folder') }}</h3>
+                    <p class="text-[9px] opacity-40 uppercase font-black tracking-widest mt-0.5">{{ t('admin.media.folder_organize_desc', 'Organize your files') }}</p>
                 </div>
             </div>
             
             <form @submit.prevent="handleSubmit" class="space-y-8">
                 <div class="form-control group">
-                    <label class="label"><span class="label-text font-black opacity-30 text-[10px] uppercase tracking-widest mb-1">Nazwa folderu</span></label>
+                    <label class="label"><span class="label-text font-black opacity-30 text-[10px] uppercase tracking-widest mb-1">{{ t('admin.media.folder_name', 'Folder Name') }}</span></label>
                     <input 
                         v-model="name" 
                         type="text" 
-                        placeholder="np. Kampania Letnia" 
+                        :placeholder="t('admin.media.folder_name_placeholder', 'e.g. Summer Campaign')" 
                         class="input input-bordered w-full focus:input-primary h-12 text-base font-bold px-4 bg-base-100 transition-all shadow-sm" 
                         required 
                         autofocus
@@ -52,10 +55,10 @@ const handleSubmit = () => {
                 </div>
                 
                 <div class="flex gap-3 justify-end pt-2">
-                    <button type="button" @click="$emit('close')" class="btn btn-ghost h-12 px-6 font-bold">Anuluj</button>
+                    <button type="button" @click="$emit('close')" class="btn btn-ghost h-12 px-6 font-bold">{{ t('admin.common.cancel', 'Cancel') }}</button>
                     <button type="submit" class="btn btn-primary h-12 px-8 font-bold shadow-lg shadow-primary/20" :disabled="processing">
                         <span v-if="processing" class="loading loading-spinner"></span>
-                        {{ folder ? 'Zapisz' : 'Utwórz' }}
+                        {{ folder ? t('admin.common.save', 'Save') : t('admin.common.create', 'Create') }}
                     </button>
                 </div>
             </form>
