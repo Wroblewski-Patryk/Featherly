@@ -124,6 +124,11 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        $this->call(AdminUiTranslationSeeder::class);
+        $this->call([
+            AdminUiTranslationSeeder::class,
+            PostSeeder::class,
+            ProjectSeeder::class,
+            TemplateSeeder::class,
+        ]);
     }
 }
