@@ -14,6 +14,28 @@ const props = defineProps(['block']);
 const page = usePage();
 const store = useBlockBuilderStore();
 const isEditor = inject('isEditor', false);
+
+// Safe reactive injection handles both refs and plain values
+const headerContent = computed(() => {
+    const injected = inject('headerContent', []);
+    const val = (injected && typeof injected === 'object' && 'value' in injected) ? injected.value : injected;
+    return Array.isArray(val) ? val : [];
+});
+const footerContent = computed(() => {
+    const injected = inject('footerContent', []);
+    const val = (injected && typeof injected === 'object' && 'value' in injected) ? injected.value : injected;
+    return Array.isArray(val) ? val : [];
+});
+const sidebarContent = computed(() => {
+    const injected = inject('sidebarContent', []);
+    const val = (injected && typeof injected === 'object' && 'value' in injected) ? injected.value : injected;
+    return Array.isArray(val) ? val : [];
+});
+const mainContent = computed(() => {
+    const injected = inject('mainContent', []);
+    const val = (injected && typeof injected === 'object' && 'value' in injected) ? injected.value : injected;
+    return Array.isArray(val) ? val : [];
+});
 const { t: originalT } = useTranslations();
 const t = (val, fallback = null) => {
     if (isEditor && store.editingLocale) {
@@ -194,7 +216,7 @@ const styleObj = computed(() => {
         // 3D Depth View (CUMULATIVE Z Depth)
         transform: store.isDepthView 
             ? `translate3d(0, 0, ${zValue * 100}px)` 
-            : `translate3d(0, 0, 0px)`,
+            : undefined,
         transformStyle: 'preserve-3d',
         // Add prominent border in 3D mode for better layer separation
         outline: store.isDepthView ? '2px solid rgba(255,255,255,0.15)' : undefined,
@@ -316,7 +338,8 @@ const contactForm = useForm({
             { 'hover-ring': isEditor && !store.isDragging && !block.hidden && !block.locked },
             { 'active-block shadow-lg z-10': isEditor && store.activeBlockId === block.id },
             { 'opacity-20 pointer-events-none grayscale': isEditor && block.hidden },
-            { 'pointer-events-none cursor-not-allowed select-none': isEditor && block.locked }
+            { 'pointer-events-none cursor-not-allowed select-none': isEditor && block.locked },
+            { 'sticky top-0 z-[60]': block.type === 'header_slot' }
         ]"
         @click.stop="isEditor && !block.locked ? (store.activeBlockId = block.id, store.isEditingBlock = false) : null"
         @mouseenter="isEditor && !block.locked ? (store.hoveredBlockId = block.id) : null"
@@ -647,17 +670,21 @@ const contactForm = useForm({
             </ul>
         </div>
 
-        <div v-else-if="block.type === 'navbar'" class="navbar bg-base-200 shadow border border-white/5 rounded-box">
+        <div v-else-if="block.type === 'navbar'" 
+             class="navbar bg-base-100 shadow-sm border-b border-base-content/5 px-4 md:px-8 min-h-[70px]"
+             :class="[
+                block.appearance?.sticky ? 'sticky top-0 z-[50]' : 'relative'
+             ]">
             <div class="flex-1">
-                <a class="btn btn-ghost text-xl">{{ t(block.content.title) }}</a>
+                <a class="btn btn-ghost text-xl font-black italic tracking-tighter uppercase">{{ t(block.content.title) || 'Featherly' }}</a>
             </div>
             <div class="flex-none hidden lg:flex">
-                <ul class="menu menu-horizontal px-1">
+                <ul class="menu menu-horizontal px-1 font-bold uppercase tracking-widest text-xs opacity-70">
                     <li v-for="(link, i) in block.content.links" :key="i"><a>{{ t(link) }}</a></li>
                 </ul>
             </div>
             <div class="flex-none">
-                <a class="btn btn-primary btn-sm ml-4" v-if="block.content.actionButton">{{ t(block.content.actionButton) }}</a>
+                <a class="btn btn-primary btn-sm rounded-full px-6 ml-4" v-if="block.content.actionButton">{{ t(block.content.actionButton) }}</a>
             </div>
         </div>
 
@@ -783,8 +810,20 @@ const contactForm = useForm({
 
         <!-- 9. Building -->
         <div v-else-if="block.type === 'template_reference'" 
-             class="template-reference-block border-2 border-dashed border-primary/30 rounded-3xl p-8 bg-primary/5 group/ref transition-all hover:bg-primary/10 hover:border-primary/50">
-            <div class="flex flex-col items-center justify-center text-center py-4">
+             class="template-reference-block"
+             :class="{'border-2 border-dashed border-primary/30 rounded-3xl p-8 bg-primary/5 group/ref transition-all hover:bg-primary/10 hover:border-primary/50': isEditor || !block.content?.template_content?.length}">
+            
+            <!-- Real Content (Runtime) -->
+            <template v-if="!isEditor && block.content?.template_content?.length">
+                <DynamicBlock 
+                    v-for="child in block.content.template_content" 
+                    :key="child.id" 
+                    :block="child" 
+                />
+            </template>
+
+            <!-- Placeholder (Editor or Empty) -->
+            <div v-else class="flex flex-col items-center justify-center text-center py-4">
                 <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover/ref:scale-110">
                     <PhPuzzlePiece weight="duotone" class="w-8 h-8 text-primary" />
                 </div>
@@ -793,12 +832,7 @@ const contactForm = useForm({
                     {{ block.content.template_id ? 'Template ID: ' + block.content.template_id : 'No Template Selected' }}
                 </p>
                 
-                <!-- If we have template data, we'd render it here in non-editor mode -->
-                <div v-if="!isEditor && block.content.template_content" class="w-full mt-8">
-                     <DynamicBlock v-for="child in block.content.template_content" :key="child.id" :block="child" />
-                </div>
-                
-                <div v-else-if="isEditor" class="mt-4">
+                <div v-if="isEditor" class="mt-4">
                     <button class="btn btn-sm btn-outline btn-primary rounded-full px-8" @click.stop="store.activeBlockId = block.id; store.isEditingBlock = true">
                         Select Template
                     </button>
@@ -806,11 +840,102 @@ const contactForm = useForm({
             </div>
         </div>
 
+        <!-- 10. Footer -->
+        <footer v-else-if="block.type === 'footer_standard'" 
+                class="w-full py-12 px-6"
+                :style="{ backgroundColor: block.appearance?.backgroundColor || '#1f2937', color: block.appearance?.textColor || '#ffffff' }">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <span class="text-2xl font-black italic uppercase tracking-tighter">Featherly</span>
+                    <span class="opacity-40 text-sm font-medium">| CMS</span>
+                </div>
+                <div class="text-sm opacity-60 font-medium tracking-wide">
+                    {{ t(block.content.copyright) || '© 2024 Featherly CMS' }}
+                </div>
+                <div class="flex gap-6 text-sm font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">
+                    <a href="#" class="hover:text-primary">Privacy</a>
+                    <a href="#" class="hover:text-primary">Terms</a>
+                </div>
+            </div>
+        </footer>
+
+
+        <!-- Header Slot -->
+        <header v-else-if="block.type === 'header_slot'" 
+             class="header-slot-block"
+             :class="{'border-2 border-dashed border-primary/30 rounded-2xl p-6 bg-primary/5 group/slot': isEditor}">
+            
+            <template v-if="headerContent?.length">
+                <DynamicBlock 
+                    v-for="subBlock in headerContent" 
+                    :key="subBlock.id" 
+                    :block="subBlock" 
+                />
+            </template>
+
+            <div v-else-if="isEditor" class="flex flex-col items-center justify-center text-center opacity-40 py-4">
+                <PhPuzzlePiece weight="duotone" class="w-10 h-10 mb-2" />
+                <span class="text-xs font-bold uppercase tracking-widest">Header Slot Placeholder</span>
+            </div>
+        </header>
+
+        <!-- Footer Slot -->
+        <footer v-else-if="block.type === 'footer_slot'" 
+             class="footer-slot-block mt-auto"
+             :class="{'border-2 border-dashed border-secondary/30 rounded-2xl p-6 bg-secondary/5 group/slot': isEditor}">
+            
+            <template v-if="footerContent?.length">
+                <DynamicBlock 
+                    v-for="subBlock in footerContent" 
+                    :key="subBlock.id" 
+                    :block="subBlock" 
+                />
+            </template>
+
+            <div v-else-if="isEditor" class="flex flex-col items-center justify-center text-center opacity-40 py-4">
+                <PhPuzzlePiece weight="duotone" class="w-10 h-10 mb-2" />
+                <span class="text-xs font-bold uppercase tracking-widest">Footer Slot Placeholder</span>
+            </div>
+        </footer>
+
+        <!-- Sidebar Slot -->
+        <div v-else-if="block.type === 'sidebar_slot'" 
+             class="sidebar-slot-block"
+             :class="{'border-2 border-dashed border-accent/30 rounded-2xl p-6 bg-accent/5 group/slot': isEditor}">
+            
+            <template v-if="sidebarContent?.length">
+                <DynamicBlock 
+                    v-for="subBlock in sidebarContent" 
+                    :key="subBlock.id" 
+                    :block="subBlock" 
+                />
+            </template>
+
+            <div v-else-if="isEditor" class="flex flex-col items-center justify-center text-center opacity-40 py-4">
+                <PhPuzzlePiece weight="duotone" class="w-10 h-10 mb-2" />
+                <span class="text-xs font-bold uppercase tracking-widest">Sidebar Slot Placeholder</span>
+            </div>
+        </div>
+
         <div v-else-if="block.type === 'content_slot'" 
-             class="content-slot-block border-2 border-dashed border-secondary/30 rounded-3xl p-12 bg-secondary/5 group/slot">
-            <div class="flex flex-col items-center justify-center text-center py-10 opacity-40 group-hover/slot:opacity-60 transition-opacity">
+             class="content-slot-block flex-grow"
+             :class="{'border-2 border-dashed border-secondary/30 rounded-3xl p-12 bg-secondary/5 group/slot': isEditor}">
+            
+            <!-- Real Content Injection (Runtime) -->
+            <template v-if="!isEditor">
+                <template v-if="mainContent?.length">
+                    <DynamicBlock 
+                        v-for="subBlock in mainContent" 
+                        :key="subBlock.id" 
+                        :block="subBlock" 
+                    />
+                </template>
+            </template>
+
+            <!-- Placeholder (Editor ONLY) -->
+            <div v-else-if="isEditor" class="flex flex-col items-center justify-center text-center py-10 opacity-40 group-hover/slot:opacity-60 transition-opacity">
                 <PhSquare weight="duotone" class="w-12 h-12 text-secondary mb-4" />
-                <h4 class="text-2xl font-black italic uppercase tracking-widest text-secondary">{{ t(block.content.label) }}</h4>
+                <h4 class="text-2xl font-black italic uppercase tracking-widest text-secondary">{{ t(block.content.label) || 'Content Slot' }}</h4>
                 <p class="text-sm mt-2 font-medium">This is where the unique page content will be injected.</p>
             </div>
         </div>

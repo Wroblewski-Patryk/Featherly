@@ -72,7 +72,9 @@
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.pages.main_template', 'Main Page Template') }}</span></label>
                             <select v-model="form.template_id" class="select select-bordered select-sm text-xs w-full">
                                 <option :value="null">{{ t('admin.pages.layout_default', 'Default Page Layout') }}</option>
-                                <option v-for="t in templates.page || []" :key="t.id" :value="t.id">{{ t.name }}</option>
+                                <option v-for="t in templates.page || []" :key="t.id" :value="t.id">
+                                    {{ t.title?.[activeLocale.value] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled Page Template' }}
+                                </option>
                             </select>
                         </div>
 
@@ -80,7 +82,9 @@
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.pages.header_section', 'Header Section') }}</span></label>
                             <select v-model="form.header_override_id" class="select select-bordered select-sm text-xs w-full">
                                 <option :value="null">{{ t('admin.pages.header_default', 'System Default Header') }}</option>
-                                <option v-for="t in templates.header || []" :key="t.id" :value="t.id">{{ t.name }}</option>
+                                <option v-for="t in templates.header || []" :key="t.id" :value="t.id">
+                                    {{ t.title?.[activeLocale.value] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled Header' }}
+                                </option>
                             </select>
                         </div>
 
@@ -88,7 +92,9 @@
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.pages.sidebar_section', 'Sidebar Section') }}</span></label>
                             <select v-model="form.sidebar_override_id" class="select select-bordered select-sm text-xs w-full">
                                 <option :value="null">{{ t('admin.pages.sidebar_default', 'System Default Sidebar') }}</option>
-                                <option v-for="t in templates.sidebar || []" :key="t.id" :value="t.id">{{ t.name }}</option>
+                                <option v-for="t in templates.sidebar || []" :key="t.id" :value="t.id">
+                                    {{ t.title?.[activeLocale.value] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled Sidebar' }}
+                                </option>
                             </select>
                         </div>
 
@@ -96,7 +102,9 @@
                             <label class="label pt-0"><span class="label-text text-xs font-bold opacity-60">{{ t('admin.pages.footer_section', 'Footer Section') }}</span></label>
                             <select v-model="form.footer_override_id" class="select select-bordered select-sm text-xs w-full">
                                 <option :value="null">{{ t('admin.pages.footer_default', 'System Default Footer') }}</option>
-                                <option v-for="t in templates.footer || []" :key="t.id" :value="t.id">{{ t.name }}</option>
+                                <option v-for="t in templates.footer || []" :key="t.id" :value="t.id">
+                                    {{ t.title?.[activeLocale.value] || t.title?.pl || Object.values(t.title || {})[0] || 'Untitled Footer' }}
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -245,7 +253,7 @@ const form = useForm({
 const previewUrl = computed(() => form.slug?.[activeLocale.value] ? `/${form.slug[activeLocale.value]}` : null);
 
 onMounted(() => {
-    store.init(props.page?.content || []);
+    store.init(props.page?.content || { pl: [], en: [] });
 });
 
 const generateSlug = (text) => {
@@ -263,18 +271,26 @@ const generateSlug = (text) => {
 
 // Auto-slug generation - always update on title change
 watch(() => form.title[activeLocale.value], (newTitle) => {
-    form.slug[activeLocale.value] = generateSlug(newTitle);
+    if (newTitle) {
+        form.slug[activeLocale.value] = generateSlug(newTitle);
+    }
 });
 
 const restoreRevision = (rev) => {
     if (confirm(t('admin.common.are_you_sure', 'Are you sure you want to restore this version? Current unsaved changes will be lost.'))) {
-        store.init(rev.content);
+        store.init(rev.content || { pl: [], en: [] });
         store.isDirty = true;
     }
 };
 
 const save = () => {
-    form.content = store.blocks;
+    // Sync current blocks to map before saving everything
+    if (store.editingLocale) {
+        store.blocksMap[store.editingLocale] = JSON.parse(JSON.stringify(store.blocks));
+    }
+    
+    form.content = store.blocksMap;
+    
     if (props.page?.id) {
         form.put(route('admin.pages.update', props.page.id), {
             onSuccess: () => {

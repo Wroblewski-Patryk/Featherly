@@ -11,6 +11,9 @@ const props = defineProps({
     posts: Object,
     page: Object,
     seo: Object,
+    header: Object,
+    footer: Object,
+    page_template: Object,
 });
 
 const { t } = useTranslations();
@@ -19,7 +22,12 @@ const { t } = useTranslations();
 <template>
     <SeoHead v-if="seo" v-bind="seo" />
 
-    <AppLayout :page="page">
+    <AppLayout 
+        :page="page" 
+        :header="header" 
+        :footer="footer" 
+        :page_template="page_template"
+    >
         <!-- Render Dynamic Blocks from the Page (if linked) -->
         <div v-if="page && page.content && page.content.length" class="page-blocks">
             <DynamicBlock 

@@ -10,6 +10,9 @@ import { useTranslations } from '@/Composables/useTranslations';
 const props = defineProps({
     post: Object,
     seo: Object,
+    header: Object,
+    footer: Object,
+    page_template: Object,
 });
 
 const { t } = useTranslations();
@@ -18,7 +21,12 @@ const { t } = useTranslations();
 <template>
     <SeoHead v-if="seo" v-bind="seo" />
 
-    <AppLayout :page="post">
+    <AppLayout 
+        :header="props.header" 
+        :footer="props.footer" 
+        :page_template="props.page_template" 
+        :page="props.post"
+    >
         <article v-if="post" class="relative z-20 max-w-4xl mx-auto px-4 py-32 text-white">
             <!-- Back button -->
             <Link :href="`/${$page.props.archive_slugs.blog}`" class="inline-flex items-center text-sm font-bold tracking-widest uppercase text-white/50 hover:text-white transition-colors mb-12">
