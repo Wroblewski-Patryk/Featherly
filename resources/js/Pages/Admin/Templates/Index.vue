@@ -48,9 +48,17 @@ function deleteTemplate(item) {
             @delete-confirmed="deleteTemplate"
         >
             <template #cell-title="{ item }">
-                <Link :href="route('admin.templates.edit', item.id)" class="font-medium hover:text-primary transition-colors">
-                    {{ t(item.title) }}
-                </Link>
+                <div class="flex items-center gap-2">
+                    <Link :href="route('admin.templates.edit', item.id)" class="font-medium hover:text-primary transition-colors">
+                        {{ typeof item.title === 'object' ? (item.title[activeLocale] || item.title['pl'] || Object.values(item.title)[0]) : item.title }}
+                    </Link>
+                    <div v-if="item.is_system" class="badge badge-primary badge-xs py-2 px-2 gap-1 text-[10px] font-bold uppercase tracking-wider">
+                        SYSTEM
+                    </div>
+                    <div v-if="item.is_default" class="badge badge-secondary badge-xs py-2 px-2 gap-1 text-[10px] font-bold uppercase tracking-wider">
+                        DEFAULT
+                    </div>
+                </div>
             </template>
             <template #cell-type="{ item }">
                 <div class="badge badge-neutral capitalize font-bold bg-base-300 border-none px-3">
@@ -63,9 +71,17 @@ function deleteTemplate(item) {
                     <Link :href="route('admin.templates.edit', item.id)" class="btn btn-sm btn-ghost btn-square hover:bg-primary/10 hover:text-primary transition-all" :title="t('admin.common.edit', 'Edit')">
                         <PhPencilSimple weight="regular" class="w-4 h-4" />
                     </Link>
-                    <button @click="tableRef?.openDeleteModal(item)" class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all" :title="t('admin.common.delete', 'Delete')">
+                    <button 
+                        v-if="!item.is_system"
+                        @click="tableRef?.openDeleteModal(item)" 
+                        class="btn btn-sm btn-ghost btn-square hover:bg-error/10 hover:text-error transition-all" 
+                        :title="t('admin.common.delete', 'Delete')"
+                    >
                         <PhTrash weight="regular" class="w-4 h-4" />
                     </button>
+                    <div v-else class="w-8 h-8 flex items-center justify-center opacity-20" :title="t('admin.templates.cannot_delete_system', 'Cannot delete system template')">
+                        <PhTrash weight="regular" class="w-4 h-4" />
+                    </div>
                 </div>
             </template>
         </ResourceTable>

@@ -11,12 +11,23 @@ const props = defineProps({
     page: Object,
     settings: Object,
     seo: Object,
+    header: Object,
+    footer: Object,
+    sidebar: Object,
+    page_template: Object,
 });
 </script>
 
 <template>
     <SeoHead v-if="seo" v-bind="seo" />
-    <AppLayout :settings="settings">
+    <AppLayout 
+        :settings="props.settings" 
+        :page="props.page" 
+        :header="props.header" 
+        :footer="props.footer" 
+        :sidebar="props.sidebar" 
+        :page_template="props.page_template"
+    >
 
         <div v-if="page.content" class="page-content">
             <DynamicBlock 

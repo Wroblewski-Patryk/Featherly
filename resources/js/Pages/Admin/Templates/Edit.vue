@@ -199,22 +199,30 @@ const generateSlug = (text) => {
 const templateSlug = ref(generateSlug(form.title[activeLocale.value]));
 
 watch(() => form.title[activeLocale.value], (newTitle) => {
-    templateSlug.value = generateSlug(newTitle);
+    if (newTitle) {
+        templateSlug.value = generateSlug(newTitle);
+    }
 });
 
 onMounted(() => {
-    store.init(props.template?.content || []);
+    store.init(props.template?.content || { pl: [], en: [] });
 });
 
 const restoreRevision = (rev) => {
     if (confirm('Are you sure you want to restore this version? Current unsaved changes will be lost.')) {
-        store.init(rev.content);
+        store.init(rev.content || { pl: [], en: [] });
         store.isDirty = true;
     }
 };
 
 const save = () => {
-    form.content = store.blocks;
+    // Sync current blocks to map before saving everything
+    if (store.editingLocale) {
+        store.blocksMap[store.editingLocale] = JSON.parse(JSON.stringify(store.blocks));
+    }
+    
+    form.content = store.blocksMap;
+    
     if (props.template?.id) {
         form.put(route('admin.templates.update', props.template.id), {
             onSuccess: () => {

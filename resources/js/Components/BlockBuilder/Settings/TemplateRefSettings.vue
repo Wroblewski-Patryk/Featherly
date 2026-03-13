@@ -4,7 +4,7 @@
         <select v-model="modelValue.template_id" class="select select-bordered select-sm w-full">
             <option :value="null">None</option>
             <option v-for="t in templates" :key="t.id" :value="t.id">
-                {{ t.name }} ({{ t.type }})
+                {{ typeof t.title === 'object' ? (t.title[store.editingLocale] || t.title['pl'] || Object.values(t.title)[0]) : t.title }} ({{ t.type }})
             </option>
         </select>
         <p class="text-[10px] opacity-40 italic">Note: Only headers, footers, and sidebars should be referenced here.</p>
@@ -12,6 +12,10 @@
 </template>
 
 <script setup>
+import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+
+const store = useBlockBuilderStore();
+
 const props = defineProps({
     modelValue: {
         type: Object,

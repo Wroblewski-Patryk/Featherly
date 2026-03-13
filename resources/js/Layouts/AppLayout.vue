@@ -1,72 +1,107 @@
-<template>
-  <ThemeStyleProvider />
-  <div class="relative bg-base-100 min-h-screen flex flex-col mx-auto w-full overflow-x-hidden shadow-2xl">
-    <!-- Header Wrapper -->
-    <header v-if="activeHeader" class="relative">
-      <div class="fixed top-6 right-6 z-[60]">
-        <LanguageSwitcher />
-      </div>
-      <DynamicBlock 
-        v-for="(block, index) in activeHeader" 
-        :key="'header-'+index" 
-        :block="block" 
-      />
-    </header>
-
-    <!-- Main Content -->
-    <main>
-      <slot />
-    </main>
-
-    <!-- Footer Wrapper -->
-    <footer v-if="activeFooter">
-      <DynamicBlock 
-        v-for="(block, index) in activeFooter" 
-        :key="'footer-'+index" 
-        :block="block" 
-      />
-    </footer>
-  </div>
-</template>
-
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, provide } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import DynamicBlock from '@/Components/DynamicBlock.vue'
-import LanguageSwitcher from '@/Components/LanguageSwitcher.vue'
 import ThemeStyleProvider from '@/Components/ThemeStyleProvider.vue'
 import { useTranslations } from '@/Composables/useTranslations'
 
 const { t } = useTranslations();
 
 const props = defineProps({
-  settings: {
-    type: Object,
-    default: () => ({})
-  },
   page: {
     type: Object,
-    default: () => null
-  }
+    default: () => ({ content: [] })
+  },
+  header: Object,
+  footer: Object,
+  sidebar: Object,
+  page_template: Object,
 });
 
 const pageProps = usePage().props;
 
-const activeHeader = computed(() => {
-  if (pageProps.page?.header_override?.content) return pageProps.page.header_override.content;
-  return pageProps.settings?.default_header_content; // Fallback or global header
+// Compute winning content for each section (Page Override > Global Default)
+const activeLocale = computed(() => pageProps.locale || 'pl');
+
+const activeHeaderContent = computed(() => {
+  const content = props.header?.content || pageProps.header?.content || pageProps.settings?.default_header_content;
+  if (content && typeof content === 'object' && !Array.isArray(content)) {
+    return content[activeLocale.value] || content['pl'] || [];
+  }
+  return content || [];
 });
 
-const activeFooter = computed(() => {
-  if (pageProps.page?.footer_override?.content) return pageProps.page.footer_override.content;
-  return pageProps.settings?.default_footer_content;
+const activeFooterContent = computed(() => {
+  const content = props.footer?.content || pageProps.footer?.content || pageProps.settings?.default_footer_content;
+  if (content && typeof content === 'object' && !Array.isArray(content)) {
+    return content[activeLocale.value] || content['pl'] || [];
+  }
+  return content || [];
 });
 
+const activeSidebarContent = computed(() => {
+  const content = props.sidebar?.content || pageProps.sidebar?.content || pageProps.settings?.default_sidebar_content;
+  if (content && typeof content === 'object' && !Array.isArray(content)) {
+    return content[activeLocale.value] || content['pl'] || [];
+  }
+  return content || [];
+});
 
+// Provide the content to child blocks (slots)
+provide('isEditor', false);
+provide('mainContent', computed(() => {
+  const content = props.page?.content;
+  if (content && typeof content === 'object' && !Array.isArray(content)) {
+    return content[activeLocale.value] || content['pl'] || [];
+  }
+  return content || [];
+}));
+provide('headerContent', activeHeaderContent);
+provide('footerContent', activeFooterContent);
+provide('sidebarContent', activeSidebarContent);
 
 onMounted(() => {
   // Reset the theme to light for the public frontend 
-  // so that the admin panel theme (if any) doesn't bleed through
   document.documentElement.setAttribute('data-theme', 'light');
 });
 </script>
+
+<template>
+  <ThemeStyleProvider />
+
+  <!-- Page Template Rendering -->
+  <template v-if="page_template && page_template.content && page_template.content.length > 0">
+    <div class="page-template-wrapper min-h-screen flex flex-col">
+      <DynamicBlock 
+        v-for="block in page_template.content" 
+        :key="block.id" 
+        :block="block" 
+      />
+    </div>
+  </template>
+
+  <!-- Default Layout Rendering (No template used) -->
+  <div v-else class="flex flex-col min-h-screen">
+    <header v-if="activeHeaderContent && activeHeaderContent.length > 0" class="sticky top-0 left-0 right-0 z-50">
+      <DynamicBlock 
+        v-for="block in activeHeaderContent" 
+        :key="block.id" 
+        :block="block" 
+      />
+    </header>
+
+    <main class="flex-grow">
+      <slot />
+    </main>
+
+    <footer v-if="activeFooterContent && activeFooterContent.length > 0" class="mt-auto">
+      <DynamicBlock 
+        v-for="block in activeFooterContent" 
+        :key="block.id" 
+        :block="block" 
+      />
+    </footer>
+  </div>
+</template>
+
+<!-- Vite Rebuild Trigger -->

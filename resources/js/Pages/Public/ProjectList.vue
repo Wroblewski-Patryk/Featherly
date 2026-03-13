@@ -10,6 +10,9 @@ const props = defineProps({
     page: Object,
     settings: Object,
     seo: Object,
+    header: Object,
+    footer: Object,
+    page_template: Object,
 });
 
 const { t } = useTranslations();
@@ -17,7 +20,13 @@ const { t } = useTranslations();
 
 <template>
     <SeoHead v-if="seo" v-bind="seo" />
-    <AppLayout :settings="settings">
+    <AppLayout 
+        :settings="settings" 
+        :page="page" 
+        :header="header" 
+        :footer="footer" 
+        :page_template="page_template"
+    >
         
         <div class="max-w-7xl mx-auto px-6 py-24">
             <h1 class="text-6xl font-black italic uppercase tracking-tighter mb-12">{{ t(page.title) }}</h1>

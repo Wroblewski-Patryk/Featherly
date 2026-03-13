@@ -12,8 +12,9 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         expandedNodes: {}, // Persist expanded/collapsed state of layers
         sidebarCollapses: {}, // Persist expanded/collapsed state of sidebar sections
         isEditingBlock: false,
-        editingLocale: null,
+        editingLocale: 'pl',
         availableLocales: [],
+        blocksMap: {}, // Map of blocks per locale { pl: [], en: [] }
         categories: [
             {
                 id: 'typography',
@@ -124,6 +125,9 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 blocks: [
                     { type: 'template_reference', label: 'Template Part', icon: 'PhLayout' },
                     { type: 'content_slot', label: 'Content Slot', icon: 'PhSquare' },
+                    { type: 'header_slot', label: 'Header Slot', icon: 'PhArrowUp' },
+                    { type: 'footer_slot', label: 'Footer Slot', icon: 'PhArrowDown' },
+                    { type: 'sidebar_slot', label: 'Sidebar Slot', icon: 'PhSidebars' },
                 ]
             },
             {
@@ -139,8 +143,19 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
         ],
     }),
     actions: {
-        init(initialBlocks) {
-            this.blocks = Array.isArray(initialBlocks) ? initialBlocks : [];
+        init(initialContent) {
+            if (initialContent && !Array.isArray(initialContent) && typeof initialContent === 'object') {
+                // New format: { pl: [], en: [] }
+                this.blocksMap = JSON.parse(JSON.stringify(initialContent));
+                const locale = this.editingLocale || Object.keys(this.blocksMap)[0] || 'pl';
+                this.blocks = Array.isArray(this.blocksMap[locale]) ? this.blocksMap[locale] : [];
+            } else {
+                // Old/Flat format
+                this.blocks = Array.isArray(initialContent) ? initialContent : [];
+                if (this.editingLocale) {
+                    this.blocksMap[this.editingLocale] = this.blocks;
+                }
+            }
             this.isDirty = false;
         },
         initLocales(languages, currentLocale) {
@@ -148,9 +163,27 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
             if (!this.editingLocale) {
                 this.editingLocale = currentLocale;
             }
+            // Ensure blocksMap has entries for all available locales
+            this.availableLocales.forEach(lang => {
+                const code = typeof lang === 'string' ? lang : lang.code;
+                if (!this.blocksMap[code]) {
+                    this.blocksMap[code] = [];
+                }
+            });
         },
         setEditingLocale(locale) {
+            // Save current blocks to map before switching
+            if (this.editingLocale) {
+                this.blocksMap[this.editingLocale] = JSON.parse(JSON.stringify(this.blocks));
+            }
+            
             this.editingLocale = locale;
+            
+            // Load blocks for the new locale
+            if (!this.blocksMap[locale]) {
+                this.blocksMap[locale] = [];
+            }
+            this.blocks = this.blocksMap[locale];
         },
         createBlockObject(type, parentId = null) {
             const defaults = {
@@ -231,6 +264,9 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 // 9. Building
                 template_reference: { template_id: null },
                 content_slot: { label: 'Page Content Placeholder' },
+                header_slot: { label: 'Header Injection Point' },
+                footer_slot: { label: 'Footer Injection Point' },
+                sidebar_slot: { label: 'Sidebar Injection Point' },
 
             };
 
@@ -286,23 +322,6 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 this.blocks.push(newBlock);
             }
             this.activeBlockId = newBlock.id;
-            this.isDirty = true;
-        },
-
-        removeBlock(id) {
-            const findAndRemove = (list) => {
-                for (let i = 0; i < list.length; i++) {
-                    if (list[i].id === id) {
-                        list.splice(i, 1);
-                        return true;
-                    }
-                    if (list[i].children && findAndRemove(list[i].children)) return true;
-                }
-                return false;
-            };
-            findAndRemove(this.blocks);
-
-            if (this.activeBlockId === id) this.activeBlockId = null;
             this.isDirty = true;
         },
         duplicateBlock(id) {

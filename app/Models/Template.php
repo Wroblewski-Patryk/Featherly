@@ -11,10 +11,21 @@ use Spatie\Translatable\HasTranslations;
 class Template extends Model
 {
     use HasFactory, HasTranslations;
-    protected $fillable = ['title', 'type', 'is_active', 'is_default', 'content', 'meta_title', 'meta_description', 'canonical_url', 'og_image', 'seo_index', 'seo_follow'];
+    protected $fillable = ['title', 'type', 'is_active', 'is_default', 'is_system', 'content', 'meta_title', 'meta_description', 'canonical_url', 'og_image', 'seo_index', 'seo_follow'];
     protected $guarded = [];
 
     public $translatable = ['title', 'meta_title', 'meta_description', 'og_image'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($template) {
+            if ($template->is_system) {
+                throw new \Exception('Cannot delete system template.');
+            }
+        });
+    }
 
     public function revisions(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
@@ -25,6 +36,7 @@ class Template extends Model
         'content' => 'array',
         'is_active' => 'boolean',
         'is_default' => 'boolean',
+        'is_system' => 'boolean',
     ];
 
     const TYPE_HEADER = 'header';

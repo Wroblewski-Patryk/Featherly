@@ -135,6 +135,10 @@ class TemplateController extends Controller
 
     public function destroy(Template $template)
     {
+        if ($template->is_system) {
+            return redirect()->back()->with('error', 'templates.delete_system_error');
+        }
+
         $template->delete();
         return redirect()->back()->with('success', 'templates.delete_success');
     }

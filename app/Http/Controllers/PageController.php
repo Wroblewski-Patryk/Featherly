@@ -6,6 +6,7 @@ use App\Models\Page;
 use App\Models\Post;
 use App\Models\Project;
 use App\Models\Setting;
+use App\Models\Template;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -165,15 +166,26 @@ class PageController extends Controller
         }
 
         $seoService = app(\App\Services\SeoService::class);
+        $contentService = app(\App\Services\BlockContentService::class);
         
         // Resolve translatable content for frontend
         $pageData = $page->toArray();
-        $pageData['content'] = $page->content; // Spatie returns current locale when accessed directly
+        $pageData['content'] = $contentService->resolveReferences($page->content ?: []); 
         $pageData['title'] = $page->title;
         $pageData['slug'] = $page->slug;
 
+        // Resolve templates
+        $header = $page->headerOverride ?: Template::where('type', 'header')->where('is_active', true)->where('is_default', true)->first();
+        $footer = $page->footerOverride ?: Template::where('type', 'footer')->where('is_active', true)->where('is_default', true)->first();
+        $sidebar = $page->sidebarOverride ?: Template::where('type', 'sidebar')->where('is_active', true)->where('is_default', true)->first();
+        $pageTemplate = $page->template ?: Template::where('type', 'page')->where('is_active', true)->where('is_default', true)->first();
+
         return Inertia::render($component, [
             'page' => $pageData,
+            'header' => $header ? ['content' => $contentService->resolveReferences($header->content ?: [])] : null,
+            'footer' => $footer ? ['content' => $contentService->resolveReferences($footer->content ?: [])] : null,
+            'sidebar' => $sidebar ? ['content' => $contentService->resolveReferences($sidebar->content ?: [])] : null,
+            'page_template' => $pageTemplate ? ['content' => $contentService->resolveReferences($pageTemplate->content ?: [])] : null,
             'settings' => $settings,
             'seo' => $seoService->getMetaData($page),
             'all_projects' => Project::all(),
@@ -211,12 +223,24 @@ class PageController extends Controller
             $blogTitle = $blogId ? $seoService->getEntityTitle(Page::find($blogId)) : 'Blog';
 
             $postData = $post->toArray();
-            $postData['content'] = $post->content;
+            $postData['content'] = app(\App\Services\BlockContentService::class)->resolveReferences($post->content ?: []);
             $postData['title'] = $post->title;
             $postData['slug'] = $post->slug;
 
+            // Resolve templates for posts
+            $header = Template::where('type', 'header')->where('is_active', true)->where('is_default', true)->first();
+            $footer = Template::where('type', 'footer')->where('is_active', true)->where('is_default', true)->first();
+            $sidebar = Template::where('type', 'sidebar')->where('is_active', true)->where('is_default', true)->first();
+            $pageTemplate = Template::where('type', 'page')->where('is_active', true)->where('is_default', true)->first();
+
+            $contentService = app(\App\Services\BlockContentService::class);
+
             return Inertia::render('Blog/Show', [
                 'post' => $postData,
+                'header' => $header ? ['content' => $contentService->resolveReferences($header->content ?: [])] : null,
+                'footer' => $footer ? ['content' => $contentService->resolveReferences($footer->content ?: [])] : null,
+                'sidebar' => $sidebar ? ['content' => $contentService->resolveReferences($sidebar->content ?: [])] : null,
+                'page_template' => $pageTemplate ? ['content' => $contentService->resolveReferences($pageTemplate->content ?: [])] : null,
                 'settings' => $settings,
                 'seo' => $seoService->getMetaData($post, $blogTitle),
             ]);
@@ -255,12 +279,24 @@ class PageController extends Controller
             $projectsTitle = $projectsId ? $seoService->getEntityTitle(Page::find($projectsId)) : 'Projekty';
 
             $projectData = $project->toArray();
-            $projectData['content'] = $project->content;
+            $projectData['content'] = app(\App\Services\BlockContentService::class)->resolveReferences($project->content ?: []);
             $projectData['title'] = $project->title;
             $projectData['slug'] = $project->slug;
 
+            // Resolve templates for projects
+            $header = Template::where('type', 'header')->where('is_active', true)->where('is_default', true)->first();
+            $footer = Template::where('type', 'footer')->where('is_active', true)->where('is_default', true)->first();
+            $sidebar = Template::where('type', 'sidebar')->where('is_active', true)->where('is_default', true)->first();
+            $pageTemplate = Template::where('type', 'page')->where('is_active', true)->where('is_default', true)->first();
+
+            $contentService = app(\App\Services\BlockContentService::class);
+
             return Inertia::render('Public/Project', [
                 'project' => $projectData,
+                'header' => $header ? ['content' => $contentService->resolveReferences($header->content ?: [])] : null,
+                'footer' => $footer ? ['content' => $contentService->resolveReferences($footer->content ?: [])] : null,
+                'sidebar' => $sidebar ? ['content' => $contentService->resolveReferences($sidebar->content ?: [])] : null,
+                'page_template' => $pageTemplate ? ['content' => $contentService->resolveReferences($pageTemplate->content ?: [])] : null,
                 'settings' => $settings,
                 'seo' => $seoService->getMetaData($project, $projectsTitle),
             ]);
