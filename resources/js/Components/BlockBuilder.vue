@@ -14,40 +14,54 @@
             @update:customHeight="customHeight = $event"
             @save="$emit('save')"
         >
-            <template #actions-left>
-                <div class="flex items-center mr-2">
-                    <div class="join">
-                        <button @click="showLeftSidebar = !showLeftSidebar" class="btn btn-xs join-item h-8 px-3 gap-2" :class="showLeftSidebar ? 'btn-primary' : 'btn-ghost'" :title="t('admin.builder.toggle_palette', 'Toggle Block Palette')">
-                            <PhCube weight="bold" class="w-3 h-3" />
-                        </button>
-                        <button @click="toggleTimeline" class="btn btn-xs join-item h-8 px-3 gap-2" :class="showTimeline ? 'btn-primary' : 'btn-ghost'" :title="t('admin.builder.toggle_timeline', 'Toggle Timeline')">
-                            <PhTimer weight="bold" class="w-3 h-3" />
-                        </button>
-                        <button @click="store.showRightSidebar = !store.showRightSidebar" class="btn btn-xs join-item h-8 px-3 gap-2" :class="store.showRightSidebar ? 'btn-primary' : 'btn-ghost'" :title="t('admin.builder.toggle_inspector', 'Toggle Document Inspector')">
-                            <PhSlidersHorizontal weight="bold" class="w-3 h-3" />
-                        </button>
-                    </div>
-
-                    <div class="h-4 w-[1px] bg-base-content/15 mx-2"></div>
-
-                    <button @click="store.isDepthView = !store.isDepthView" class="btn btn-xs h-8 px-3 gap-2" :class="store.isDepthView ? 'btn-primary' : 'btn-ghost'" :title="t('admin.builder.toggle_3d', 'Toggle 3D View')">
-                        <PhStack weight="bold" class="w-3 h-3" />
+            <!-- Language Switcher -->
+            <template #languages>
+                <div v-if="store.availableLocales.length > 1" class="join bg-base-200/50 p-0.5 rounded-lg">
+                    <button 
+                        v-for="lang in store.availableLocales" 
+                        :key="lang.code"
+                        @click="store.setEditingLocale(lang.code)"
+                        class="btn btn-xs join-item h-7 px-2.5 gap-2 border-none"
+                        :class="store.editingLocale === lang.code ? 'btn-primary shadow-sm' : 'btn-ghost opacity-60 hover:opacity-100'"
+                    >
+                        <span :class="`fi fi-${lang.code === 'en' ? 'gb' : lang.code} rounded-sm w-3 h-2`"></span>
+                        <span class="text-[9px] font-black tracking-widest">{{ lang.code }}</span>
                     </button>
+                </div>
+            </template>
 
-                    <div class="h-4 w-[1px] bg-base-content/15 mx-2"></div>
+            <!-- Sidebar Toggle Controls -->
+            <template #sidebars>
+                <div class="join bg-base-200/50 p-0.5 rounded-lg">
+                    <button @click="showLeftSidebar = !showLeftSidebar" class="btn btn-xs join-item h-7 px-2.5 gap-2 border-none" :class="showLeftSidebar ? 'btn-primary' : 'btn-ghost opacity-60'" :title="t('admin.builder.toggle_palette', 'Toggle Block Palette')">
+                        <PhCube weight="bold" class="w-3.5 h-3.5" />
+                    </button>
+                    <button @click="toggleTimeline" class="btn btn-xs join-item h-7 px-2.5 gap-2 border-none" :class="showTimeline ? 'btn-primary' : 'btn-ghost opacity-60'" :title="t('admin.builder.toggle_timeline', 'Toggle Timeline')">
+                        <PhTimer weight="bold" class="w-3.5 h-3.5" />
+                    </button>
+                    <button @click="store.showRightSidebar = !store.showRightSidebar" class="btn btn-xs join-item h-7 px-2.5 gap-2 border-none" :class="store.showRightSidebar ? 'btn-primary' : 'btn-ghost opacity-60'" :title="t('admin.builder.toggle_inspector', 'Toggle Document Inspector')">
+                        <PhSlidersHorizontal weight="bold" class="w-3.5 h-3.5" />
+                    </button>
+                </div>
+            </template>
 
-                    <div class="join items-center">
-                        <button @click="zoomOut" class="btn btn-xs btn-ghost join-item h-8 px-3 gap-2" :title="t('admin.builder.zoom_out', 'Zoom Out')">
-                            <PhMinus weight="bold" class="w-3 h-3" />
-                        </button>
-                        <span class="join-item h-8 px-2 text-[10px] font-black font-mono text-center flex items-center">{{ Math.round(zoomLevel * 100) }}%</span>
-                        <button @click="zoomIn" class="btn btn-xs btn-ghost join-item h-8 px-3 gap-2" :title="t('admin.builder.zoom_in', 'Zoom In')">
-                            <PhPlus weight="bold" class="w-3 h-3" />
-                        </button>
-                        <button @click="resetZoom" class="btn btn-xs btn-ghost join-item h-8 px-3 gap-2" :title="t('admin.builder.zoom_reset', 'Reset Zoom')">
-                            <PhArrowUUpLeft weight="bold" class="w-3 h-3" />
-                        </button>
-                    </div>
+            <!-- 3D & Layers Tools -->
+            <template #tools>
+                <button @click="store.isDepthView = !store.isDepthView" class="btn btn-xs h-7 px-2.5 gap-2 rounded-lg border-none" :class="store.isDepthView ? 'btn-primary' : 'bg-base-200/50 btn-ghost opacity-60 hover:opacity-100'" :title="t('admin.builder.toggle_3d', 'Toggle 3D View')">
+                    <PhStack weight="bold" class="w-3.5 h-3.5" />
+                </button>
+            </template>
+
+            <!-- Zoom Controls -->
+            <template #zoom>
+                <div class="join bg-base-200/50 p-0.5 rounded-lg">
+                    <button @click="zoomOut" class="btn btn-xs btn-ghost join-item h-7 px-2 border-none opacity-60 hover:opacity-100" :title="t('admin.builder.zoom_out', 'Zoom Out')">
+                        <PhMinus weight="bold" class="w-3 h-3" />
+                    </button>
+                    <span class="join-item h-7 px-2 text-[9px] font-black font-mono flex items-center min-w-[40px] justify-center opacity-70">{{ Math.round(zoomLevel * 100) }}%</span>
+                    <button @click="zoomIn" class="btn btn-xs btn-ghost join-item h-7 px-2 border-none opacity-60 hover:opacity-100" :title="t('admin.builder.zoom_in', 'Zoom In')">
+                        <PhPlus weight="bold" class="w-3 h-3" />
+                    </button>
                 </div>
             </template>
         </BuilderHeader>
