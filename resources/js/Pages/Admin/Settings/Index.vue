@@ -17,7 +17,14 @@ const props = defineProps({
 const languages = usePage().props.languages || [];
 const { t } = useTranslations();
 const isMediaPickerOpen = ref(false);
-const currentLocale = usePage().props.locale || 'en';
+const currentLocale = computed(() => usePage().props.locale || 'en');
+
+const getEmptyLocales = (field) => {
+    return languages.reduce((acc, lang) => {
+        acc[lang.code] = props.settings[field]?.[lang.code] || '';
+        return acc;
+    }, {});
+};
 
 const breadcrumbs = [
     { label: t('admin.dashboard.title', 'Dashboard'), url: route('admin.dashboard.index'), icon: markRaw(PhHouse) },
@@ -34,21 +41,12 @@ const form = useForm({
     page_404_id: props.settings.page_404_id || '',
     
     // SEO Settings (Dynamic)
-    site_name: languages.reduce((acc, lang) => {
-        acc[lang.code] = props.settings.site_name?.[lang.code] || '';
-        return acc;
-    }, {}),
-    site_description: languages.reduce((acc, lang) => {
-        acc[lang.code] = props.settings.site_description?.[lang.code] || '';
-        return acc;
-    }, {}),
+    site_name: getEmptyLocales('site_name'),
+    site_description: getEmptyLocales('site_description'),
     title_separator: props.settings.title_separator || ' - ',
     homepage_include_page_title: props.settings.homepage_include_page_title === '1' || props.settings.homepage_include_page_title === true,
     title_order: props.settings.title_order || 'brand_first',
-    default_meta_description: languages.reduce((acc, lang) => {
-        acc[lang.code] = props.settings.default_meta_description?.[lang.code] || '';
-        return acc;
-    }, {}),
+    default_meta_description: getEmptyLocales('default_meta_description'),
     default_og_image: props.settings.default_og_image || '',
     admin_noindex: props.settings.admin_noindex !== '0' && props.settings.admin_noindex !== false, // default true
     robots_disallow_admin: props.settings.robots_disallow_admin !== '0' && props.settings.robots_disallow_admin !== false, // default true

@@ -2,8 +2,10 @@
 import { ref, watch } from 'vue';
 import { PhLink, PhX, PhCaretRight, PhTrash, PhImageSquare, PhFile } from '@phosphor-icons/vue';
 import { useTranslations } from '@/Composables/useTranslations';
+import { useFormatter } from '@/Composables/useFormatter';
 
 const { t } = useTranslations();
+const { formatDate } = useFormatter();
 
 const props = defineProps({
     item: Object,
@@ -58,7 +60,7 @@ watch(() => props.item, (newItem) => {
                         <div class="grid grid-cols-2 gap-4">
                             <div class="bg-base-200/50 p-4 rounded-xl border border-base-300/50">
                                 <p class="text-[10px] uppercase font-black opacity-30 tracking-widest mb-1">{{ t('admin.common.created_at', 'Created At') }}</p>
-                                <p class="text-xs font-bold">{{ new Date(item.created_at).toLocaleDateString() }}</p>
+                                <p class="text-xs font-bold">{{ formatDate(item.created_at) }}</p>
                             </div>
                             <div class="bg-base-200/50 p-4 rounded-xl border border-base-300/50">
                                 <p class="text-[10px] uppercase font-black opacity-30 tracking-widest mb-1">{{ t('admin.media.dimensions', 'Dimensions') }}</p>

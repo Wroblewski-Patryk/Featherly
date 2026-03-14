@@ -59,7 +59,18 @@ class PageController extends Controller
             'title' => 'required|array',
             'title.*' => 'nullable|string',
             'slug' => 'required|array',
-            'slug.*' => 'nullable|string',
+            'slug.*' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) {
+                    if (!$value) return;
+                    $locale = str_replace('slug.', '', $attribute);
+                    $exists = \App\Models\Page::where("slug->{$locale}", $value)->exists();
+                    if ($exists) {
+                        $fail("The slug for locale {$locale} is already taken.");
+                    }
+                }
+            ],
             'content' => 'required|array',
             'status' => 'nullable|string',
             'published_at' => 'nullable|date',
@@ -114,7 +125,20 @@ class PageController extends Controller
             'title' => 'required|array',
             'title.*' => 'nullable|string',
             'slug' => 'required|array',
-            'slug.*' => 'nullable|string',
+            'slug.*' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) use ($page) {
+                    if (!$value) return;
+                    $locale = str_replace('slug.', '', $attribute);
+                    $exists = \App\Models\Page::where('id', '!=', $page->id)
+                        ->where("slug->{$locale}", $value)
+                        ->exists();
+                    if ($exists) {
+                        $fail("The slug for locale {$locale} is already taken.");
+                    }
+                }
+            ],
             'content' => 'required|array',
             'status' => 'nullable|string',
             'published_at' => 'nullable|date',

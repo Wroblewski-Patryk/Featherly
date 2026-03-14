@@ -114,14 +114,12 @@ class PageController extends Controller
         }
 
         if ($page->status === 'planned' && !$isAdmin) {
-            if ($comingSoonId) {
-                $soonPage = Page::find($comingSoonId);
-                if ($soonPage) {
-                    return Inertia::render('Public/Page', [
-                        'page' => $soonPage,
-                        'settings' => $settings
-                    ]);
-                }
+            $soonPage = $this->getComingSoonPage($settings);
+            if ($soonPage) {
+                return Inertia::render('Public/Page', [
+                    'page' => $soonPage,
+                    'settings' => $settings
+                ]);
             }
             return $this->render404($settings, $page404Id);
         }
@@ -155,10 +153,11 @@ class PageController extends Controller
         $pageData['slug'] = $page->slug;
 
         // Resolve templates
-        $header = $page->headerOverride ?: Template::where('type', 'header')->where('is_active', true)->where('is_default', true)->first();
-        $footer = $page->footerOverride ?: Template::where('type', 'footer')->where('is_active', true)->where('is_default', true)->first();
-        $sidebar = $page->sidebarOverride ?: Template::where('type', 'sidebar')->where('is_active', true)->where('is_default', true)->first();
-        $pageTemplate = $page->template ?: Template::where('type', 'page')->where('is_active', true)->where('is_default', true)->first();
+        $templates = $this->resolveTemplates($page);
+        $header = $templates['header'];
+        $footer = $templates['footer'];
+        $sidebar = $templates['sidebar'];
+        $pageTemplate = $templates['page'];
 
         return Inertia::render($component, [
             'page' => $pageData,
@@ -204,15 +203,12 @@ class PageController extends Controller
             }
 
             if ($post->status === 'planned' && !$isAdmin) {
-                $comingSoonId = $settings['coming_soon_page_id'] ?? null;
-                if ($comingSoonId) {
-                    $soonPage = Page::find($comingSoonId);
-                    if ($soonPage) {
-                        return Inertia::render('Public/Page', [
-                            'page' => $soonPage,
-                            'settings' => $settings
-                        ]);
-                    }
+                $soonPage = $this->getComingSoonPage($settings);
+                if ($soonPage) {
+                    return Inertia::render('Public/Page', [
+                        'page' => $soonPage,
+                        'settings' => $settings
+                    ]);
                 }
                 return $this->render404($settings, $page404Id);
             }
@@ -226,10 +222,11 @@ class PageController extends Controller
             $postData['slug'] = $post->slug;
 
             // Resolve templates for posts
-            $header = Template::where('type', 'header')->where('is_active', true)->where('is_default', true)->first();
-            $footer = Template::where('type', 'footer')->where('is_active', true)->where('is_default', true)->first();
-            $sidebar = Template::where('type', 'sidebar')->where('is_active', true)->where('is_default', true)->first();
-            $pageTemplate = Template::where('type', 'page')->where('is_active', true)->where('is_default', true)->first();
+            $templates = $this->resolveTemplates();
+            $header = $templates['header'];
+            $footer = $templates['footer'];
+            $sidebar = $templates['sidebar'];
+            $pageTemplate = $templates['page'];
 
             $contentService = app(\App\Services\BlockContentService::class);
 
@@ -278,15 +275,12 @@ class PageController extends Controller
             }
 
             if ($project->status === 'planned' && !$isAdmin) {
-                $comingSoonId = $settings['coming_soon_page_id'] ?? null;
-                if ($comingSoonId) {
-                    $soonPage = Page::find($comingSoonId);
-                    if ($soonPage) {
-                        return Inertia::render('Public/Page', [
-                            'page' => $soonPage,
-                            'settings' => $settings
-                        ]);
-                    }
+                $soonPage = $this->getComingSoonPage($settings);
+                if ($soonPage) {
+                    return Inertia::render('Public/Page', [
+                        'page' => $soonPage,
+                        'settings' => $settings
+                    ]);
                 }
                 return $this->render404($settings, $page404Id);
             }
@@ -300,10 +294,11 @@ class PageController extends Controller
             $projectData['slug'] = $project->slug;
 
             // Resolve templates for projects
-            $header = Template::where('type', 'header')->where('is_active', true)->where('is_default', true)->first();
-            $footer = Template::where('type', 'footer')->where('is_active', true)->where('is_default', true)->first();
-            $sidebar = Template::where('type', 'sidebar')->where('is_active', true)->where('is_default', true)->first();
-            $pageTemplate = Template::where('type', 'page')->where('is_active', true)->where('is_default', true)->first();
+            $templates = $this->resolveTemplates();
+            $header = $templates['header'];
+            $footer = $templates['footer'];
+            $sidebar = $templates['sidebar'];
+            $pageTemplate = $templates['page'];
 
             $contentService = app(\App\Services\BlockContentService::class);
 
@@ -352,5 +347,27 @@ class PageController extends Controller
             \Illuminate\Support\Facades\Log::warning("Database connection failed in render404: " . $e->getMessage());
         }
         abort(404);
+    }
+
+    /**
+     * Resolve default or overridden templates.
+     */
+    private function resolveTemplates($entity = null)
+    {
+        return [
+            'header' => ($entity && method_exists($entity, 'headerOverride') && $entity->headerOverride) ? $entity->headerOverride : Template::where('type', 'header')->where('is_active', true)->where('is_default', true)->first(),
+            'footer' => ($entity && method_exists($entity, 'footerOverride') && $entity->footerOverride) ? $entity->footerOverride : Template::where('type', 'footer')->where('is_active', true)->where('is_default', true)->first(),
+            'sidebar' => ($entity && method_exists($entity, 'sidebarOverride') && $entity->sidebarOverride) ? $entity->sidebarOverride : Template::where('type', 'sidebar')->where('is_active', true)->where('is_default', true)->first(),
+            'page' => ($entity && method_exists($entity, 'template') && $entity->template) ? $entity->template : Template::where('type', 'page')->where('is_active', true)->where('is_default', true)->first(),
+        ];
+    }
+
+    /**
+     * Get the configured coming soon page.
+     */
+    private function getComingSoonPage($settings)
+    {
+        $id = $settings['coming_soon_page_id'] ?? null;
+        return $id ? Page::find($id) : null;
     }
 }
