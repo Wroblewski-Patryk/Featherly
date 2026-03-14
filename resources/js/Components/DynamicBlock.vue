@@ -477,7 +477,7 @@ const contactForm = useForm({
 
         <div v-else-if="block.type === 'dropdown'" class="dropdown">
             <div tabindex="0" role="button" class="btn m-1">{{ t(block.content.label) }}</div>
-            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow border border-white/10">
+            <ul v-if="page.props.menus" tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow border border-white/10">
                 <li v-for="(item, i) in block.content.items" :key="i"><a>{{ t(item) }}</a></li>
             </ul>
         </div>
@@ -675,13 +675,13 @@ const contactForm = useForm({
 
         <!-- 6. Navigation -->
         <div v-else-if="block.type === 'breadcrumbs'" class="breadcrumbs text-sm">
-            <ul>
+            <ul v-if="page.props.menus">
                 <li v-for="(item, i) in block.content.items" :key="i"><a>{{ t(item) }}</a></li>
             </ul>
         </div>
 
         <div v-else-if="block.type === 'menu'">
-            <ul class="menu bg-base-200 rounded-box w-56">
+            <ul v-if="page.props.menus" class="menu bg-base-200 rounded-box w-56">
                 <li v-for="(item, i) in block.content.items" :key="i"><a>{{ t(item) }}</a></li>
             </ul>
         </div>
@@ -695,7 +695,7 @@ const contactForm = useForm({
                 <a class="btn btn-ghost text-xl font-black italic tracking-tighter uppercase">{{ t(block.content.title) || 'Featherly' }}</a>
             </div>
             <div class="flex-none hidden lg:flex">
-                <ul class="menu menu-horizontal px-1 font-bold uppercase tracking-widest text-xs opacity-70">
+                <ul v-if="page.props.menus" class="menu menu-horizontal px-1 font-bold uppercase tracking-widest text-xs opacity-70">
                     <li v-for="(link, i) in block.content.links" :key="i"><a>{{ t(link) }}</a></li>
                 </ul>
             </div>
