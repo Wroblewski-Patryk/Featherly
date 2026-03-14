@@ -76,6 +76,13 @@ const displayedProjects = computed(() => {
     return props.block.content.projects || [];
 });
 
+const resolveMediaUrl = (value) => {
+    if (!value || typeof value !== 'string') return value;
+    if (/^https?:\/\//i.test(value)) return value;
+    if (value.startsWith('/')) return value;
+    return `/storage/${value.replace(/^\/+/, '')}`;
+};
+
 const styleObj = computed(() => {
     const s = props.block.settings || {};
     const l = s.layout || {};
@@ -95,9 +102,11 @@ const styleObj = computed(() => {
             fillStyles.backgroundImage = st.backgroundFill.gradient;
             fillStyles.backgroundColor = 'transparent';
         } else if (st.backgroundFill.type === 'image') {
-            fillStyles.backgroundImage = `url(${st.backgroundFill.image})`;
-            fillStyles.backgroundSize = 'cover';
-            fillStyles.backgroundPosition = 'center';
+            const bgImageUrl = resolveMediaUrl(st.backgroundFill.image);
+            fillStyles.backgroundImage = bgImageUrl ? `url(${bgImageUrl})` : undefined;
+            fillStyles.backgroundSize = st.backgroundSize || 'cover';
+            fillStyles.backgroundPosition = st.backgroundPosition || 'center';
+            fillStyles.backgroundRepeat = st.backgroundRepeat || 'no-repeat';
             fillStyles.backgroundColor = 'transparent';
         } else {
             fillStyles.backgroundColor = 'transparent';
@@ -187,7 +196,13 @@ const styleObj = computed(() => {
         flexWrap: st.flexWrap,
         justifyContent: st.justifyContent,
         alignItems: st.alignItems,
+        justifyItems: st.justifyItems,
+        alignContent: st.alignContent,
         gridTemplateColumns: st.gridTemplateColumns,
+        gridTemplateRows: st.gridTemplateRows,
+        gridAutoFlow: st.gridAutoFlow,
+        gridAutoColumns: st.gridAutoColumns,
+        gridAutoRows: st.gridAutoRows,
         gap: st.gap,
         columnGap: st.columnGap,
         rowGap: st.rowGap,
@@ -297,7 +312,8 @@ const textStyleObj = computed(() => {
             textStyles.width = 'fit-content';
             textStyles.paddingRight = '0.2em';
         } else if (st.textFill.type === 'image') {
-            textStyles.backgroundImage = `url(${st.textFill.image})`;
+            const textImageUrl = resolveMediaUrl(st.textFill.image);
+            textStyles.backgroundImage = textImageUrl ? `url(${textImageUrl})` : undefined;
             textStyles.backgroundSize = 'cover';
             textStyles.backgroundPosition = 'center';
             textStyles.WebkitBackgroundClip = 'text';
