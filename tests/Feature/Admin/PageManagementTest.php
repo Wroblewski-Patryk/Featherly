@@ -15,7 +15,7 @@ class PageManagementTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->admin = \App\Models\User::factory()->create();
+        $this->admin = \App\Models\User::factory()->admin()->create();
     }
 
     public function test_admin_can_list_pages(): void

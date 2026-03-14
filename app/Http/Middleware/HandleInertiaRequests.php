@@ -96,7 +96,15 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user() ? $request->user()->only('id', 'name', 'email') : null,
+                'user' => $request->user() ? [
+                    'id' => $request->user()->id,
+                    'name' => $request->user()->name,
+                    'email' => $request->user()->email,
+                    'role' => $request->user()->role,
+                    'permissions' => $request->user()->getAllPermissions()->pluck('name')->mapWithKeys(function ($permission) {
+                        return ['can_' . str_replace('-', '_', $permission) => true];
+                    })->toArray(),
+                ] : null,
             ],
             'header' => fn () => $header ? $header->content : null,
             'footer' => fn () => $footer ? $footer->content : null,

@@ -145,6 +145,8 @@ class AdminUiTranslationSeeder extends Seeder
             'dashboard.pages_card_desc' => ['pl' => 'Twórz i edytuj zawartość swojej witryny.', 'en' => 'Create and edit your website content.'],
             'dashboard.media_card_title' => ['pl' => 'Media', 'en' => 'Media'],
             'dashboard.media_card_desc' => ['pl' => 'Przesyłaj i organizuj zdjęcia oraz pliki.', 'en' => 'Upload and organize images and files.'],
+            'dashboard.posts_desc' => ['pl' => 'Pisz i publikuj artykuły na blogu z pełnymi ustawieniami SEO.', 'en' => 'Write and publish blog articles with full SEO settings.'],
+            'dashboard.manage_posts' => ['pl' => 'Zarządzaj wpisami', 'en' => 'Manage Posts'],
             'dashboard.settings_card_title' => ['pl' => 'Ustawienia', 'en' => 'Settings'],
             'dashboard.settings_card_desc' => ['pl' => 'Konfiguruj globalne parametry systemu.', 'en' => 'Configure global system parameters.'],
             'dashboard.go_to_pages' => ['pl' => 'Przejdź do stron', 'en' => 'Go to Pages'],

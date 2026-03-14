@@ -8,7 +8,8 @@ import { useTranslations } from '@/Composables/useTranslations';
 import { useFormatter } from '@/Composables/useFormatter';
 
 const props = defineProps({
-    user_item: Object
+    user_item: Object,
+    roles: Array
 });
 
 const { t } = useTranslations();
@@ -18,7 +19,8 @@ const form = useForm({
     name: props.user_item.name || '',
     email: props.user_item.email || '',
     password: '',
-    password_confirmation: ''
+    password_confirmation: '',
+    roles: props.user_item.roles?.map(r => r.name) || (props.user_item.id ? [] : ['editor'])
 });
 
 const submit = () => {
@@ -164,6 +166,23 @@ const breadcrumbs = [
 
                 <!-- Sidebar Metadata Column -->
                 <div class="space-y-6">
+                    <div class="bg-base-100 rounded-box shadow-sm border border-base-300 p-6">
+                        <h2 class="text-xs font-black uppercase tracking-widest opacity-40 mb-4 pb-2 border-b border-base-200">{{ t('admin.users.role', 'Role') }}</h2>
+                        <div class="form-control w-full">
+                            <select 
+                                :value="form.roles[0]" 
+                                @change="form.roles = [$event.target.value]"
+                                class="select select-bordered w-full bg-base-100 focus:bg-base-100 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                            >
+                                <option disabled value="">{{ t('admin.users.select_role', 'Select role') }}</option>
+                                <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
+                            </select>
+                            <label class="label" v-if="form.errors.roles">
+                                <span class="label-text-alt text-error font-medium">{{ form.errors.roles }}</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="bg-base-100 rounded-box shadow-sm border border-base-300 p-6">
                         <h2 class="text-xs font-black uppercase tracking-widest opacity-40 mb-4 pb-2 border-b border-base-200">{{ t('admin.users.account_status', 'Account Status') }}</h2>
                         
