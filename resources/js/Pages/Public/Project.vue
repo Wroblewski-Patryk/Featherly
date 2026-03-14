@@ -13,6 +13,8 @@ const props = defineProps({
     sidebar: Object,
     page_template: Object,
 });
+
+const { t } = useTranslations();
 </script>
 
 <template>
