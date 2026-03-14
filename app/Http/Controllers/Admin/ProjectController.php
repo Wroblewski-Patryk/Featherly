@@ -44,8 +44,10 @@ class ProjectController extends Controller
     public function create()
     {
         $project = new Project();
-        $project->setAttribute('title', ['pl' => '', 'en' => '']);
-        $project->setAttribute('description', ['pl' => '', 'en' => '']);
+        $locales = \App\Models\Language::where('is_active', true)->pluck('code')->toArray();
+        $emptyLocales = array_fill_keys($locales, '');
+        $project->setAttribute('title', $emptyLocales);
+        $project->setAttribute('description', $emptyLocales);
 
         return Inertia::render('Admin/Projects/Edit', [
             'project' => $project,
@@ -66,7 +68,18 @@ class ProjectController extends Controller
             'description' => 'nullable|array',
             'description.*' => 'nullable|string',
             'slug' => 'nullable|array',
-            'slug.*' => 'nullable|string',
+            'slug.*' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) {
+                    if (!$value) return;
+                    $locale = str_replace('slug.', '', $attribute);
+                    $exists = \App\Models\Project::where("slug->{$locale}", $value)->exists();
+                    if ($exists) {
+                        $fail("The slug for locale {$locale} is already taken.");
+                    }
+                }
+            ],
             'desktop_image' => 'nullable|string',
             'mobile_image' => 'nullable|string',
             'url' => 'nullable|string',
@@ -90,7 +103,8 @@ class ProjectController extends Controller
         $this->applyStatusLogic(null, $validated);
 
         if (empty($validated['slug'])) {
-            $validated['slug'] = [app()->getLocale() => Str::slug($validated['title'][app()->getLocale()] ?? $validated['title']['pl'] ?? '')];
+            $fallback = config('app.fallback_locale', 'en');
+            $validated['slug'] = [app()->getLocale() => Str::slug($validated['title'][app()->getLocale()] ?? $validated['title'][$fallback] ?? '')];
         }
 
         $project = Project::create($validated);
@@ -125,7 +139,20 @@ class ProjectController extends Controller
             'description' => 'nullable|array',
             'description.*' => 'nullable|string',
             'slug' => 'required|array',
-            'slug.*' => 'nullable|string',
+            'slug.*' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) use ($project) {
+                    if (!$value) return;
+                    $locale = str_replace('slug.', '', $attribute);
+                    $exists = \App\Models\Project::where('id', '!=', $project->id)
+                        ->where("slug->{$locale}", $value)
+                        ->exists();
+                    if ($exists) {
+                        $fail("The slug for locale {$locale} is already taken.");
+                    }
+                }
+            ],
             'desktop_image' => 'nullable|string',
             'mobile_image' => 'nullable|string',
             'url' => 'nullable|string',

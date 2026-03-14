@@ -103,7 +103,7 @@
                                 <slot :name="`cell-${col.key}`" :item="item">
                                     <span v-if="col.key === 'id'" class="text-xs font-mono opacity-40">#{{ item.id }}</span>
                                     <span v-else-if="['created_at', 'updated_at', 'published_at'].includes(col.key)" class="text-xs opacity-60">
-                                        {{ item[col.key] ? new Date(item[col.key]).toLocaleDateString() : '-' }}
+                                        {{ item[col.key] ? formatDate(item[col.key]) : '-' }}
                                     </span>
                                     <span v-else>{{ getFieldValue(item, col.key) }}</span>
                                 </slot>
@@ -171,8 +171,10 @@ import { Link, router } from '@inertiajs/vue3';
 import { PhPlus, PhMagnifyingGlass, PhSlidersHorizontal, PhColumns, PhCaretUp, PhCaretDown, PhFolderOpen, PhWarning } from '@phosphor-icons/vue';
 import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
 import { useTranslations } from '@/Composables/useTranslations';
+import { useFormatter } from '@/Composables/useFormatter';
 
 const { t } = useTranslations();
+const { formatDate } = useFormatter();
 
 const cleanPaginationLabel = (label) => {
     if (!label) return '';

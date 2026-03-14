@@ -5,12 +5,14 @@ import { PhUser, PhHouse, PhUsers, PhFloppyDisk, PhX } from '@phosphor-icons/vue
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
 import { useTranslations } from '@/Composables/useTranslations';
+import { useFormatter } from '@/Composables/useFormatter';
 
 const props = defineProps({
     user_item: Object
 });
 
 const { t } = useTranslations();
+const { formatDateTime } = useFormatter();
 
 const form = useForm({
     name: props.user_item.name || '',
@@ -169,14 +171,14 @@ const breadcrumbs = [
                             <div class="flex flex-col gap-1">
                                 <span class="text-xs font-semibold opacity-60">{{ t('admin.users.created_at', 'Created At') }}</span>
                                 <span class="text-sm font-mono opacity-80 bg-base-200 p-2 rounded-lg break-all">
-                                    {{ user_item.created_at ? new Date(user_item.created_at).toLocaleString() : '-' }}
+                                    {{ user_item.created_at ? formatDateTime(user_item.created_at) : '-' }}
                                 </span>
                             </div>
                             
                             <div class="flex flex-col gap-1 mt-4">
                                 <span class="text-xs font-semibold opacity-60">{{ t('admin.users.last_updated', 'Last Updated') }}</span>
                                 <span class="text-sm font-mono opacity-80 bg-base-200 p-2 rounded-lg break-all">
-                                    {{ user_item.updated_at ? new Date(user_item.updated_at).toLocaleString() : '-' }}
+                                    {{ user_item.updated_at ? formatDateTime(user_item.updated_at) : '-' }}
                                 </span>
                             </div>
                         </div>

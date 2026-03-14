@@ -43,9 +43,11 @@ class PostController extends Controller
     public function create()
     {
         $post = new Post();
-        $post->setAttribute('title', ['pl' => '', 'en' => '']);
-        $post->setAttribute('slug', ['pl' => '', 'en' => '']);
-        $post->setAttribute('excerpt', ['pl' => '', 'en' => '']);
+        $locales = \App\Models\Language::where('is_active', true)->pluck('code')->toArray();
+        $emptyLocales = array_fill_keys($locales, '');
+        $post->setAttribute('title', $emptyLocales);
+        $post->setAttribute('slug', $emptyLocales);
+        $post->setAttribute('excerpt', $emptyLocales);
         $post->setAttribute('content', []);
         $post->setAttribute('revisions', []);
 
@@ -66,7 +68,18 @@ class PostController extends Controller
             'title' => 'required|array',
             'title.*' => 'nullable|string',
             'slug' => 'required|array',
-            'slug.*' => 'nullable|string',
+            'slug.*' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) {
+                    if (!$value) return;
+                    $locale = str_replace('slug.', '', $attribute);
+                    $exists = \App\Models\Post::where("slug->{$locale}", $value)->exists();
+                    if ($exists) {
+                        $fail("The slug for locale {$locale} is already taken.");
+                    }
+                }
+            ],
             'excerpt' => 'nullable|array',
             'excerpt.*' => 'nullable|string',
             'content' => 'required|array',
@@ -119,7 +132,20 @@ class PostController extends Controller
             'title' => 'required|array',
             'title.*' => 'nullable|string',
             'slug' => 'required|array',
-            'slug.*' => 'nullable|string',
+            'slug.*' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) use ($post) {
+                    if (!$value) return;
+                    $locale = str_replace('slug.', '', $attribute);
+                    $exists = \App\Models\Post::where('id', '!=', $post->id)
+                        ->where("slug->{$locale}", $value)
+                        ->exists();
+                    if ($exists) {
+                        $fail("The slug for locale {$locale} is already taken.");
+                    }
+                }
+            ],
             'excerpt' => 'nullable|array',
             'excerpt.*' => 'nullable|string',
             'content' => 'required|array',

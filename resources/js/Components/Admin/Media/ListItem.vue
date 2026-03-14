@@ -6,8 +6,10 @@ import {
 } from '@phosphor-icons/vue';
 import { computed } from 'vue';
 import { useTranslations } from '@/Composables/useTranslations';
+import { useFormatter } from '@/Composables/useFormatter';
 
 const { t } = useTranslations();
+const { formatDate } = useFormatter();
 
 const props = defineProps({
     item: Object,
@@ -71,7 +73,7 @@ const formatSize = (bytes) => {
             </span>
         </td>
         <td class="text-xs opacity-60">{{ type === 'folder' ? '-' : formatSize(item.size) }}</td>
-        <td class="text-xs opacity-60">{{ new Date(item.created_at).toLocaleDateString() }}</td>
+        <td class="text-xs opacity-60">{{ formatDate(item.created_at) }}</td>
         <td class="text-right">
             <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity" @click.stop="">
                 <button v-if="type === 'media'" @click="$emit('preview')" class="btn btn-ghost btn-xs btn-square" :title="t('admin.common.preview', 'Preview')"><PhEye class="w-4 h-4" /></button>
