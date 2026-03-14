@@ -4,8 +4,8 @@
         <div class="color-trigger-wrap w-6 h-6 shrink-0 rounded-sm overflow-hidden shadow-inner border border-white/10">
             <ColorPicker v-model:pureColor="internalValue" :format="format === 'hex' ? 'hex8' : 'rgb'" shape="square" useType="pure" :isWidget="false" @pureColorChange="handlePickerChange" />
         </div>
-        <input type="text" v-model="internalValue" @change="handleInputChange" class="input input-xs input-bordered flex-1 px-2 font-mono" />
-        <button @click="toggleFormat" class="btn btn-xs btn-outline border-white/10 w-12 text-[9px] font-bold" title="Toggle Format">
+        <input type="text" v-model="internalValue" @change="handleInputChange" class="input input-sm input-bordered flex-1 px-2 font-mono" />
+        <button @click="toggleFormat" class="btn btn-sm btn-outline border-white/10 w-12 text-[9px] font-bold" title="Toggle Format">
             {{ format.toUpperCase() }}
         </button>
     </div>
@@ -121,3 +121,4 @@ const toggleFormat = () => {
     display: block !important;
 }
 </style>
+

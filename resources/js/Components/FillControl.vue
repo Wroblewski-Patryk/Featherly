@@ -3,40 +3,40 @@
         <!-- Header & Top Toggles -->
         <div class="flex items-center justify-between">
             <label class="label-text text-[10px] uppercase font-bold tracking-widest opacity-50">{{ label }}</label>
-            <div class="join bg-base-300 rounded-md p-1 items-center">
+            <div class="join bg-base-200 rounded-md items-center">
                 <button 
                     @click="setType('none')" 
-                    class="btn btn-xs join-item min-h-0 h-6 w-8 border-none text-[10px]" 
+                    class="btn btn-sm join-item min-h-0 h-8 w-10 border-none text-[10px]"
                     :class="type === 'none' ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"
                     :title="t('admin.builder.fill_none', 'None')">
-                    <PhProhibit weight="bold" class="w-3 h-3" />
+                    <PhProhibit weight="bold" class="w-4 h-4" />
                 </button>
                 <button 
                     @click="setType('color')" 
-                    class="btn btn-xs join-item min-h-0 h-6 w-8 border-none text-[10px]" 
+                    class="btn btn-sm join-item min-h-0 h-8 w-10 border-none text-[10px]"
                     :class="type === 'color' ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"
                     :title="t('admin.builder.fill_color', 'Solid Color')">
-                    <PhPaintBucket weight="bold" class="w-3 h-3" />
+                    <PhPaintBucket weight="bold" class="w-4 h-4" />
                 </button>
                 <button 
                     @click="setType('gradient')" 
-                    class="btn btn-xs join-item min-h-0 h-6 w-8 border-none text-[10px]" 
+                    class="btn btn-sm join-item min-h-0 h-8 w-10 border-none text-[10px]"
                     :class="type === 'gradient' ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"
                     :title="t('admin.builder.fill_gradient', 'Gradient')">
-                    <PhSwatches weight="bold" class="w-3 h-3" />
+                    <PhSwatches weight="bold" class="w-4 h-4" />
                 </button>
                 <button 
                     @click="setType('image')" 
-                    class="btn btn-xs join-item min-h-0 h-6 w-8 border-none text-[10px]" 
+                    class="btn btn-sm join-item min-h-0 h-8 w-10 border-none text-[10px]"
                     :class="type === 'image' ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"
                     :title="t('admin.builder.fill_image', 'Image')">
-                    <PhImage weight="bold" class="w-3 h-3" />
+                    <PhImage weight="bold" class="w-4 h-4" />
                 </button>
             </div>
         </div>
 
         <!-- Mode-Specific Input Area -->
-        <div v-if="type !== 'none'" class="bg-base-200/50 rounded-xl p-3 border border-white/5 relative flex justify-center mt-1">
+        <div v-if="type !== 'none'" class="mt-1">
             
             <!-- Solid Color Picker -->
             <div v-if="type === 'color'" class="w-full">
@@ -47,7 +47,7 @@
             <div v-else-if="type === 'gradient'" class="w-full flex flex-col gap-3">
                 <div class="flex items-center gap-2 mb-1">
                     <span class="text-[10px] uppercase opacity-50 font-bold w-12">{{ t('admin.builder.fill_grad_type', 'Type') }}</span>
-                    <select v-model="gradType" @change="updateGradient" class="select select-xs select-bordered w-full max-w-[120px] focus:outline-none">
+                    <select v-model="gradType" @change="updateGradient" class="select select-bordered select-sm h-8 min-h-0 w-full max-w-[120px]">
                         <option value="linear">{{ t('admin.builder.fill_grad_linear', 'Linear') }}</option>
                         <option value="radial">{{ t('admin.builder.fill_grad_radial', 'Radial') }}</option>
                     </select>
@@ -55,9 +55,9 @@
 
                 <div v-if="gradType === 'linear'" class="flex items-center gap-2 mb-1">
                     <span class="text-[10px] uppercase opacity-50 font-bold w-12">{{ t('admin.builder.fill_grad_angle', 'Angle') }}</span>
-                    <input type="range" min="0" max="360" v-model="gradAngle" @input="updateGradient" class="range range-xs flex-1" />
+                    <input type="range" min="0" max="360" v-model="gradAngle" @input="updateGradient" class="range range-primary range-sm flex-1" />
                     <div class="flex items-center relative">
-                        <input type="number" min="0" max="360" v-model="gradAngle" @input="updateGradient" class="input input-xs input-bordered w-14 px-1 text-center pr-3 font-mono" />
+                        <input type="number" min="0" max="360" v-model="gradAngle" @input="updateGradient" class="input input-sm input-bordered h-8 min-h-0 w-14 px-1 text-center pr-3 font-mono" />
                         <span class="absolute right-2 text-[8px] opacity-50 pointer-events-none">&deg;</span>
                     </div>
                 </div>
@@ -77,19 +77,19 @@
 
             <!-- Image Selection Area -->
             <div v-else-if="type === 'image'" class="w-full flex flex-col gap-3">
-                <div v-if="internalImage" class="relative group/img overflow-hidden rounded-xl border border-white/10 bg-base-300 aspect-video w-full">
-                    <img :src="'/storage/' + internalImage" class="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-110" />
+                <div v-if="internalImage" class="relative group/img overflow-hidden rounded-xl aspect-video w-full">
+                    <img :src="resolveMediaSrc(internalImage)" class="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-110" />
                     <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[2px]">
-                        <button @click="openMediaLibrary" class="btn btn-circle btn-xs btn-primary shadow-lg" :title="t('admin.builder.fill_image_change', 'Change Image')">
+                        <button @click="openMediaLibrary" class="btn btn-circle btn-sm btn-primary shadow-lg" :title="t('admin.builder.fill_image_change', 'Change Image')">
                             <PhImage weight="bold" class="w-3 h-3" />
                         </button>
-                        <button @click="internalImage = ''; emitUpdate()" class="btn btn-circle btn-xs btn-error shadow-lg" :title="t('admin.builder.fill_image_remove', 'Remove Image')">
+                        <button @click="internalImage = ''; emitUpdate()" class="btn btn-circle btn-sm btn-error shadow-lg" :title="t('admin.builder.fill_image_remove', 'Remove Image')">
                             <PhTrash weight="bold" class="w-3 h-3" />
                         </button>
                     </div>
                 </div>
                 
-                <button v-else @click="openMediaLibrary" class="btn btn-sm btn-outline border-dashed border-white/10 hover:border-primary/50 text-[10px] uppercase tracking-widest gap-2 w-full h-24 flex flex-col items-center justify-center bg-base-300/30">
+                <button v-else @click="openMediaLibrary" class="btn btn-sm btn-outline border-dashed border-white/10 hover:border-primary/50 text-[10px] uppercase tracking-widest gap-2 w-full h-24 flex flex-col items-center justify-center bg-base-200/50">
                     <PhImage weight="bold" class="w-6 h-6 opacity-30" /> 
                     <span>{{ t('admin.builder.fill_image_browse', 'Browse Media') }}</span>
                 </button>
@@ -217,11 +217,19 @@ const emitUpdate = () => {
     emit('update:modelValue', payload);
 };
 
+const resolveMediaSrc = (value) => {
+    if (!value) return '';
+    if (typeof value !== 'string') return '';
+    if (/^https?:\/\//i.test(value)) return value;
+    if (value.startsWith('/')) return `${window.location.origin}${value}`;
+    return `${window.location.origin}/storage/${value.replace(/^\/+/, '')}`;
+};
+
 const openMediaLibrary = async () => {
     try {
         const file = await mediaPicker.open({ type: 'image' });
         if (file) {
-            internalImage.value = file.path;
+            internalImage.value = file.url || resolveMediaSrc(file.path);
             emitUpdate();
         }
     } catch (e) {

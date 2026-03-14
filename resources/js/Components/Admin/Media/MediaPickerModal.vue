@@ -68,9 +68,33 @@ const handleSelect = (type, id) => {
     if (type === 'media') {
         const item = media.value.data.find(m => m.id === id);
         if (item) {
-            store.select(item);
+            store.select(normalizeSelectedItem(item));
         }
     }
+};
+
+const toAbsoluteMediaUrl = (item) => {
+    if (!item) return '';
+    if (typeof item.url === 'string' && item.url.trim() !== '') {
+        if (/^https?:\/\//i.test(item.url)) return item.url;
+        if (item.url.startsWith('/')) return `${window.location.origin}${item.url}`;
+    }
+
+    const path = typeof item.path === 'string' ? item.path.trim() : '';
+    if (!path) return '';
+    if (/^https?:\/\//i.test(path)) return path;
+    if (path.startsWith('/')) return `${window.location.origin}${path}`;
+    return `${window.location.origin}/storage/${path.replace(/^\/+/, '')}`;
+};
+
+const normalizeSelectedItem = (item) => {
+    const absoluteUrl = toAbsoluteMediaUrl(item);
+    return {
+        ...item,
+        relative_path: item.path,
+        path: absoluteUrl,
+        url: absoluteUrl
+    };
 };
 
 const close = () => {
@@ -181,7 +205,7 @@ const breadcrumbs = computed(() => {
                     :selected-media-ids="[]"
                     @folder-click="handleFolderClick"
                     @selection-toggle="handleSelect"
-                    @preview="(item) => store.select(item)"
+                    @preview="(item) => store.select(normalizeSelectedItem(item))"
                 />
             </div>
 

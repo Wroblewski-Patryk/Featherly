@@ -18,41 +18,44 @@
                 </div>
 
                 <!-- Flex Settings -->
-                <div v-if="modelValue.display === 'flex'" class="p-3 bg-base-300/30 rounded-xl space-y-4 border border-white/5 shadow-inner animate-in fade-in slide-in-from-top-1 duration-200">
+                <div v-if="modelValue.display === 'flex'" class="space-y-4">
                     <div class="form-control">
                         <label class="label py-1"><span class="text-[9px] uppercase font-bold opacity-40">Direction</span></label>
-                        <div class="join w-full">
-                            <button @click="modelValue.flexDirection = 'row'" class="btn btn-xs join-item flex-1" :class="modelValue.flexDirection === 'row' ? 'btn-primary' : 'bg-base-200'" title="Row"><PhColumns class="w-3 h-3" /></button>
-                            <button @click="modelValue.flexDirection = 'column'" class="btn btn-xs join-item flex-1" :class="modelValue.flexDirection === 'column' ? 'btn-primary' : 'bg-base-200'" title="Column"><PhRows class="w-3 h-3" /></button>
-                            <button @click="modelValue.flexDirection = 'row-reverse'" class="btn btn-xs join-item flex-1" :class="modelValue.flexDirection === 'row-reverse' ? 'btn-primary' : 'bg-base-200'" title="Row Reverse"><i class="fas fa-right-left text-[10px]"></i></button>
-                            <button @click="modelValue.flexDirection = 'column-reverse'" class="btn btn-xs join-item flex-1" :class="modelValue.flexDirection === 'column-reverse' ? 'btn-primary' : 'bg-base-200'" title="Column Reverse"><i class="fas fa-up-down text-[10px]"></i></button>
+                        <div class="join w-full bg-base-200 rounded-md">
+                            <button @click="modelValue.flexDirection = 'row'" class="btn btn-sm join-item min-h-0 h-8 flex-1 border-none" :class="modelValue.flexDirection === 'row' ? 'btn-primary' : 'bg-transparent opacity-60 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'" title="Row"><PhArrowRight class="w-4 h-4" /></button>
+                            <button @click="modelValue.flexDirection = 'column'" class="btn btn-sm join-item min-h-0 h-8 flex-1 border-none" :class="modelValue.flexDirection === 'column' ? 'btn-primary' : 'bg-transparent opacity-60 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'" title="Column"><PhArrowDown class="w-4 h-4" /></button>
+                            <button @click="modelValue.flexDirection = 'row-reverse'" class="btn btn-sm join-item min-h-0 h-8 flex-1 border-none" :class="modelValue.flexDirection === 'row-reverse' ? 'btn-primary' : 'bg-transparent opacity-60 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'" title="Row Reverse"><PhArrowLeft class="w-4 h-4" /></button>
+                            <button @click="modelValue.flexDirection = 'column-reverse'" class="btn btn-sm join-item min-h-0 h-8 flex-1 border-none" :class="modelValue.flexDirection === 'column-reverse' ? 'btn-primary' : 'bg-transparent opacity-60 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'" title="Column Reverse"><PhArrowUp class="w-4 h-4" /></button>
                         </div>
                     </div>
 
                     <div class="form-control">
                         <label class="label py-1 flex justify-between items-center cursor-pointer">
                             <span class="text-[9px] uppercase font-bold opacity-40">Wrap Content</span>
-                            <input type="checkbox" :checked="modelValue.flexWrap === 'wrap'" @change="modelValue.flexWrap = $event.target.checked ? 'wrap' : 'nowrap'" class="toggle toggle-xs toggle-primary" />
+                            <input type="checkbox" :checked="modelValue.flexWrap === 'wrap'" @change="modelValue.flexWrap = $event.target.checked ? 'wrap' : 'nowrap'" class="toggle toggle-sm toggle-primary" />
                         </label>
                     </div>
 
                     <div class="form-control">
                         <label class="label py-1"><span class="text-[9px] uppercase font-bold opacity-40">Justify</span></label>
                         <div class="grid grid-cols-6 gap-1">
-                            <button v-for="j in ['flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly']" :key="j"
-                                @click="modelValue.justifyContent = j" class="btn btn-xs px-0 bg-base-200" :class="modelValue.justifyContent === j ? 'btn-primary' : ''" :title="j">
-                                <span class="text-[8px] uppercase font-bold">{{ j.split('-').pop()[0] }}</span>
-                            </button>
+                            <button @click="modelValue.justifyContent = 'flex-start'" class="btn btn-sm px-0" :class="modelValue.justifyContent === 'flex-start' ? 'btn-primary' : 'bg-base-200'" title="Start"><PhAlignLeftSimple class="w-3 h-3" /></button>
+                            <button @click="modelValue.justifyContent = 'center'" class="btn btn-sm px-0" :class="modelValue.justifyContent === 'center' ? 'btn-primary' : 'bg-base-200'" title="Center"><PhAlignCenterHorizontalSimple class="w-3 h-3" /></button>
+                            <button @click="modelValue.justifyContent = 'flex-end'" class="btn btn-sm px-0" :class="modelValue.justifyContent === 'flex-end' ? 'btn-primary' : 'bg-base-200'" title="End"><PhAlignRightSimple class="w-3 h-3" /></button>
+                            <button @click="modelValue.justifyContent = 'space-between'" class="btn btn-sm px-0" :class="modelValue.justifyContent === 'space-between' ? 'btn-primary' : 'bg-base-200'" title="Space Between"><PhArrowsOutLineHorizontal class="w-3 h-3" /></button>
+                            <button @click="modelValue.justifyContent = 'space-around'" class="btn btn-sm px-0" :class="modelValue.justifyContent === 'space-around' ? 'btn-primary' : 'bg-base-200'" title="Space Around"><PhArrowsHorizontal class="w-3 h-3" /></button>
+                            <button @click="modelValue.justifyContent = 'space-evenly'" class="btn btn-sm px-0" :class="modelValue.justifyContent === 'space-evenly' ? 'btn-primary' : 'bg-base-200'" title="Space Evenly"><PhDotsThreeOutline class="w-3 h-3" /></button>
                         </div>
                     </div>
 
                     <div class="form-control">
                         <label class="label py-1"><span class="text-[9px] uppercase font-bold opacity-40">Align</span></label>
                         <div class="grid grid-cols-5 gap-1">
-                            <button v-for="a in ['flex-start', 'center', 'flex-end', 'baseline', 'stretch']" :key="a"
-                                @click="modelValue.alignItems = a" class="btn btn-xs px-0 bg-base-200" :class="modelValue.alignItems === a ? 'btn-primary' : ''" :title="a">
-                                <span class="text-[8px] uppercase font-bold">{{ a.split('-').pop()[0] }}</span>
-                            </button>
+                            <button @click="modelValue.alignItems = 'flex-start'" class="btn btn-sm px-0" :class="modelValue.alignItems === 'flex-start' ? 'btn-primary' : 'bg-base-200'" title="Start"><PhAlignTopSimple class="w-3 h-3" /></button>
+                            <button @click="modelValue.alignItems = 'center'" class="btn btn-sm px-0" :class="modelValue.alignItems === 'center' ? 'btn-primary' : 'bg-base-200'" title="Center"><PhAlignCenterVerticalSimple class="w-3 h-3" /></button>
+                            <button @click="modelValue.alignItems = 'flex-end'" class="btn btn-sm px-0" :class="modelValue.alignItems === 'flex-end' ? 'btn-primary' : 'bg-base-200'" title="End"><PhAlignBottomSimple class="w-3 h-3" /></button>
+                            <button @click="modelValue.alignItems = 'baseline'" class="btn btn-sm px-0" :class="modelValue.alignItems === 'baseline' ? 'btn-primary' : 'bg-base-200'" title="Baseline"><PhTextT class="w-3 h-3" /></button>
+                            <button @click="modelValue.alignItems = 'stretch'" class="btn btn-sm px-0" :class="modelValue.alignItems === 'stretch' ? 'btn-primary' : 'bg-base-200'" title="Stretch"><PhArrowsOutLineVertical class="w-3 h-3" /></button>
                         </div>
                     </div>
 
@@ -65,33 +68,110 @@
                 </div>
 
                 <!-- Grid Settings -->
-                <div v-if="modelValue.display === 'grid'" class="p-3 bg-base-300/30 rounded-xl space-y-4 border border-white/5 shadow-inner animate-in fade-in slide-in-from-top-1 duration-200">
-                    <div class="form-control">
-                        <label class="label py-1"><span class="text-[9px] uppercase font-bold opacity-40">Columns</span></label>
-                        <input type="text" v-model="modelValue.gridTemplateColumns" placeholder="e.g. 1fr 1fr" class="input input-xs input-bordered w-full font-mono text-[10px]" />
-                    </div>
+                <div v-if="modelValue.display === 'grid'" class="space-y-4">
                     <div class="grid grid-cols-2 gap-2">
+                        <div class="form-control col-span-2">
+                            <label class="label py-1"><span class="text-[9px] uppercase font-bold opacity-40">Template Columns</span></label>
+                            <input type="text" v-model="modelValue.gridTemplateColumns" placeholder="e.g. repeat(3, 1fr)" class="input input-sm input-bordered w-full font-mono text-[10px]" />
+                        </div>
+                        <div class="form-control col-span-2">
+                            <label class="label py-1"><span class="text-[9px] uppercase font-bold opacity-40">Template Rows</span></label>
+                            <input type="text" v-model="modelValue.gridTemplateRows" placeholder="e.g. auto 1fr auto" class="input input-sm input-bordered w-full font-mono text-[10px]" />
+                        </div>
+                        <div class="form-control col-span-2">
+                            <label class="label py-1"><span class="text-[9px] uppercase font-bold opacity-40">Auto Flow</span></label>
+                            <div class="grid grid-cols-5 gap-1">
+                                <button @click="modelValue.gridAutoFlow = undefined" class="btn btn-sm px-0" :class="modelValue.gridAutoFlow === undefined ? 'btn-primary' : 'bg-base-200'" title="Default"><PhCircleDashed class="w-3 h-3" /></button>
+                                <button @click="modelValue.gridAutoFlow = 'row'" class="btn btn-sm px-0" :class="modelValue.gridAutoFlow === 'row' ? 'btn-primary' : 'bg-base-200'" title="Row">
+                                    <PhRows class="w-3 h-3" />
+                                </button>
+                                <button @click="modelValue.gridAutoFlow = 'column'" class="btn btn-sm px-0" :class="modelValue.gridAutoFlow === 'column' ? 'btn-primary' : 'bg-base-200'" title="Column">
+                                    <PhColumns class="w-3 h-3" />
+                                </button>
+                                <button @click="modelValue.gridAutoFlow = 'row dense'" class="btn btn-sm px-0" :class="modelValue.gridAutoFlow === 'row dense' ? 'btn-primary' : 'bg-base-200'" title="Row Dense"><PhArrowsInLineHorizontal class="w-3 h-3" /></button>
+                                <button @click="modelValue.gridAutoFlow = 'column dense'" class="btn btn-sm px-0" :class="modelValue.gridAutoFlow === 'column dense' ? 'btn-primary' : 'bg-base-200'" title="Column Dense"><PhArrowsInLineVertical class="w-3 h-3" /></button>
+                            </div>
+                        </div>
+                        <div class="form-control">
+                            <label class="label py-0.5"><span class="text-[8px] uppercase font-bold opacity-40">Auto Columns</span></label>
+                            <input type="text" v-model="modelValue.gridAutoColumns" placeholder="auto" class="input input-sm input-bordered w-full font-mono text-[10px]" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label py-0.5"><span class="text-[8px] uppercase font-bold opacity-40">Auto Rows</span></label>
+                            <input type="text" v-model="modelValue.gridAutoRows" placeholder="auto" class="input input-sm input-bordered w-full font-mono text-[10px]" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="form-control">
+                            <label class="label py-0.5"><span class="text-[8px] uppercase font-bold opacity-40">Gap</span></label>
+                            <UnitInput v-model="modelValue.gap" placeholder="0px" />
+                        </div>
                         <div class="form-control">
                             <label class="label py-0.5"><span class="text-[8px] uppercase font-bold opacity-40">Column Gap</span></label>
                             <UnitInput v-model="modelValue.columnGap" placeholder="0px" />
                         </div>
-                        <div class="form-control">
+                        <div class="form-control col-span-2">
                             <label class="label py-0.5"><span class="text-[8px] uppercase font-bold opacity-40">Row Gap</span></label>
                             <UnitInput v-model="modelValue.rowGap" placeholder="0px" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="form-control">
+                            <label class="label py-0.5"><span class="text-[8px] uppercase font-bold opacity-40">Justify Items</span></label>
+                            <div class="grid grid-cols-5 gap-1">
+                                <button @click="modelValue.justifyItems = undefined" class="btn btn-sm px-0" :class="modelValue.justifyItems === undefined ? 'btn-primary' : 'bg-base-200'" title="Default"><PhCircleDashed class="w-3 h-3" /></button>
+                                <button @click="modelValue.justifyItems = 'start'" class="btn btn-sm px-0" :class="modelValue.justifyItems === 'start' ? 'btn-primary' : 'bg-base-200'" title="Start"><PhAlignLeftSimple class="w-3 h-3" /></button>
+                                <button @click="modelValue.justifyItems = 'center'" class="btn btn-sm px-0" :class="modelValue.justifyItems === 'center' ? 'btn-primary' : 'bg-base-200'" title="Center"><PhAlignCenterHorizontalSimple class="w-3 h-3" /></button>
+                                <button @click="modelValue.justifyItems = 'end'" class="btn btn-sm px-0" :class="modelValue.justifyItems === 'end' ? 'btn-primary' : 'bg-base-200'" title="End"><PhAlignRightSimple class="w-3 h-3" /></button>
+                                <button @click="modelValue.justifyItems = 'stretch'" class="btn btn-sm px-0" :class="modelValue.justifyItems === 'stretch' ? 'btn-primary' : 'bg-base-200'" title="Stretch"><PhArrowsOutLineHorizontal class="w-3 h-3" /></button>
+                            </div>
+                        </div>
+                        <div class="form-control">
+                            <label class="label py-0.5"><span class="text-[8px] uppercase font-bold opacity-40">Align Items</span></label>
+                            <div class="grid grid-cols-5 gap-1">
+                                <button @click="modelValue.alignItems = undefined" class="btn btn-sm px-0" :class="modelValue.alignItems === undefined ? 'btn-primary' : 'bg-base-200'" title="Default"><PhCircleDashed class="w-3 h-3" /></button>
+                                <button @click="modelValue.alignItems = 'start'" class="btn btn-sm px-0" :class="modelValue.alignItems === 'start' ? 'btn-primary' : 'bg-base-200'" title="Start"><PhAlignTopSimple class="w-3 h-3" /></button>
+                                <button @click="modelValue.alignItems = 'center'" class="btn btn-sm px-0" :class="modelValue.alignItems === 'center' ? 'btn-primary' : 'bg-base-200'" title="Center"><PhAlignCenterVerticalSimple class="w-3 h-3" /></button>
+                                <button @click="modelValue.alignItems = 'end'" class="btn btn-sm px-0" :class="modelValue.alignItems === 'end' ? 'btn-primary' : 'bg-base-200'" title="End"><PhAlignBottomSimple class="w-3 h-3" /></button>
+                                <button @click="modelValue.alignItems = 'stretch'" class="btn btn-sm px-0" :class="modelValue.alignItems === 'stretch' ? 'btn-primary' : 'bg-base-200'" title="Stretch"><PhArrowsOutLineVertical class="w-3 h-3" /></button>
+                            </div>
+                        </div>
+                        <div class="form-control">
+                            <label class="label py-0.5"><span class="text-[8px] uppercase font-bold opacity-40">Justify Content</span></label>
+                            <div class="grid grid-cols-4 gap-1">
+                                <button @click="modelValue.justifyContent = undefined" class="btn btn-sm px-0" :class="modelValue.justifyContent === undefined ? 'btn-primary' : 'bg-base-200'" title="Default"><PhCircleDashed class="w-3 h-3" /></button>
+                                <button @click="modelValue.justifyContent = 'start'" class="btn btn-sm px-0" :class="modelValue.justifyContent === 'start' ? 'btn-primary' : 'bg-base-200'" title="Start"><PhAlignLeftSimple class="w-3 h-3" /></button>
+                                <button @click="modelValue.justifyContent = 'center'" class="btn btn-sm px-0" :class="modelValue.justifyContent === 'center' ? 'btn-primary' : 'bg-base-200'" title="Center"><PhAlignCenterHorizontalSimple class="w-3 h-3" /></button>
+                                <button @click="modelValue.justifyContent = 'end'" class="btn btn-sm px-0" :class="modelValue.justifyContent === 'end' ? 'btn-primary' : 'bg-base-200'" title="End"><PhAlignRightSimple class="w-3 h-3" /></button>
+                                <button @click="modelValue.justifyContent = 'space-between'" class="btn btn-sm px-0" :class="modelValue.justifyContent === 'space-between' ? 'btn-primary' : 'bg-base-200'" title="Space Between"><PhArrowsOutLineHorizontal class="w-3 h-3" /></button>
+                                <button @click="modelValue.justifyContent = 'space-around'" class="btn btn-sm px-0" :class="modelValue.justifyContent === 'space-around' ? 'btn-primary' : 'bg-base-200'" title="Space Around"><PhArrowsHorizontal class="w-3 h-3" /></button>
+                                <button @click="modelValue.justifyContent = 'space-evenly'" class="btn btn-sm px-0 col-span-2" :class="modelValue.justifyContent === 'space-evenly' ? 'btn-primary' : 'bg-base-200'" title="Space Evenly"><PhDotsThreeOutline class="w-3 h-3" /></button>
+                            </div>
+                        </div>
+                        <div class="form-control">
+                            <label class="label py-0.5"><span class="text-[8px] uppercase font-bold opacity-40">Align Content</span></label>
+                            <div class="grid grid-cols-4 gap-1">
+                                <button @click="modelValue.alignContent = undefined" class="btn btn-sm px-0" :class="modelValue.alignContent === undefined ? 'btn-primary' : 'bg-base-200'" title="Default"><PhCircleDashed class="w-3 h-3" /></button>
+                                <button @click="modelValue.alignContent = 'start'" class="btn btn-sm px-0" :class="modelValue.alignContent === 'start' ? 'btn-primary' : 'bg-base-200'" title="Start"><PhAlignTopSimple class="w-3 h-3" /></button>
+                                <button @click="modelValue.alignContent = 'center'" class="btn btn-sm px-0" :class="modelValue.alignContent === 'center' ? 'btn-primary' : 'bg-base-200'" title="Center"><PhAlignCenterVerticalSimple class="w-3 h-3" /></button>
+                                <button @click="modelValue.alignContent = 'end'" class="btn btn-sm px-0" :class="modelValue.alignContent === 'end' ? 'btn-primary' : 'bg-base-200'" title="End"><PhAlignBottomSimple class="w-3 h-3" /></button>
+                                <button @click="modelValue.alignContent = 'stretch'" class="btn btn-sm px-0" :class="modelValue.alignContent === 'stretch' ? 'btn-primary' : 'bg-base-200'" title="Stretch"><PhArrowsOutLineVertical class="w-3 h-3" /></button>
+                                <button @click="modelValue.alignContent = 'space-between'" class="btn btn-sm px-0" :class="modelValue.alignContent === 'space-between' ? 'btn-primary' : 'bg-base-200'" title="Space Between"><PhArrowsOutLineVertical class="w-3 h-3" /></button>
+                                <button @click="modelValue.alignContent = 'space-around'" class="btn btn-sm px-0" :class="modelValue.alignContent === 'space-around' ? 'btn-primary' : 'bg-base-200'" title="Space Around"><PhArrowsVertical class="w-3 h-3" /></button>
+                                <button @click="modelValue.alignContent = 'space-evenly'" class="btn btn-sm px-0" :class="modelValue.alignContent === 'space-evenly' ? 'btn-primary' : 'bg-base-200'" title="Space Evenly"><PhDotsThreeOutlineVertical class="w-3 h-3" /></button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </AdminCollapse>
 
-        <!-- 2. Sizing & Positioning -->
-        <AdminCollapse :title="t('admin.builder.tab_sizing', 'Sizing & Position')" icon="PhBoundingBox" persistKey="style_sizing">
+        <!-- 2. Sizing -->
+        <AdminCollapse :title="t('admin.builder.tab_sizing', 'Sizing')" icon="PhBoundingBox" persistKey="style_sizing">
             <div class="space-y-6 pt-1">
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="form-control">
-                        <label class="label"><span class="label-text text-[10px] uppercase">Z-Index</span></label>
-                        <input type="number" v-model="modelValue.zIndex" class="input input-sm input-bordered w-full" />
-                    </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text text-[10px] uppercase">Aspect Ratio</span></label>
                         <select v-model="modelValue.aspectRatio" class="select select-bordered select-sm w-full">
@@ -139,9 +219,16 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </AdminCollapse>
 
-                <div class="divider my-0 opacity-10"></div>
-
+        <!-- 3. Position -->
+        <AdminCollapse :title="t('admin.builder.tab_position', 'Position')" icon="PhArrowUDownRight" persistKey="style_position">
+            <div class="space-y-6 pt-1">
+                <div class="form-control">
+                    <label class="label"><span class="label-text text-[10px] uppercase">Z-Index</span></label>
+                    <input type="number" v-model="modelValue.zIndex" class="input input-sm input-bordered w-full" />
+                </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text text-[10px] uppercase font-bold opacity-50">Positioning</span></label>
                     <select v-model="modelValue.position" class="select select-bordered select-sm w-full">
@@ -154,18 +241,18 @@
                 </div>
 
                 <!-- Offsets -->
-                <div v-if="['absolute', 'fixed', 'sticky', 'relative'].includes(modelValue.position)" class="bg-base-300/30 p-3 rounded-xl space-y-3 border border-white/5 shadow-inner">
+                <div v-if="['absolute', 'fixed', 'sticky', 'relative'].includes(modelValue.position)" class="space-y-3">
                     <div class="flex flex-col gap-3">
                         <div class="flex justify-center gap-4">
                             <!-- Y Axis Toggle -->
-                            <div class="join border border-white/10 overflow-hidden shadow-lg">
-                                <button @click="toggleOffset('top')" class="btn btn-xs join-item h-7 w-8" :class="modelValue.top !== undefined ? 'btn-primary' : 'bg-base-200 opacity-50'" title="Top"><PhArrowUp weight="bold" class="w-3 h-3" /></button>
-                                <button @click="toggleOffset('bottom')" class="btn btn-xs join-item h-7 w-8" :class="modelValue.bottom !== undefined ? 'btn-primary' : 'bg-base-200 opacity-50'" title="Bottom"><PhArrowDown weight="bold" class="w-3 h-3" /></button>
+                            <div class="join bg-base-200 rounded-md">
+                                <button @click="toggleOffset('top')" class="btn btn-sm join-item min-h-0 h-8 w-10 border-none" :class="modelValue.top !== undefined ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'" title="Top"><PhArrowUp weight="bold" class="w-4 h-4" /></button>
+                                <button @click="toggleOffset('bottom')" class="btn btn-sm join-item min-h-0 h-8 w-10 border-none" :class="modelValue.bottom !== undefined ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'" title="Bottom"><PhArrowDown weight="bold" class="w-4 h-4" /></button>
                             </div>
                             <!-- X Axis Toggle -->
-                            <div class="join border border-white/10 overflow-hidden shadow-lg">
-                                <button @click="toggleOffset('left')" class="btn btn-xs join-item h-7 w-8" :class="modelValue.left !== undefined ? 'btn-primary' : 'bg-base-200 opacity-50'" title="Left"><PhArrowLeft weight="bold" class="w-3 h-3" /></button>
-                                <button @click="toggleOffset('right')" class="btn btn-xs join-item h-7 w-8" :class="modelValue.right !== undefined ? 'btn-primary' : 'bg-base-200 opacity-50'" title="Right"><PhArrowRight weight="bold" class="w-3 h-3" /></button>
+                            <div class="join bg-base-200 rounded-md">
+                                <button @click="toggleOffset('left')" class="btn btn-sm join-item min-h-0 h-8 w-10 border-none" :class="modelValue.left !== undefined ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'" title="Left"><PhArrowLeft weight="bold" class="w-4 h-4" /></button>
+                                <button @click="toggleOffset('right')" class="btn btn-sm join-item min-h-0 h-8 w-10 border-none" :class="modelValue.right !== undefined ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'" title="Right"><PhArrowRight weight="bold" class="w-4 h-4" /></button>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-2">
@@ -191,11 +278,11 @@
             </div>
         </AdminCollapse>
 
-        <!-- 2. Typography -->
+        <!-- 4. Typography -->
         <AdminCollapse :title="t('admin.theme.typography', 'Typography')" icon="PhTextT" persistKey="style_typography" v-if="!['spacer', 'divider', 'image', 'video', 'gallery', 'carousel'].includes(blockType)">
             <div class="space-y-4 pt-1">
                 <div class="form-control">
-                    <FillControl v-model="textFill" :label="t('admin.builder.style_text_color', 'Text Color')" />
+                    <FillControl v-model="textFill" :label="t('admin.builder.style_color', 'Color')" />
                 </div>
 
                 <div class="divider my-0 opacity-10"></div>
@@ -240,32 +327,27 @@
                 </div>
 
                 <div class="form-control">
-                    <label class="label"><span class="label-text text-[10px] uppercase">Weight</span></label>
-                    <div class="join w-full">
-                        <button v-for="w in [['300','L'],['normal','R'],['500','M'],['bold','B'],['900','H']]" 
-                            :key="w[0]"
-                            @click="modelValue.fontWeight = w[0]" 
-                            class="btn btn-sm join-item flex-1" 
-                            :class="((!modelValue.fontWeight && w[0] === 'normal') || modelValue.fontWeight === w[0]) ? 'btn-primary' : 'bg-base-300 border-white/5'">
-                            {{ w[1] }}
-                        </button>
-                    </div>
+                    <label class="label flex justify-between">
+                        <span class="label-text text-[10px] uppercase">Weight</span>
+                        <span class="text-[10px] font-mono">{{ fontWeightSlider }}</span>
+                    </label>
+                    <input type="range" v-model.number="fontWeightSlider" min="100" max="900" step="100" class="range range-primary range-sm" />
                 </div>
 
                 <div class="form-control">
                     <label class="label"><span class="label-text text-[10px] uppercase">Alignment</span></label>
-                    <div class="join w-full">
-                        <button @click="modelValue.textAlign = 'left'" class="btn btn-sm join-item flex-1" :class="modelValue.textAlign === 'left' ? 'btn-primary' : 'bg-base-300 border-white/5'"><PhTextAlignLeft weight="bold" class="w-4 h-4" /></button>
-                        <button @click="modelValue.textAlign = 'center'" class="btn btn-sm join-item flex-1" :class="modelValue.textAlign === 'center' ? 'btn-primary' : 'bg-base-300 border-white/5'"><PhTextAlignCenter weight="bold" class="w-4 h-4" /></button>
-                        <button @click="modelValue.textAlign = 'right'" class="btn btn-sm join-item flex-1" :class="modelValue.textAlign === 'right' ? 'btn-primary' : 'bg-base-300 border-white/5'"><PhTextAlignRight weight="bold" class="w-4 h-4" /></button>
-                        <button @click="modelValue.textAlign = 'justify'" class="btn btn-sm join-item flex-1" :class="modelValue.textAlign === 'justify' ? 'btn-primary' : 'bg-base-300 border-white/5'"><PhTextAlignJustify weight="bold" class="w-4 h-4" /></button>
+                    <div class="join w-full bg-base-200 rounded-md">
+                        <button @click="modelValue.textAlign = 'left'" class="btn btn-sm join-item min-h-0 h-8 flex-1 border-none" :class="modelValue.textAlign === 'left' ? 'btn-primary' : 'bg-transparent opacity-60 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"><PhTextAlignLeft weight="bold" class="w-4 h-4" /></button>
+                        <button @click="modelValue.textAlign = 'center'" class="btn btn-sm join-item min-h-0 h-8 flex-1 border-none" :class="modelValue.textAlign === 'center' ? 'btn-primary' : 'bg-transparent opacity-60 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"><PhTextAlignCenter weight="bold" class="w-4 h-4" /></button>
+                        <button @click="modelValue.textAlign = 'right'" class="btn btn-sm join-item min-h-0 h-8 flex-1 border-none" :class="modelValue.textAlign === 'right' ? 'btn-primary' : 'bg-transparent opacity-60 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"><PhTextAlignRight weight="bold" class="w-4 h-4" /></button>
+                        <button @click="modelValue.textAlign = 'justify'" class="btn btn-sm join-item min-h-0 h-8 flex-1 border-none" :class="modelValue.textAlign === 'justify' ? 'btn-primary' : 'bg-transparent opacity-60 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"><PhTextAlignJustify weight="bold" class="w-4 h-4" /></button>
                     </div>
                 </div>
             </div>
         </AdminCollapse>
 
-        <!-- 3. Background & Effects -->
-        <AdminCollapse :title="t('admin.builder.style_background', 'Background & Effects')" icon="PhPalette" persistKey="style_background">
+        <!-- 5. Background -->
+        <AdminCollapse :title="t('admin.builder.style_background', 'Background')" icon="PhPalette" persistKey="style_background">
             <div class="space-y-6 pt-1">
                 <div class="form-control">
                     <FillControl v-model="backgroundFill" :label="t('admin.builder.style_background', 'Background')" />
@@ -278,19 +360,58 @@
                         <option value="fixed">Fixed (Parallax)</option>
                     </select>
                 </div>
+                <div v-if="backgroundFill?.type === 'image'" class="grid grid-cols-2 gap-4">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-[10px] uppercase">Background Size</span></label>
+                        <select v-model="modelValue.backgroundSize" class="select select-bordered select-sm w-full">
+                            <option value="cover">Cover</option>
+                            <option value="contain">Contain</option>
+                            <option value="auto">Auto</option>
+                            <option value="100% 100%">Stretch</option>
+                        </select>
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text text-[10px] uppercase">Background Repeat</span></label>
+                        <select v-model="modelValue.backgroundRepeat" class="select select-bordered select-sm w-full">
+                            <option value="no-repeat">No Repeat</option>
+                            <option value="repeat">Repeat</option>
+                            <option value="repeat-x">Repeat X</option>
+                            <option value="repeat-y">Repeat Y</option>
+                            <option value="space">Space</option>
+                            <option value="round">Round</option>
+                        </select>
+                    </div>
+                    <div class="form-control col-span-2">
+                        <label class="label"><span class="label-text text-[10px] uppercase">Background Position</span></label>
+                        <select v-model="modelValue.backgroundPosition" class="select select-bordered select-sm w-full">
+                            <option value="center">Center</option>
+                            <option value="top">Top</option>
+                            <option value="bottom">Bottom</option>
+                            <option value="left">Left</option>
+                            <option value="right">Right</option>
+                            <option value="top left">Top Left</option>
+                            <option value="top right">Top Right</option>
+                            <option value="bottom left">Bottom Left</option>
+                            <option value="bottom right">Bottom Right</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </AdminCollapse>
 
-                <div class="divider my-0 opacity-10"></div>
-
+        <!-- 6. Effects -->
+        <AdminCollapse :title="t('admin.builder.style_effects', 'Effects')" icon="PhSelectionBackground" persistKey="style_effects">
+            <div class="space-y-6 pt-1">
                 <div class="form-control">
                     <label class="label flex justify-between">
                         <span class="label-text text-[10px] uppercase font-bold opacity-50">Opacity</span>
                         <span class="text-[10px] font-mono">{{ Math.round((modelValue.opacity ?? 1) * 100) }}%</span>
                     </label>
-                    <input type="range" v-model.number="modelValue.opacity" min="0" max="1" step="0.01" class="range range-primary range-xs" />
+                    <input type="range" v-model.number="modelValue.opacity" min="0" max="1" step="0.01" class="range range-primary range-sm" />
                 </div>
 
                 <!-- Filters -->
-                <div class="space-y-4 bg-base-300/30 p-4 rounded-xl border border-white/5">
+                <div class="space-y-4">
                     <div class="text-[10px] uppercase font-bold opacity-40 border-b border-white/10 pb-2 flex items-center gap-2">
                         <PhSelectionBackground class="w-3 h-3" /> Filters
                     </div>
@@ -303,7 +424,7 @@
                             </label>
                             <input type="range" v-model.number="modelValue[f[0]]" 
                                 :min="0" :max="f[3]" :step="f[0] === 'blur' ? 1 : 5" 
-                                class="range range-xs" :class="modelValue[f[0]] !== undefined ? 'range-primary' : 'opacity-30'" />
+                                class="range range-sm" :class="modelValue[f[0]] !== undefined ? 'range-primary' : 'opacity-30'" />
                         </div>
                     </div>
                 </div>
@@ -315,7 +436,7 @@
             </div>
         </AdminCollapse>
 
-        <!-- 4. Borders -->
+        <!-- 7. Borders -->
         <AdminCollapse :title="t('admin.builder.tab_borders', 'Borders')" icon="PhSquareHalf" persistKey="style_borders">
             <div class="space-y-6 pt-1">
                 <LinkedUnitInput 
@@ -353,7 +474,7 @@
             </div>
         </AdminCollapse>
 
-        <!-- 5. Spacing -->
+        <!-- 8. Spacing -->
         <AdminCollapse :title="t('admin.theme.spacing', 'Spacing')" icon="PhFrameCorners" persistKey="style_spacing">
             <div class="space-y-6 pt-1">
                 <LinkedUnitInput 
@@ -374,7 +495,7 @@
             </div>
         </AdminCollapse>
  
-        <!-- 6. Advanced -->
+        <!-- 9. Advanced -->
         <AdminCollapse :title="t('admin.builder.tab_advanced', 'Advanced')" icon="PhSlidersHorizontal" persistKey="style_advanced">
             <div class="space-y-4 pt-1">
                 <div class="form-control">
@@ -399,7 +520,7 @@
         </AdminCollapse>
 
         <div class="form-control px-2 pt-4">
-            <button @click="$emit('reset')" class="btn btn-outline btn-error btn-xs w-full opacity-50 hover:opacity-100 transition-opacity">
+            <button @click="$emit('reset')" class="btn btn-outline btn-error btn-sm w-full opacity-50 hover:opacity-100 transition-opacity">
                 <PhTrash class="w-3 h-3 mr-1" /> {{ t('admin.builder.action_reset_styles', 'Reset All Styles') }}
             </button>
         </div>
@@ -415,10 +536,15 @@ import LinkedUnitInput from '@/Components/LinkedUnitInput.vue';
 import UnitInput from '@/Components/UnitInput.vue';
 import { 
     PhTextAlignLeft, PhTextAlignCenter, PhTextAlignRight, PhTextAlignJustify, 
+    PhAlignLeftSimple, PhAlignCenterHorizontalSimple, PhAlignRightSimple,
+    PhAlignTopSimple, PhAlignCenterVerticalSimple, PhAlignBottomSimple,
     PhPalette, PhFrameCorners, PhTextT, PhSquareHalf, 
     PhArrowUp, PhArrowDown, PhArrowLeft, PhArrowRight,
+    PhArrowsHorizontal, PhArrowsVertical, PhArrowsOutLineHorizontal, PhArrowsOutLineVertical,
+    PhArrowsInLineHorizontal, PhArrowsInLineVertical, PhCircleDashed,
+    PhDotsThreeOutline, PhDotsThreeOutlineVertical,
     PhBoundingBox, PhSelectionBackground, PhSlidersHorizontal, PhTrash,
-    PhLayout, PhSquaresFour, PhColumns, PhRows, PhArrowUDownRight, PhListDashes
+    PhLayout, PhColumns, PhRows, PhArrowUDownRight
 } from '@phosphor-icons/vue';
 
 const props = defineProps({
@@ -453,6 +579,25 @@ const backgroundFill = createFillProxy('backgroundColor', 'backgroundFill');
 const textFill = createFillProxy('textColor', 'textFill');
 const borderFill = createFillProxy('borderColor', 'borderFill');
 
+const fontWeightSlider = computed({
+    get: () => {
+        const raw = props.modelValue?.fontWeight;
+        if (raw === undefined || raw === null || raw === '') return 400;
+        if (raw === 'normal') return 400;
+        if (raw === 'bold') return 700;
+
+        const parsed = Number(raw);
+        if (!Number.isFinite(parsed)) return 400;
+        return Math.min(900, Math.max(100, Math.round(parsed / 100) * 100));
+    },
+    set: (val) => {
+        if (!props.modelValue) return;
+        const parsed = Number(val);
+        const clamped = Number.isFinite(parsed) ? Math.min(900, Math.max(100, Math.round(parsed / 100) * 100)) : 400;
+        emit('update:modelValue', { ...props.modelValue, fontWeight: String(clamped) });
+    }
+});
+
 const toggleOffset = (direction) => {
     if (!props.modelValue) return;
     const newModelValue = { ...props.modelValue };
@@ -477,3 +622,4 @@ const toggleOffset = (direction) => {
     emit('update:modelValue', newModelValue);
 };
 </script>
+
