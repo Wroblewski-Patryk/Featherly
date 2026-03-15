@@ -109,9 +109,10 @@ class HandleInertiaRequests extends Middleware
             'header' => fn () => $header ? $header->content : null,
             'footer' => fn () => $footer ? $footer->content : null,
             'locale' => fn () => app()->getLocale(),
-            'languages' => fn () => $languages,
-            'all_projects' => fn () => $allProjects,
-            'theme_config' => $themeConfig,
+            'languages' => fn () => \App\Models\Language::where('is_active', true)->orderBy('is_default', 'desc')->get(),
+            'all_projects' => fn () => \App\Models\Project::orderBy('order')->get(),
+            'theme_config' => fn () => $themeConfig,
+            'menus' => fn () => [], // Safe historical fallback
             'translations' => fn () => \Illuminate\Support\Facades\Cache::remember('translations.' . app()->getLocale(), 3600, function () {
                 return Translation::all()->reduce(function ($carry, $translation) {
                     $locale = app()->getLocale();

@@ -34,7 +34,7 @@ class TemplateManagementTest extends TestCase
         $data = [
             'title' => ['pl' => 'Nagłówek', 'en' => 'Custom Header'],
             'type' => 'header',
-            'content' => [],
+            'content' => [['type' => 'text', 'body' => 'Test']],
             'is_active' => true,
             'is_default' => true,
         ];
@@ -42,10 +42,9 @@ class TemplateManagementTest extends TestCase
         $response = $this->actingAs($this->admin)->post(route('admin.templates.store'), $data);
 
         $response->assertRedirect(); // Redirects to edit
-        $this->assertDatabaseHas('templates', [
-            'title->en' => 'Custom Header',
-            'is_default' => true,
-        ]);
+        $template = Template::all()->last();
+        $this->assertEquals('Custom Header', $template->getTranslation('title', 'en'));
+        $this->assertTrue($template->is_default);
     }
 
     public function test_admin_can_update_template(): void
@@ -55,17 +54,15 @@ class TemplateManagementTest extends TestCase
         $data = [
             'title' => ['pl' => 'Nowa nazwa', 'en' => 'Updated Name'],
             'type' => $template->type,
-            'content' => [],
+            'content' => [['type' => 'text', 'body' => 'Updated']],
             'is_active' => true,
         ];
 
         $response = $this->actingAs($this->admin)->put(route('admin.templates.update', $template), $data);
 
         $response->assertRedirect(); // Redirects back
-        $this->assertDatabaseHas('templates', [
-            'id' => $template->id,
-            'title->en' => 'Updated Name',
-        ]);
+        $template->refresh();
+        $this->assertEquals('Updated Name', $template->getTranslation('title', 'en'));
     }
 
     public function test_admin_can_delete_template(): void
