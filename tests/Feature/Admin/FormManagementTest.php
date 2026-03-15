@@ -41,7 +41,7 @@ class FormManagementTest extends TestCase
 
         $form = Form::all()->last();
         $response->assertRedirect(route('admin.forms.edit', $form));
-        $this->assertDatabaseHas('forms', ['title->en' => 'Contact Us']);
+        $this->assertEquals('Contact Us', $form->getTranslation('title', 'en'));
     }
 
     public function test_admin_can_update_form(): void
@@ -59,7 +59,8 @@ class FormManagementTest extends TestCase
             ->put(route('admin.forms.update', $form), $data);
 
         $response->assertRedirect(route('admin.forms.edit', $form));
-        $this->assertDatabaseHas('forms', ['id' => $form->id, 'title->en' => 'Updated Form']);
+        $form->refresh();
+        $this->assertEquals('Updated Form', $form->getTranslation('title', 'en'));
     }
 
     public function test_admin_can_delete_form(): void
