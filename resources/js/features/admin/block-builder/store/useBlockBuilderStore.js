@@ -80,6 +80,7 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                     { type: 'range', label: 'Range', icon: 'PhSlidersHorizontal' },
                     { type: 'rating', label: 'Rating', icon: 'PhStarHalf' },
                     { type: 'file_input', label: 'File Input', icon: 'PhUploadSimple' },
+                    { type: 'form', label: 'Form Container', icon: 'PhFiles' },
                 ]
             },
             {
@@ -244,6 +245,13 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 range: { min: 0, max: 100, val: 50 },
                 rating: { max: 5, val: 3 },
                 file_input: { label: 'Upload document', placeholder: 'Choose file' },
+                form: {
+                    form_id: null,
+                    submit_url: '',
+                    success_message: 'Thank you! Your message has been sent.',
+                    error_message: 'Something went wrong.',
+                    submit_label: 'Send Message'
+                },
 
                 // 5. Layout & Media
                 container: {

@@ -57,48 +57,36 @@ class PageController extends Controller
         }
 
         // 2. Resolve Page or special archive
-        // Find page by slug (checking current locale preferred, or any)
-        $pageQuery = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
-            ->where(function($query) use ($locale, $fallbackLocale, $firstSegment) {
-                $query->whereRaw("json_unquote(json_extract(slug, '$.$locale')) = ?", [$firstSegment])
-                      ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$firstSegment]);
-            });
-            
-        $firstPage = $pageQuery->first();
+        // Try to find page by the FULL path first (for nested slugs or specific pages)
+        $firstPage = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
+            ->where(function ($query) use ($locale, $fallbackLocale, $actualPath) {
+                $query->whereRaw("json_unquote(json_extract(slug, '$.$locale')) = ?", [$actualPath])
+                      ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$actualPath]);
+            })->first();
 
-        // If not found, try finding a page by the full path
-        if (!$firstPage) {
-            $firstPage = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
-                ->where(function ($query) use ($locale, $fallbackLocale, $actualPath) {
-                    $query->whereRaw("json_unquote(json_extract(slug, '$.$locale')) = ?", [$actualPath])
-                          ->orWhereRaw("json_unquote(json_extract(slug, '$.$fallbackLocale')) = ?", [$actualPath]);
-                })->first();
+        // If not found, try finding a parent page (like Blog or Projects archive)
+        if (!$firstPage && count($segments) > 1) {
+            $firstSegment = $segments[0];
+            $parentPage = Page::where('status', 'published')
+                ->where(function ($query) use ($firstSegment, $locale, $fallbackLocale) {
+                    $query->where("slug->{$locale}", $firstSegment)
+                          ->orWhere("slug->{$fallbackLocale}", $firstSegment);
+                })
+                ->first();
+
+            if ($parentPage) {
+                $tail = implode('/', array_slice($segments, 1));
+                if ($parentPage->id == $blogId) {
+                    return $this->showPost($tail);
+                }
+                if ($parentPage->id == $projectsId) {
+                    return $this->showProject($tail);
+                }
+            }
         }
 
         if ($firstPage) {
-            // Check if this is a special archive page (Blog)
-            if ($firstPage->id == $blogId && count($segments) > 1) {
-                return $this->showPost($segments[1]); // Assuming single level for now
-            }
-            
-            // Check if this is a special archive page (Projects)
-            if ($firstPage->id == $projectsId && count($segments) > 1) {
-                return $this->showProject($segments[1]);
-            }
-
-            // Otherwise, it's just a regular page (or the archive page itself)
-            // Redirect if using wrong locale slug? (Skip for now to avoid loops, let's just render)
             return $this->renderPage($firstPage, $settings, $isAdmin, $comingSoonId, $page404Id);
-        }
-
-        // If no page found for the first segment, try finding a page by the full path (for nested static pages if any)
-        $fullPage = Page::with(['headerOverride', 'footerOverride', 'sidebarOverride'])
-            ->where("slug->{$locale}", $path)
-            ->orWhere("slug->{$fallbackLocale}", $path)
-            ->first();
-
-        if ($fullPage) {
-            return $this->renderPage($fullPage, $settings, $isAdmin, $comingSoonId, $page404Id);
         }
 
         return $this->render404($settings, $page404Id);
