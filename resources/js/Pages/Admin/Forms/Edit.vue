@@ -2,6 +2,7 @@
     <AdminLayout :full-width="true">
         <BlockBuilder 
             v-model:title="form.title[activeLocale]"
+            :module-label="formModel?.id ? t('admin.forms.edit_form', 'Edit Form') : t('admin.forms.add_form', 'Add New Form')"
             :categories="store.categories"
             :module-categories="formModuleCategories"
             :saving="form.processing"

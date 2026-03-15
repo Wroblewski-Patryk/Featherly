@@ -2,6 +2,7 @@
     <AdminLayout :full-width="true">
         <BlockBuilder 
             v-model:title="form.title"
+            :module-label="post?.id ? t('admin.posts.edit_post', 'Edit Post') : t('admin.posts.add_post', 'Add New Post')"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"

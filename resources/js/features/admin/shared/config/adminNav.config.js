@@ -14,28 +14,48 @@ export const navigation = (t) => [
                 icon: PhFileText,
                 route: 'admin.pages.index',
                 createRoute: 'admin.pages.create',
-                active: '/admin/pages'
+                active: '/admin/pages',
+                color: 'primary',
+                children: [
+                    { label: t('admin.common.all', 'All'), route: 'admin.pages.index', active: '/admin/pages', exact: true },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.pages.create', active: '/admin/pages/create' }
+                ]
             },
             {
                 label: t('admin.menu.posts', 'Posts'),
                 icon: PhFeather,
                 route: 'admin.posts.index',
                 createRoute: 'admin.posts.create',
-                active: ['/admin/posts', '/admin/categories']
+                active: ['/admin/posts', '/admin/categories'],
+                color: 'primary',
+                children: [
+                    { label: t('admin.common.all', 'All'), route: 'admin.posts.index', active: '/admin/posts', exact: true },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.posts.create', active: '/admin/posts/create' }
+                ]
             },
             {
                 label: t('admin.menu.projects', 'Projects'),
                 icon: PhCards,
                 route: 'admin.projects.index',
                 createRoute: 'admin.projects.create',
-                active: ['/admin/projects', '/admin/clients']
+                active: ['/admin/projects', '/admin/clients'],
+                color: 'primary',
+                children: [
+                    { label: t('admin.common.all', 'All'), route: 'admin.projects.index', active: '/admin/projects', exact: true },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.projects.create', active: '/admin/projects/create' }
+                ]
             },
             {
                 label: t('admin.menu.forms', 'Forms'),
                 icon: PhTextbox,
                 route: 'admin.forms.index',
                 createRoute: 'admin.forms.create',
-                active: '/admin/forms'
+                active: '/admin/forms',
+                color: 'primary',
+                children: [
+                    { label: t('admin.common.all', 'All'), route: 'admin.forms.index', active: '/admin/forms', exact: true },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.forms.create', active: '/admin/forms/create' }
+                ]
             }
         ]
     },
@@ -54,9 +74,14 @@ export const navigation = (t) => [
                 label: t('admin.menu.templates', 'Templates'),
                 icon: PhLayout,
                 route: 'admin.templates.index',
+                createRoute: 'admin.templates.create',
                 permission: 'can_manage_settings',
                 active: '/admin/templates',
-                color: 'secondary'
+                color: 'secondary',
+                children: [
+                    { label: t('admin.common.all', 'All'), route: 'admin.templates.index', active: '/admin/templates', exact: true },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.templates.create', active: '/admin/templates/create' }
+                ]
             }
         ]
     },
@@ -93,23 +118,29 @@ export const navigation = (t) => [
         permission: 'can_manage_settings',
         items: [
             {
-                label: t('admin.menu.localization', 'Localization'),
+                label: t('admin.menu.languages', 'Languages'),
                 icon: PhGlobe,
+                route: 'admin.languages.index',
+                createRoute: 'admin.languages.create',
                 active: ['/admin/languages', '/admin/translations'],
                 color: 'info',
                 children: [
-                    { label: t('admin.menu.languages', 'Languages'), route: 'admin.languages.index', active: '/admin/languages' },
+                    { label: t('admin.common.all', 'All'), route: 'admin.languages.index', active: '/admin/languages', exact: true },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.languages.create', active: '/admin/languages/create' },
                     { label: t('admin.menu.translations', 'Translations'), route: 'admin.translations.index', active: '/admin/translations' }
                 ]
             },
             {
-                label: t('admin.menu.users_management', 'Users & Roles'),
+                label: t('admin.menu.users', 'Users'),
                 icon: PhUsers,
+                route: 'admin.users.index',
+                createRoute: 'admin.users.create',
                 permission: 'can_manage_users',
                 active: ['/admin/users', '/admin/roles'],
                 color: 'info',
                 children: [
-                    { label: t('admin.menu.users', 'Users'), route: 'admin.users.index', active: '/admin/users' },
+                    { label: t('admin.common.all', 'All'), route: 'admin.users.index', active: '/admin/users', exact: true },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.users.create', active: '/admin/users/create' },
                     { label: t('admin.menu.roles', 'Roles'), route: 'admin.roles.index', active: '/admin/roles' }
                 ]
             },

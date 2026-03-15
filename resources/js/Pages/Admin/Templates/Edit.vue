@@ -2,6 +2,7 @@
     <AdminLayout :full-width="true">
         <BlockBuilder 
             v-model:title="form.title"
+            :module-label="template?.id ? t('admin.templates.edit_template', 'Edit Template') : t('admin.templates.add_template', 'Add New Template')"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"

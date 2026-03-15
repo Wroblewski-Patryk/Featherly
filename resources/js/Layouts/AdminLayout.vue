@@ -18,22 +18,7 @@ const themesList = ['light', 'dark', 'emerald', 'corporate', 'retro', 'cyberpunk
 const currentTheme = ref('light');
 const isSidebarCollapsed = ref(false);
 
-const menuOpen = ref({
-    posts: false,
-    projects: false,
-    theme: false,
-    languages: false,
-    users: false,
-});
-
-// Watch for URL changes to keep submenus open
-watch(() => usePage().url, (url) => {
-    if (url.includes('/admin/posts')) menuOpen.value.posts = true;
-    if (url.includes('/admin/projects')) menuOpen.value.projects = true;
-    if (url.includes('/admin/theme')) menuOpen.value.theme = true;
-    if (url.includes('/admin/languages') || url.includes('/admin/translations')) menuOpen.value.languages = true;
-    if (url.includes('/admin/users') || url.includes('/admin/roles')) menuOpen.value.users = true;
-}, { immediate: true });
+// Navigation state managed by watcher on current URL
 
 onMounted(() => {
     // Check localStorage for a saved theme
@@ -91,13 +76,16 @@ const navConfig = computed(() => navigation(t));
 const navState = ref({});
 
 watch(() => usePage().url, (url) => {
+    // Strip locale prefix for matching
+    const cleanUrl = url.replace(/^\/(pl|en)/, '') || '/';
+
     // Determine which groups should be open based on URL
     navConfig.value.forEach((group, groupIdx) => {
         group.items.forEach((item, itemIdx) => {
             if (item.children) {
                 const isActive = Array.isArray(item.active) 
-                    ? item.active.some(a => url.startsWith(a))
-                    : url.startsWith(item.active);
+                    ? item.active.some(a => cleanUrl.startsWith(a))
+                    : cleanUrl.startsWith(item.active);
                 
                 if (isActive) {
                     navState.value[`${groupIdx}-${itemIdx}`] = true;
@@ -116,8 +104,23 @@ const hasPermission = (permission) => {
     return page.props.auth?.user?.permissions?.[permission] || false;
 };
 
-const isItemActive = (itemActive) => {
-    const url = usePage().url;
+const isItemActive = (item) => {
+    let url = usePage().url;
+    // Strip locale prefix (e.g., /pl, /en)
+    url = url.replace(/^\/(pl|en)/, '');
+    if (url === '') url = '/';
+
+    const itemActive = item.active;
+    
+    if (!itemActive) return false;
+
+    if (item.exact) {
+        if (Array.isArray(itemActive)) {
+            return itemActive.some(a => url === a);
+        }
+        return url === itemActive;
+    }
+
     if (Array.isArray(itemActive)) {
         return itemActive.some(a => url.startsWith(a));
     }
@@ -293,54 +296,56 @@ const changeLanguage = (langCode) => {
                             <!-- Sidebar content here -->
                             <!-- Dynamic Sidebar Content -->
                             <template v-for="(group, groupIdx) in navConfig" :key="groupIdx">
-                                <li v-if="hasPermission(group.permission)" class="menu-title mt-4 mb-2 border-b border-base-200/50 pb-1 pointer-events-none">
+                                <li v-if="hasPermission(group.permission)" class="menu-title mt-4 mb-1 px-4 pointer-events-none">
                                     <span class="text-[10px] uppercase font-bold tracking-widest whitespace-nowrap overflow-hidden transition-all duration-300" 
-                                          :class="group.items[0]?.color ? `text-${group.items[0].color}/60` : 'text-primary/60'"
+                                          :class="group.items[0]?.color ? `text-${group.items[0].color}` : 'text-primary'"
                                           v-show="!isSidebarCollapsed">
                                         {{ group.title }}
                                     </span>
                                 </li>
 
                                 <template v-for="(item, itemIdx) in group.items" :key="itemIdx">
-                                    <li v-if="hasPermission(item.permission)" class="relative group/menu-item">
+                                    <li v-if="hasPermission(item.permission)" class="relative group/menu-item px-2">
                                         <!-- Main Item -->
-                                        <div class="flex items-center justify-between group transition-all px-3 py-1.5" 
+                                        <div class="flex items-center justify-between group transition-all px-3 py-2 rounded-lg" 
                                              :class="[
-                                                isItemActive(item.active) ? `bg-${item.color || 'primary'}/5 text-${item.color || 'primary'} font-medium border-l-2 border-${item.color || 'primary'}` : `hover:bg-transparent hover:text-${item.color || 'primary'}`
+                                                isItemActive(item) ? `bg-${item.color || 'primary'}/10 text-${item.color || 'primary'} font-semibold` : `hover:bg-base-200/50 hover:text-${item.color || 'primary'}`
                                              ]">
+                                            <!-- Vertical Active Indicator -->
+                                            <div v-if="isItemActive(item)" :class="`absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-${item.color || 'primary'}`"></div>
+
                                             <component :is="item.route ? Link : 'div'" 
                                                        v-if="item.route || item.children"
                                                        :href="item.route ? route(item.route) : null" 
                                                        @click="!item.route && item.children ? toggleSubmenu(`${groupIdx}-${itemIdx}`) : null"
                                                        class="flex items-center flex-1 cursor-pointer">
                                                 <component :is="item.icon" weight="regular" class="w-5 h-5 shrink-0 transition-colors" 
-                                                           :class="{'text-primary': isItemActive(item.active) && !item.color, [`text-${item.color}`]: isItemActive(item.active) && item.color}" />
-                                                <span v-show="!isSidebarCollapsed" class="ml-2.5 transition-opacity duration-300 text-sm">{{ item.label }}</span>
+                                                            :class="isItemActive(item) ? `text-${item.color || 'primary'}` : 'text-base-content/60 group-hover/menu-item:text-inherit'" />
+                                                <span v-show="!isSidebarCollapsed" class="ml-3 transition-opacity duration-300 text-sm">{{ item.label }}</span>
                                             </component>
 
                                             <!-- Action Buttons (Create or Toggle) -->
-                                            <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity gap-0.5">
+                                            <div v-show="!isSidebarCollapsed" class="flex items-center pr-1 opacity-0 group-hover:opacity-100 transition-opacity gap-1">
                                                 <Link v-if="item.createRoute" :href="route(item.createRoute)" 
-                                                      class="p-1.5 transition-all"
-                                                      :class="`hover:bg-${item.color || 'primary'}/10 hover:text-${item.color || 'primary'}`">
-                                                    <PhPlus weight="bold" class="w-3.5 h-3.5" />
+                                                      class="p-1 rounded-md transition-all hover:bg-base-300"
+                                                      :class="`text-${item.color || 'primary'}`" title="Add New">
+                                                    <PhPlus weight="bold" class="w-4 h-4" />
                                                 </Link>
-                                                <button v-if="item.children" @click="toggleSubmenu(`${groupIdx}-${itemIdx}`)" 
-                                                        class="p-1.5 transition-all"
-                                                        :class="`hover:bg-${item.color || 'primary'}/10 hover:text-${item.color || 'primary'}`">
+                                                <button v-if="item.children" @click.stop="toggleSubmenu(`${groupIdx}-${itemIdx}`)" 
+                                                        class="p-1 rounded-md transition-all hover:bg-base-300">
                                                     <PhCaretDown weight="bold" class="w-3.5 h-3.5 transition-transform duration-300" 
-                                                                 :class="{'rotate-180': navState[`${groupIdx}-${itemIdx}`]}" />
+                                                                 :class="[{'rotate-180': navState[`${groupIdx}-${itemIdx}`]}, `text-${item.color || 'primary'}`]" />
                                                 </button>
                                             </div>
                                         </div>
 
                                         <!-- Submenu -->
                                         <ul v-if="item.children" v-show="navState[`${groupIdx}-${itemIdx}`] && !isSidebarCollapsed" 
-                                            class="mt-0.5 ml-4 border-l border-base-300 pl-2 space-y-0.5">
+                                            class="mt-1 ml-6 border-l-2 border-base-200 pl-2 space-y-1 py-1">
                                             <li v-for="(child, childIdx) in item.children" :key="childIdx">
-                                                <Link :href="route(child.route)" class="py-1 px-3 text-xs transition-colors block" 
+                                                <Link :href="route(child.route)" class="py-1.5 px-3 text-[13px] rounded-md transition-colors block" 
                                                       :class="[
-                                                        isItemActive(child.active) ? `text-${item.color || 'primary'} font-medium` : `hover:text-${item.color || 'primary'} hover:bg-transparent`
+                                                        isItemActive(child) ? `bg-${item.color || 'primary'}/5 text-${item.color || 'primary'} font-medium` : `hover:text-${item.color || 'primary'} hover:bg-base-200/30 text-base-content/70`
                                                       ]">
                                                     {{ child.label }}
                                                 </Link>

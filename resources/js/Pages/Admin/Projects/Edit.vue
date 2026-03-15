@@ -3,6 +3,7 @@
     <AdminLayout :full-width="true">
         <BlockBuilder 
             v-model:title="form.title"
+            :module-label="project?.id ? t('admin.projects.edit_project', 'Edit Project') : t('admin.projects.add_project', 'Add New Project')"
             :categories="store.categories"
             :saving="form.processing"
             :templates="templates"

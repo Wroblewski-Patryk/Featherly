@@ -4,6 +4,7 @@
         <!-- Unified Header -->
         <BlockBuilderHeader 
             v-model:title="docTitle"
+            :module-label="moduleLabel"
             :current-viewport="viewport"
             :custom-width="customWidth"
             :custom-height="customHeight"
@@ -263,6 +264,7 @@ const iconMap = {
 
 const props = defineProps({
     title: { type: [String, Object], default: 'Untitled' },
+    moduleLabel: { type: String, default: '' },
     categories: { type: Array, default: () => [] },
     moduleCategories: { type: Array, default: () => [] },
     menus: { type: Array, default: () => [] },
