@@ -3,7 +3,7 @@ import { ref, markRaw } from 'vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import { PhPencilSimple, PhPlusCircle, PhGlobe, PhPlus, PhTrash, PhHouse } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import ResourceTable from '@/Components/ResourceTable.vue';
+import ResourceTable from '@/features/admin/shared/components/ResourceTable.vue';
 import { useTranslations } from '@/Composables/useTranslations';
 
 const { t } = useTranslations();

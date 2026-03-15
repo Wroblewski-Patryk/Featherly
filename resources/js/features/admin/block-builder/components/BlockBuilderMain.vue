@@ -2,7 +2,7 @@
     <div class="h-full flex flex-col overflow-hidden bg-base-300" style="--admin-p: var(--color-primary, #38bdf8); --admin-radius: var(--radius-box, var(--rounded-box, 1rem));">
         
         <!-- Unified Header -->
-        <BuilderHeader 
+        <BlockBuilderHeader 
             v-model:title="docTitle"
             :current-viewport="viewport"
             :custom-width="customWidth"
@@ -64,7 +64,7 @@
                     </button>
                 </div>
             </template>
-        </BuilderHeader>
+        </BlockBuilderHeader>
 
         <div class="flex-1 flex overflow-hidden">
             <!-- Left Sidebar: Block Palette -->
@@ -182,7 +182,7 @@
                         </button>
                     </div>
                     <div class="flex-1 overflow-y-auto p-4 custom-scrollbar flex flex-col">
-                        <GsapTimelineEditor :blocks="timelineBlocks" class="flex-1" />
+                        <BlockBuilderTimeline :blocks="timelineBlocks" class="flex-1" />
                     </div>
                 </div>
             </div>
@@ -192,7 +192,7 @@
                 :class="store.showRightSidebar ? 'w-[360px]' : 'w-0 border-l-0'"
             >
                 <div class="w-[360px] h-full flex flex-col">
-                    <BlockEditorSidebar 
+                    <BlockBuilderSidebar 
                         :menus="menus" 
                         :templates="templates" 
                         :saving="saving"
@@ -210,7 +210,7 @@
                         <template #history>
                             <slot name="history"></slot>
                         </template>
-                    </BlockEditorSidebar>
+                    </BlockBuilderSidebar>
                 </div>
             </div>
         </div>
@@ -234,17 +234,17 @@ import {
     PhBriefcase, PhArrowsClockwise, PhListNumbers, PhDeviceTablet, PhArrowsOut,
     PhArrowUUpLeft, PhPlus, PhX, PhPerspective
 } from '@phosphor-icons/vue';
-import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useTranslations } from '@/Composables/useTranslations';
-import DynamicBlock from '@/Components/DynamicBlock.vue';
-import BlockEditorSidebar from '@/Components/BlockEditorSidebar.vue';
-import BuilderHeader from '@/Components/BlockBuilder/Layout/BuilderHeader.vue';
-import SidebarPanelHeader from '@/Components/BlockBuilder/Layout/SidebarPanelHeader.vue';
+import DynamicBlock from '@/features/admin/block-builder/components/DynamicBlock.vue';
+import BlockBuilderSidebar from './BlockBuilderSidebar.vue';
+import BlockBuilderHeader from './Layout/BlockBuilderHeader.vue';
+import SidebarPanelHeader from './Layout/SidebarPanelHeader.vue';
 import LayerTreeItem from '@/Components/LayerTreeItem.vue';
-import GsapTimelineEditor from '@/Components/GsapTimelineEditor.vue';
-import AdminCollapse from '@/Components/AdminCollapse.vue';
-import BlockPaletteTile from '@/Components/BlockBuilder/Palette/BlockPaletteTile.vue';
-import MediaPickerModal from '@/Components/Admin/Media/MediaPickerModal.vue';
+import BlockBuilderTimeline from './BlockBuilderTimeline.vue';
+import AdminCollapse from '@/features/admin/shared/components/AdminCollapse.vue';
+import BlockPaletteTile from './Palette/BlockPaletteTile.vue';
+import MediaPickerModal from '@/features/admin/media/components/MediaPickerModal.vue';
 import draggable from 'vuedraggable';
 import gsap from 'gsap';
 

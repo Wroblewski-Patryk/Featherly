@@ -530,10 +530,10 @@
 <script setup>
 import { computed } from 'vue';
 import { useTranslations } from '@/Composables/useTranslations';
-import AdminCollapse from '@/Components/AdminCollapse.vue';
-import FillControl from '@/Components/FillControl.vue';
-import LinkedUnitInput from '@/Components/LinkedUnitInput.vue';
-import UnitInput from '@/Components/UnitInput.vue';
+import AdminCollapse from '@/features/admin/shared/components/AdminCollapse.vue';
+import FillControl from '@/features/admin/theme/components/FillControl.vue';
+import LinkedUnitInput from '@/features/admin/theme/components/LinkedUnitInput.vue';
+import UnitInput from '@/features/admin/theme/components/UnitInput.vue';
 import { 
     PhTextAlignLeft, PhTextAlignCenter, PhTextAlignRight, PhTextAlignJustify, 
     PhAlignLeftSimple, PhAlignCenterHorizontalSimple, PhAlignRightSimple,

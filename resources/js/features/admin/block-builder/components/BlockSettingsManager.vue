@@ -17,7 +17,7 @@
 <script setup>
 import { computed, defineAsyncComponent } from 'vue';
 import { useTranslations } from '@/Composables/useTranslations';
-import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { usePage } from '@inertiajs/vue3';
 
 const { t } = useTranslations();

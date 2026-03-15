@@ -2,7 +2,7 @@
 import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import SeoHead from '@/Components/SeoHead.vue';
-import DynamicBlock from '@/Components/DynamicBlock.vue';
+import DynamicBlock from '@/features/admin/block-builder/components/DynamicBlock.vue';
 import { PhArrowLeft } from '@phosphor-icons/vue';
 import { useTranslations } from '@/Composables/useTranslations';
 import { useFormatter } from '@/Composables/useFormatter';

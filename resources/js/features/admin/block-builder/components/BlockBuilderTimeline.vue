@@ -76,7 +76,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { PhSkipBack, PhPlay, PhPause, PhTimer, PhCube } from '@phosphor-icons/vue';
-import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useTranslations } from '@/Composables/useTranslations';
 import gsap from 'gsap';
 

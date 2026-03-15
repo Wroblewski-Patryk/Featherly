@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 
 const store = useBlockBuilderStore();
 

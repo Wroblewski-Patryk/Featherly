@@ -2,12 +2,13 @@
 import { ref, onMounted, computed, watch, inject } from 'vue';
 import { useGsapRuntime } from '@/Composables/useGsapRuntime';
 import { useForm, usePage, Link } from '@inertiajs/vue3';
-import DynamicBlock from '@/Components/DynamicBlock.vue';
+// Self-import removed to avoid Vite recursion issues. 
+// Vue 3 naturally supports recursive components via their own name.
 import draggable from 'vuedraggable';
 import { PhArrowsOut, PhCopy, PhTrash, PhInfo, PhCheckCircle, PhSlidersHorizontal, PhPuzzlePiece, PhSquare, PhCube, PhLayout, PhCalendarBlank, PhUser } from '@phosphor-icons/vue';
-import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useTranslations } from '@/Composables/useTranslations';
-import placeholderImg from '../../images/placeholder.png';
+import placeholderImg from '@/../images/placeholder.png';
 import moment from 'moment';
 
 const props = defineProps(['block']);
@@ -17,24 +18,24 @@ const isEditor = inject('isEditor', false);
 
 // Safe reactive injection handles both refs and plain values
 const headerContent = computed(() => {
-    const injected = inject('headerContent', []);
-    const val = (injected && typeof injected === 'object' && 'value' in injected) ? injected.value : injected;
-    return Array.isArray(val) ? val : [];
+    const injectedVal = inject('headerContent', []);
+    const value = (injectedVal && typeof injectedVal === 'object' && 'value' in injectedVal) ? injectedVal.value : injectedVal;
+    return Array.isArray(value) ? value : [];
 });
 const footerContent = computed(() => {
-    const injected = inject('footerContent', []);
-    const val = (injected && typeof injected === 'object' && 'value' in injected) ? injected.value : injected;
-    return Array.isArray(val) ? val : [];
+    const injectedVal = inject('footerContent', []);
+    const value = (injectedVal && typeof injectedVal === 'object' && 'value' in injectedVal) ? injectedVal.value : injectedVal;
+    return Array.isArray(value) ? value : [];
 });
 const sidebarContent = computed(() => {
-    const injected = inject('sidebarContent', []);
-    const val = (injected && typeof injected === 'object' && 'value' in injected) ? injected.value : injected;
-    return Array.isArray(val) ? val : [];
+    const injectedVal = inject('sidebarContent', []);
+    const value = (injectedVal && typeof injectedVal === 'object' && 'value' in injectedVal) ? injectedVal.value : injectedVal;
+    return Array.isArray(value) ? value : [];
 });
 const mainContent = computed(() => {
-    const injected = inject('mainContent', []);
-    const val = (injected && typeof injected === 'object' && 'value' in injected) ? injected.value : injected;
-    return Array.isArray(val) ? val : [];
+    const injectedVal = inject('mainContent', []);
+    const value = (injectedVal && typeof injectedVal === 'object' && 'value' in injectedVal) ? injectedVal.value : injectedVal;
+    return Array.isArray(value) ? value : [];
 });
 const { t: originalT } = useTranslations();
 
