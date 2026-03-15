@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, watch, inject } from 'vue';
+import { ref, onMounted, computed, watch, inject, provide, reactive } from 'vue';
 import { useGsapRuntime } from '@/Composables/useGsapRuntime';
 import { useForm, usePage, Link } from '@inertiajs/vue3';
 // Self-import removed to avoid Vite recursion issues. 
@@ -9,10 +9,12 @@ import { PhArrowsOut, PhCopy, PhTrash, PhInfo, PhCheckCircle, PhSlidersHorizonta
 import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useTranslations } from '@/Composables/useTranslations';
 import placeholderImg from '@/../images/placeholder.png';
+import { useToastStore } from '@/Stores/useToastStore';
 import moment from 'moment';
 
 const props = defineProps(['block']);
 const page = usePage();
+const toast = useToastStore();
 const store = useBlockBuilderStore();
 const isEditor = inject('isEditor', false);
 
@@ -378,6 +380,77 @@ const contactForm = useForm({
     message: '',
     website: '' // honeypot
 });
+
+// Runtime Form Handling (Phase J)
+const parentFormValues = inject('runtimeFormValues', null);
+const isFormBlock = computed(() => props.block.type === 'form');
+const localFormValues = isFormBlock.value ? reactive({ website: '' }) : null;
+
+if (isFormBlock.value) {
+    provide('runtimeFormValues', localFormValues);
+}
+
+const submitRuntimeForm = () => {
+    if (isEditor) return;
+    
+    // Check honeypot
+    if (localFormValues.website) {
+        toast.info(t(props.block.content.success_message));
+        return;
+    }
+
+    const submitUrl = props.block.content.submit_url || (props.block.content.form_id ? route('forms.submit', props.block.content.form_id) : null);
+    
+    if (!submitUrl) {
+        console.error('No submission URL or form ID defined for this form container.');
+        return;
+    }
+
+    const f = useForm(localFormValues);
+    f.post(submitUrl, {
+        onSuccess: () => {
+             // Reset form
+             Object.keys(localFormValues).forEach(key => {
+                 if (key !== 'website') localFormValues[key] = '';
+             });
+             // Success message is handled by backend + flash or we can show local toast
+             // The backend PublicFormController returns with('success', ...)
+        },
+        preserveScroll: true
+    });
+};
+
+// Phase J: Input binding helper
+const formValue = computed({
+    get: () => {
+        if (!parentFormValues) return null;
+        
+        // For radio, we use 'group' as the data key
+        if (props.block.type === 'radio' && props.block.content.group) {
+            return parentFormValues[props.block.content.group];
+        }
+        
+        if (!props.block.content.label) return null;
+        const key = t(props.block.content.label);
+        return parentFormValues[key];
+    },
+    set: (v) => {
+        if (!parentFormValues) return;
+
+        // For radio, we use 'group' as the data key
+        if (props.block.type === 'radio' && props.block.content.group) {
+            parentFormValues[props.block.content.group] = v;
+            return;
+        }
+
+        if (props.block.content.label) {
+            const key = t(props.block.content.label);
+            parentFormValues[key] = v;
+        }
+    }
+});
+
+
 </script>
 
 <template>
@@ -659,34 +732,99 @@ const contactForm = useForm({
         </div>
 
         <!-- 4. Data Input -->
+        <component :is="'form'"
+             v-else-if="block.type === 'form'"
+             @submit.prevent="submitRuntimeForm"
+             class="w-full relative transition-colors"
+             :class="[
+                containerClasses,
+                {'min-h-[100px] border border-dashed border-primary/20 rounded-xl p-4': isEditor}
+             ]">
+            <!-- In Editor, show a badge indicating it's a form -->
+            <div v-if="isEditor" class="absolute -top-3 left-4 badge badge-primary badge-sm gap-2 z-10">
+                <PhFiles weight="bold" class="w-3 h-3" />
+                <span>Form Container</span>
+            </div>
+
+            <template v-if="isEditor">
+                <draggable 
+                    v-model="block.children" 
+                    :group="'admin.blocks'"
+                    item-key="id"
+                    handle=".drag-handle"
+                    ghost-class="ghost-block"
+                    class="min-h-[80px] w-full"
+                    :class="[
+                        resolvedContent.layoutType === 'flex' ? 'flex' : 'flex flex-col',
+                        resolvedContent.layoutType === 'flex' && resolvedContent.flexConfig?.direction === 'row' ? 'flex-row' : 'flex-col',
+                        resolvedContent.layoutType === 'grid' ? 'grid' : '',
+                        resolvedContent.layoutType === 'grid' ? `grid-cols-${resolvedContent.gridConfig?.cols || '1'}` : '',
+                        (resolvedContent.layoutType === 'flex' || resolvedContent.layoutType === 'grid') && resolvedContent.flexConfig?.gap ? `gap-${resolvedContent.flexConfig.gap}` : 'gap-4'
+                    ]">
+                    <template #item="{ element }">
+                        <DynamicBlock :block="element" />
+                    </template>
+                </draggable>
+            </template>
+            <template v-else>
+                <div class="w-full flex flex-col gap-6" 
+                    :class="[
+                        resolvedContent.layoutType === 'flex' ? 'flex' : 'flex flex-col',
+                        resolvedContent.layoutType === 'flex' && resolvedContent.flexConfig?.direction === 'row' ? 'flex-row' : 'flex-col',
+                        resolvedContent.layoutType === 'grid' ? 'grid' : '',
+                        resolvedContent.layoutType === 'grid' ? `grid-cols-${resolvedContent.gridConfig?.cols || '1'}` : '',
+                        (resolvedContent.layoutType === 'flex' || resolvedContent.layoutType === 'grid') && resolvedContent.flexConfig?.gap ? `gap-${resolvedContent.flexConfig.gap}` : 'gap-4'
+                    ]">
+                    <DynamicBlock 
+                        v-for="child in block.children" 
+                        :key="child.id" 
+                        :block="child" 
+                    />
+                    
+                    <!-- Hidden honeypot -->
+                    <input type="text" v-model="localFormValues.website" class="hidden" />
+
+                    <div class="mt-4 flex" :class="[
+                        block.appearance?.justifyContent === 'center' ? 'justify-center' : 
+                        block.appearance?.justifyContent === 'end' ? 'justify-end' : 'justify-start'
+                    ]">
+                        <button type="submit" class="btn btn-primary px-8 rounded-full shadow-lg shadow-primary/20">
+                            {{ t(resolvedContent.submit_label) || 'Send Message' }}
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </component>
+
+        <!-- 4. Data Input -->
         <div v-else-if="block.type === 'text_input'" class="form-control w-full max-w-xs mx-auto">
             <label class="label"><span class="label-text">{{ t(resolvedContent.label) }}</span></label>
-            <input type="text" :placeholder="t(resolvedContent.placeholder)" class="input input-bordered w-full" :disabled="isEditor" />
+            <input type="text" :placeholder="t(resolvedContent.placeholder)" class="input input-bordered w-full" :disabled="isEditor" v-model="formValue" />
         </div>
 
         <div v-else-if="block.type === 'textarea'" class="form-control w-full max-w-2xl mx-auto">
             <label class="label"><span class="label-text">{{ t(resolvedContent.label) }}</span></label>
-            <textarea class="textarea textarea-bordered h-24" :placeholder="t(resolvedContent.placeholder)" :disabled="isEditor"></textarea>
+            <textarea class="textarea textarea-bordered h-24" :placeholder="t(resolvedContent.placeholder)" :disabled="isEditor" v-model="formValue"></textarea>
         </div>
 
         <div v-else-if="block.type === 'select'" class="form-control w-full max-w-xs mx-auto">
             <label class="label"><span class="label-text">{{ t(resolvedContent.label) }}</span></label>
-            <select class="select select-bordered" :disabled="isEditor">
-                <option disabled selected>Pick one</option>
-                <option v-for="(opt, i) in (t(resolvedContent.options)?.split('\n') || [])" :key="i">{{ opt }}</option>
+            <select class="select select-bordered" :disabled="isEditor" v-model="formValue">
+                <option disabled selected value="">Pick one</option>
+                <option v-for="(opt, i) in (t(resolvedContent.options)?.split('\n') || [])" :key="i" :value="opt">{{ opt }}</option>
             </select>
         </div>
 
         <div v-else-if="block.type === 'checkbox'" class="form-control mx-auto w-fit">
             <label class="cursor-pointer flex items-center gap-2">
-                <input type="checkbox" :checked="resolvedContent.checked" class="checkbox" :disabled="isEditor" />
+                <input type="checkbox" class="checkbox" :disabled="isEditor" v-model="formValue" />
                 <span class="label-text">{{ t(resolvedContent.label) }}</span>
             </label>
         </div>
 
         <div v-else-if="block.type === 'radio'" class="form-control mx-auto w-fit">
             <label class="cursor-pointer flex items-center gap-2">
-                <input type="radio" :name="resolvedContent.group" class="radio" checked :disabled="isEditor" />
+                <input type="radio" :name="resolvedContent.group" class="radio" :disabled="isEditor" :value="t(resolvedContent.label)" v-model="formValue" />
                 <span class="label-text">{{ t(resolvedContent.label) }}</span>
             </label>
         </div>
@@ -694,21 +832,21 @@ const contactForm = useForm({
         <div v-else-if="block.type === 'toggle'" class="form-control mx-auto w-fit">
             <label class="cursor-pointer flex items-center gap-2">
                 <span class="label-text">{{ t(resolvedContent.label) }}</span>
-                <input type="checkbox" class="toggle toggle-primary" :checked="resolvedContent.checked" :disabled="isEditor" />
+                <input type="checkbox" class="toggle toggle-primary" :disabled="isEditor" v-model="formValue" />
             </label>
         </div>
 
         <div v-else-if="block.type === 'range'" class="flex flex-col gap-2 w-full max-w-xs mx-auto">
-            <input type="range" :min="resolvedContent.min" :max="resolvedContent.max" :value="resolvedContent.val" class="range" :disabled="isEditor" />
+            <input type="range" :min="resolvedContent.min" :max="resolvedContent.max" class="range" :disabled="isEditor" v-model="formValue" />
         </div>
 
         <div v-else-if="block.type === 'rating'" class="rating mx-auto flex w-fit">
-            <input v-for="i in resolvedContent.max" :key="i" type="radio" :name="'rating-' + block.id" class="mask mask-star-2 bg-orange-400" :checked="i === resolvedContent.val" :disabled="isEditor" />
+            <input v-for="i in resolvedContent.max" :key="i" type="radio" :name="'rating-' + block.id" class="mask mask-star-2 bg-orange-400" :value="i" :disabled="isEditor" v-model="formValue" />
         </div>
 
         <div v-else-if="block.type === 'file_input'" class="form-control w-full max-w-xs mx-auto">
             <label class="label"><span class="label-text">{{ t(resolvedContent.label) }}</span></label>
-            <input type="file" class="file-input file-input-bordered w-full max-w-xs" :disabled="isEditor" />
+            <input type="file" class="file-input file-input-bordered w-full max-w-xs" :disabled="isEditor" @change="(e) => formValue = e.target.files[0]" />
         </div>
 
         <!-- 6. Navigation -->
