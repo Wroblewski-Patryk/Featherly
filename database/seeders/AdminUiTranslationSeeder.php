@@ -136,6 +136,8 @@ class AdminUiTranslationSeeder extends Seeder
             'common.archived' => ['pl' => 'Archiwalna', 'en' => 'Archived'],
             'common.edit' => ['pl' => 'Edytuj', 'en' => 'Edit'],
             'common.search' => ['pl' => 'Szukaj', 'en' => 'Search'],
+            'common.all' => ['pl' => 'Wszystkie', 'en' => 'All'],
+            'common.add' => ['pl' => 'Dodaj nowy', 'en' => 'Add new'],
 
             // Dashboard Module
             'dashboard.title' => ['pl' => 'Pulpit', 'en' => 'Dashboard'],
@@ -202,8 +204,8 @@ class AdminUiTranslationSeeder extends Seeder
             'pages.status_draft' => ['pl' => 'Szkic', 'en' => 'Draft'],
             'pages.status_published' => ['pl' => 'Opublikowano', 'en' => 'Published'],
             'pages.status_planned' => ['pl' => 'Planowana', 'en' => 'Planned'],
-            'pages.edit_title' => ['pl' => 'Edytuj stronę', 'en' => 'Edit Page'],
-            'pages.create_title' => ['pl' => 'Utwórz nową stronę', 'en' => 'Create New Page'],
+            'pages.edit_page' => ['pl' => 'Edytuj stronę', 'en' => 'Edit Page'],
+            'pages.add_page' => ['pl' => 'Dodaj nową stronę', 'en' => 'Add New Page'],
             'pages.create_btn' => ['pl' => 'Utwórz stronę', 'en' => 'Create Page'],
             'pages.title_field' => ['pl' => 'Tytuł', 'en' => 'Title'],
             'pages.slug_field' => ['pl' => 'Slug', 'en' => 'Slug'],
@@ -244,6 +246,8 @@ class AdminUiTranslationSeeder extends Seeder
             'posts.title_field' => ['pl' => 'Tytuł', 'en' => 'Title'],
             'posts.slug_field' => ['pl' => 'Slug', 'en' => 'Slug'],
             'posts.status_field' => ['pl' => 'Status', 'en' => 'Status'],
+            'posts.edit_post' => ['pl' => 'Edytuj wpis', 'en' => 'Edit Post'],
+            'posts.add_post' => ['pl' => 'Dodaj nowy wpis', 'en' => 'Add New Post'],
             
             // Projects Module Additional
             'projects.management_title' => ['pl' => 'Zarządzaj projektami', 'en' => 'Manage Projects'],
@@ -252,6 +256,8 @@ class AdminUiTranslationSeeder extends Seeder
             'projects.title_field' => ['pl' => 'Tytuł', 'en' => 'Title'],
             'projects.slug_field' => ['pl' => 'Slug', 'en' => 'Slug'],
             'projects.status_field' => ['pl' => 'Status', 'en' => 'Status'],
+            'projects.edit_project' => ['pl' => 'Edytuj projekt', 'en' => 'Edit Project'],
+            'projects.add_project' => ['pl' => 'Dodaj nowy projekt', 'en' => 'Add New Project'],
             'projects.category_field' => ['pl' => 'Kategoria', 'en' => 'Category'],
 
             // Navigation & Global SEO
@@ -489,11 +495,15 @@ class AdminUiTranslationSeeder extends Seeder
             'forms.create_success' => ['pl' => 'Formularz został utworzony pomyślnie.', 'en' => 'Form created successfully.'],
             'forms.update_success' => ['pl' => 'Formularz został zaktualizowany.', 'en' => 'Form updated successfully.'],
             'forms.delete_success' => ['pl' => 'Formularz został usunięty.', 'en' => 'Form deleted successfully.'],
+            'forms.edit_form' => ['pl' => 'Edytuj formularz', 'en' => 'Edit Form'],
+            'forms.add_form' => ['pl' => 'Dodaj nowy formularz', 'en' => 'Add New Form'],
             
             // Templates Success
             'templates.create_success' => ['pl' => 'Szablon został utworzony pomyślnie.', 'en' => 'Template created successfully.'],
             'templates.update_success' => ['pl' => 'Szablon został zaktualizowany.', 'en' => 'Template updated successfully.'],
             'templates.delete_success' => ['pl' => 'Szablon został usunięty.', 'en' => 'Template deleted successfully.'],
+            'templates.edit_template' => ['pl' => 'Edytuj szablon', 'en' => 'Edit Template'],
+            'templates.add_template' => ['pl' => 'Dodaj nowy szablon', 'en' => 'Add New Template'],
         ];
 
         foreach ($translations as $key => $values) {

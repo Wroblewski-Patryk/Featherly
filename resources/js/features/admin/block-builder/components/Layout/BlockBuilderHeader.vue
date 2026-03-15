@@ -8,6 +8,7 @@
                 </slot>
             </div>
             <div class="flex flex-col min-w-0">
+                <span v-if="moduleLabel" class="text-[9px] font-black uppercase tracking-widest opacity-30 leading-none mb-1">{{ moduleLabel }}</span>
                 <div class="flex items-center gap-1.5">
                     <input
                         type="text"
@@ -132,6 +133,7 @@ import { useTranslations } from '@/Composables/useTranslations';
 
 defineProps({
     title: String,
+    moduleLabel: String,
     currentViewport: {
         type: String,
         default: 'desktop'
