@@ -1,6 +1,6 @@
 <script setup>
 import { Head, useForm, Link } from '@inertiajs/vue3';
-import { PhHouse, PhShield, PhArrowLeft, PhFloppyDisk } from '@phosphor-icons/vue];
+import { PhHouse, PhShield, PhArrowLeft, PhFloppyDisk } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { useTranslations } from '@/Composables/useTranslations';
 

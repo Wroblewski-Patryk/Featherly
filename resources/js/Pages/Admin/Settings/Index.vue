@@ -5,9 +5,9 @@ import {
     PhFloppyDisk, PhHouse, PhGearSix, PhBrowser, PhBookOpen, PhMagnifyingGlass, PhGlobe, PhImage, PhCheckCircle, PhXCircle, PhMapTrifold, PhLayout
 } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
+import ModuleHeader from '@/features/admin/shared/components/ModuleHeader.vue';
 import { useTranslations } from '@/Composables/useTranslations';
-import MediaPickerModal from '@/Components/Admin/Media/MediaPickerModal.vue';
+import MediaPickerModal from '@/features/admin/media/components/MediaPickerModal.vue';
 
 const props = defineProps({
     settings: Object,

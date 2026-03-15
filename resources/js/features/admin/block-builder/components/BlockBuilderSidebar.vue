@@ -1,5 +1,5 @@
 <script setup>
-import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { computed, ref, watch, useSlots } from 'vue';
 import { 
     PhX, PhStack, PhClockCounterClockwise, PhSelection, PhSlidersHorizontal, PhInfo, PhCloudArrowUp, PhFloppyDisk, PhGlobe, PhGear
@@ -7,15 +7,15 @@ import {
 import { useTranslations } from '@/Composables/useTranslations';
 
 // New Modular Components
-import BlockSettingsManager from './BlockBuilder/BlockSettingsManager.vue';
-import StyleSettings from './BlockBuilder/Settings/StyleSettings.vue';
-import AnimationSettings from './BlockBuilder/Settings/AnimationSettings.vue';
+import BlockSettingsManager from './BlockSettingsManager.vue';
+import StyleSettings from './Settings/StyleSettings.vue';
+import AnimationSettings from './Settings/AnimationSettings.vue';
 
 // Inspector Tabs
-import InspectorLayersTab from './BlockBuilder/Inspector/InspectorLayersTab.vue';
-import InspectorHistoryTab from './BlockBuilder/Inspector/InspectorHistoryTab.vue';
-import InspectorInfoTab from './BlockBuilder/Inspector/InspectorInfoTab.vue';
-import SidebarPanelHeader from './BlockBuilder/Layout/SidebarPanelHeader.vue';
+import InspectorLayersTab from './Inspector/InspectorLayersTab.vue';
+import InspectorHistoryTab from './Inspector/InspectorHistoryTab.vue';
+import InspectorInfoTab from './Inspector/InspectorInfoTab.vue';
+import SidebarPanelHeader from './Layout/SidebarPanelHeader.vue';
 
 const props = defineProps({
     templates: [Array, Object],

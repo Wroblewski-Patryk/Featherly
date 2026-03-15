@@ -3,7 +3,7 @@ import { Head, useForm, Link } from '@inertiajs/vue3';
 import { markRaw } from 'vue';
 import { PhUser, PhHouse, PhUsers, PhFloppyDisk, PhX } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import ModuleHeader from '@/Components/Admin/ModuleHeader.vue';
+import ModuleHeader from '@/features/admin/shared/components/ModuleHeader.vue';
 import { useTranslations } from '@/Composables/useTranslations';
 import { useFormatter } from '@/Composables/useFormatter';
 

@@ -209,10 +209,10 @@ import {
     PhArrowSquareOut
 } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import BlockBuilder from '@/Components/BlockBuilder.vue';
-import DatePicker from '@/Components/DatePicker.vue';
+import BlockBuilder from '@/features/admin/block-builder/components/BlockBuilderMain.vue';
+import DatePicker from '@/features/admin/shared/components/DatePicker.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useToastStore } from '@/Stores/useToastStore';
 import { useTranslations } from '@/Composables/useTranslations';
 import { computed, onMounted, watch } from 'vue';
@@ -259,7 +259,7 @@ const form = useForm({
 const previewUrl = computed(() => form.slug?.[activeLocale.value] ? `/${form.slug[activeLocale.value]}` : null);
 
 onMounted(() => {
-    store.init(props.page?.content || getEmptyLocales());
+    store.init(props.page?.content || []);
 });
 
 const generateSlug = (text) => {

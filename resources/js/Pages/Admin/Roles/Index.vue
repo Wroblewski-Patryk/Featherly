@@ -3,7 +3,7 @@ import { ref, markRaw } from 'vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
 import { PhPencilSimple, PhTrash, PhHouse, PhShield } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import ResourceTable from '@/Components/ResourceTable.vue';
+import ResourceTable from '@/features/admin/shared/components/ResourceTable.vue';
 import { useTranslations } from '@/Composables/useTranslations';
 
 const props = defineProps(['roles']);

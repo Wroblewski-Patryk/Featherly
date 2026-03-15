@@ -103,9 +103,9 @@ import {
     PhArrowSquareOut
 } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import BlockBuilder from '@/Components/BlockBuilder.vue';
+import BlockBuilder from '@/features/admin/block-builder/components/BlockBuilderMain.vue';
 import { useForm, usePage, Head } from '@inertiajs/vue3';
-import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useToastStore } from '@/Stores/useToastStore';
 import { useTranslations } from '@/Composables/useTranslations';
 import { computed, onMounted, watch } from 'vue';

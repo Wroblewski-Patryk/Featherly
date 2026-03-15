@@ -3,7 +3,7 @@ import { ref, markRaw, computed } from 'vue';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { PhPencilSimple, PhTrash, PhHouse, PhCards, PhEye, PhCircle, PhClock, PhCheckCircle, PhFileText, PhArchive } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import ResourceTable from '@/Components/ResourceTable.vue';
+import ResourceTable from '@/features/admin/shared/components/ResourceTable.vue';
 import { useTranslations } from '@/Composables/useTranslations';
 import { useFormatter } from '@/Composables/useFormatter';
 

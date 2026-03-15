@@ -105,10 +105,10 @@
 import { onMounted, computed, watch } from 'vue';
 import { PhArrowsClockwise, PhArrowSquareOut, PhFingerprint } from '@phosphor-icons/vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import BlockBuilder from '@/Components/BlockBuilder.vue';
-import DatePicker from '@/Components/DatePicker.vue';
+import BlockBuilder from '@/features/admin/block-builder/components/BlockBuilderMain.vue';
+import DatePicker from '@/features/admin/shared/components/DatePicker.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useToastStore } from '@/Stores/useToastStore';
 import { useTranslations } from '@/Composables/useTranslations';
 import { useFormatter } from '@/Composables/useFormatter';
@@ -124,7 +124,6 @@ const props = defineProps({
     templates: [Array, Object]
 });
 
-const store = useBlockBuilderStore();
 const toast = useToastStore();
 
 const getEmptyLocales = () => {

@@ -31,7 +31,7 @@
 import { ref, watch, computed } from 'vue';
 import { PhCaretDown } from '@phosphor-icons/vue';
 import * as PhosphorIcons from '@phosphor-icons/vue';
-import { useBlockBuilderStore } from '@/Stores/useBlockBuilderStore';
+import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 
 const props = defineProps({
     title: { type: String, required: true },
