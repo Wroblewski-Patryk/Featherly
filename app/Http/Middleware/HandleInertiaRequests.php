@@ -117,7 +117,7 @@ class HandleInertiaRequests extends Middleware
                     $locale = app()->getLocale();
                     $fallback = config('app.fallback_locale', 'en');
                     $text = $translation->getTranslation('text', $locale, false) ?: $translation->getTranslation('text', $fallback, false);
-                    $carry[$translation->group . '.' . $translation->key] = $text;
+                    $carry[$translation->key] = $text;
                     return $carry;
                 }, []);
             }),

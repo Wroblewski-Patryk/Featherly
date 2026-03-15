@@ -1,7 +1,7 @@
 import { 
     PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, 
     PhCube, PhLayout, PhImageSquare, PhGlobe, PhGearSix, 
-    PhUsers, PhTag, PhHash
+    PhUsers, PhTag, PhHash, PhList, PhPlus, PhPalette, PhTextT, PhTextH, PhSelectionAll, PhMagicWand, PhCardsThree
 } from '@phosphor-icons/vue';
 
 export const navigation = (t) => [
@@ -17,8 +17,8 @@ export const navigation = (t) => [
                 active: '/admin/pages',
                 color: 'primary',
                 children: [
-                    { label: t('admin.common.all', 'All'), route: 'admin.pages.index', active: '/admin/pages', exact: true },
-                    { label: t('admin.common.add', 'Add New'), route: 'admin.pages.create', active: '/admin/pages/create' },
+                    { label: t('admin.common.all', 'All'), route: 'admin.pages.index', active: '/admin/pages', exact: true, icon: PhList },
+                    { label: t('admin.pages.add', 'Add New'), route: 'admin.pages.create', active: '/admin/pages/create', icon: PhPlus },
                 ]
             },
             {
@@ -29,10 +29,10 @@ export const navigation = (t) => [
                 active: ['/admin/posts', '/admin/categories'],
                 color: 'primary',
                 children: [
-                    { label: t('admin.common.all', 'All'), route: 'admin.posts.index', active: '/admin/posts', exact: true },
-                    { label: t('admin.common.add', 'Add New'), route: 'admin.posts.create', active: '/admin/posts/create' },
-                    { label: t('admin.taxonomy.type_category', 'Categories'), route: 'admin.taxonomies.index', params: { type: 'category' }, active: '/admin/taxonomies?type=category' },
-                    { label: t('admin.taxonomy.type_tag', 'Tags'), route: 'admin.taxonomies.index', params: { type: 'tag' }, active: '/admin/taxonomies?type=tag' }
+                    { label: t('admin.common.all', 'All'), route: 'admin.posts.index', active: '/admin/posts', exact: true, icon: PhList },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.posts.create', active: '/admin/posts/create', icon: PhPlus },
+                    { label: t('admin.taxonomy.type_category', 'Categories'), route: 'admin.taxonomies.index', params: { type: 'category' }, active: '/admin/taxonomies?type=category', icon: PhTag },
+                    { label: t('admin.taxonomy.type_tag', 'Tags'), route: 'admin.taxonomies.index', params: { type: 'tag' }, active: '/admin/taxonomies?type=tag', icon: PhHash }
                 ]
             },
             {
@@ -43,10 +43,10 @@ export const navigation = (t) => [
                 active: ['/admin/projects', '/admin/clients'],
                 color: 'primary',
                 children: [
-                    { label: t('admin.common.all', 'All'), route: 'admin.projects.index', active: '/admin/projects', exact: true },
-                    { label: t('admin.common.add', 'Add New'), route: 'admin.projects.create', active: '/admin/projects/create' },
-                    { label: t('admin.taxonomy.type_category', 'Categories'), route: 'admin.taxonomies.index', params: { type: 'category' }, active: '/admin/taxonomies?type=category' },
-                    { label: t('admin.taxonomy.type_tag', 'Tags'), route: 'admin.taxonomies.index', params: { type: 'tag' }, active: '/admin/taxonomies?type=tag' }
+                    { label: t('admin.common.all', 'All'), route: 'admin.projects.index', active: '/admin/projects', exact: true, icon: PhList },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.projects.create', active: '/admin/projects/create', icon: PhPlus },
+                    { label: t('admin.taxonomy.type_category', 'Categories'), route: 'admin.taxonomies.index', params: { type: 'category' }, active: '/admin/taxonomies?type=category', icon: PhTag },
+                    { label: t('admin.taxonomy.type_tag', 'Tags'), route: 'admin.taxonomies.index', params: { type: 'tag' }, active: '/admin/taxonomies?type=tag', icon: PhHash }
                 ]
             },
             {
@@ -57,8 +57,8 @@ export const navigation = (t) => [
                 active: '/admin/forms',
                 color: 'primary',
                 children: [
-                    { label: t('admin.common.all', 'All'), route: 'admin.forms.index', active: '/admin/forms', exact: true },
-                    { label: t('admin.common.add', 'Add New'), route: 'admin.forms.create', active: '/admin/forms/create' }
+                    { label: t('admin.common.all', 'All'), route: 'admin.forms.index', active: '/admin/forms', exact: true, icon: PhList },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.forms.create', active: '/admin/forms/create', icon: PhPlus }
                 ]
             }
         ]
@@ -83,8 +83,8 @@ export const navigation = (t) => [
                 active: '/admin/templates',
                 color: 'secondary',
                 children: [
-                    { label: t('admin.common.all', 'All'), route: 'admin.templates.index', active: '/admin/templates', exact: true },
-                    { label: t('admin.common.add', 'Add New'), route: 'admin.templates.create', active: '/admin/templates/create' }
+                    { label: t('admin.common.all', 'All'), route: 'admin.templates.index', active: '/admin/templates', exact: true, icon: PhList },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.templates.create', active: '/admin/templates/create', icon: PhPlus }
                 ]
             }
         ]
@@ -100,11 +100,11 @@ export const navigation = (t) => [
                 active: '/admin/theme',
                 color: 'accent',
                 children: [
-                    { label: t('admin.menu.colors', 'Colors'), route: 'admin.theme.colors', active: '/admin/theme/colors' },
-                    { label: t('admin.menu.fonts', 'Fonts'), route: 'admin.theme.fonts', active: '/admin/theme/fonts' },
-                    { label: t('admin.menu.typography', 'Typography'), route: 'admin.theme.typography', active: '/admin/theme/typography' },
-                    { label: t('admin.menu.sizes', 'Sizes'), route: 'admin.theme.sizes', active: '/admin/theme/sizes' },
-                    { label: t('admin.menu.effects', 'Effects'), route: 'admin.theme.effects', active: '/admin/theme/effects' }
+                    { label: t('admin.menu.colors', 'Colors'), route: 'admin.theme.colors', active: '/admin/theme/colors', icon: PhPalette },
+                    { label: t('admin.menu.fonts', 'Fonts'), route: 'admin.theme.fonts', active: '/admin/theme/fonts', icon: PhTextT },
+                    { label: t('admin.menu.typography', 'Typography'), route: 'admin.theme.typography', active: '/admin/theme/typography', icon: PhTextH },
+                    { label: t('admin.menu.sizes', 'Sizes'), route: 'admin.theme.sizes', active: '/admin/theme/sizes', icon: PhSelectionAll },
+                    { label: t('admin.menu.effects', 'Effects'), route: 'admin.theme.effects', active: '/admin/theme/effects', icon: PhMagicWand }
                 ]
             },
             {
@@ -129,9 +129,9 @@ export const navigation = (t) => [
                 active: ['/admin/languages', '/admin/translations'],
                 color: 'info',
                 children: [
-                    { label: t('admin.common.all', 'All'), route: 'admin.languages.index', active: '/admin/languages', exact: true },
-                    { label: t('admin.common.add', 'Add New'), route: 'admin.languages.create', active: '/admin/languages/create' },
-                    { label: t('admin.menu.translations', 'Translations'), route: 'admin.translations.index', active: '/admin/translations' }
+                    { label: t('admin.common.all', 'All'), route: 'admin.languages.index', active: '/admin/languages', exact: true, icon: PhList },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.languages.create', active: '/admin/languages/create', icon: PhPlus },
+                    { label: t('admin.menu.translations', 'Translations'), route: 'admin.translations.index', active: '/admin/translations', icon: PhGlobe }
                 ]
             },
             {
@@ -143,9 +143,9 @@ export const navigation = (t) => [
                 active: ['/admin/users', '/admin/roles'],
                 color: 'info',
                 children: [
-                    { label: t('admin.common.all', 'All'), route: 'admin.users.index', active: '/admin/users', exact: true },
-                    { label: t('admin.common.add', 'Add New'), route: 'admin.users.create', active: '/admin/users/create' },
-                    { label: t('admin.menu.roles', 'Roles'), route: 'admin.roles.index', active: '/admin/roles' }
+                    { label: t('admin.common.all', 'All'), route: 'admin.users.index', active: '/admin/users', exact: true, icon: PhList },
+                    { label: t('admin.common.add', 'Add New'), route: 'admin.users.create', active: '/admin/users/create', icon: PhPlus },
+                    { label: t('admin.menu.roles', 'Roles'), route: 'admin.roles.index', active: '/admin/roles', icon: PhCardsThree }
                 ]
             },
             {
