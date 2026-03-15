@@ -293,8 +293,9 @@ const changeLanguage = (langCode) => {
                             <PhCaretLeft v-else weight="bold" class="w-4 h-4 text-base-content/70" />
                         </button>
 
-                        <ul class="menu p-4 h-[calc(100vh-4rem)] bg-base-100/80 backdrop-blur-md text-base-content border-r border-base-200 gap-1 overflow-y-auto overflow-x-hidden transition-[width] duration-300 ease-in-out flex-nowrap"
-                            :class="[isSidebarCollapsed ? 'w-[84px] [&_details_summary::after]:hidden' : 'w-64']">
+                        <ul class="menu px-0 py-3 h-[calc(100vh-4rem)] bg-base-100/80 backdrop-blur-md text-base-content border-r border-base-200 gap-0.5 overflow-y-auto overflow-x-hidden transition-[width] duration-300 ease-in-out flex-nowrap"
+                            :class="[isSidebarCollapsed ? 'w-20 [&_details_summary::after]:hidden' : 'w-64']"
+                            :style="{ width: isSidebarCollapsed ? '80px' : '256px' }">
                             
                             <!-- Sidebar content here -->
                             <!-- Dynamic Sidebar Content -->
@@ -312,18 +313,15 @@ const changeLanguage = (langCode) => {
                                         :item="item"
                                         :collapsed="isSidebarCollapsed"
                                         :isActive="isItemActive(item)"
-                                        :isOpen="navState[`${groupIdx}-${itemIdx}`]"
-                                        @toggle="toggleSubmenu(`${groupIdx}-${itemIdx}`)"
                                     >
-                                        <ul v-if="item.children" class="mt-1 ml-6 border-l-2 border-base-200 pl-2 space-y-1 py-1">
-                                            <SidebarChild 
-                                                v-for="(child, childIdx) in item.children" 
-                                                :key="childIdx"
-                                                :child="child"
-                                                :isActive="isItemActive(child)"
-                                                :color="item.color || 'primary'"
-                                            />
-                                        </ul>
+                                        <SidebarChild 
+                                            v-for="(child, childIdx) in item.children" 
+                                            :key="childIdx"
+                                            :child="child"
+                                            :isActive="isItemActive(child)"
+                                            :collapsed="isSidebarCollapsed"
+                                            :color="item.color || 'primary'"
+                                        />
                                     </SidebarItem>
                                 </template>
                             </template>
