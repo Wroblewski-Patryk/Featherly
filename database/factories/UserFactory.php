@@ -49,7 +49,10 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'role' => 'admin',
-        ]);
+        ])->afterCreating(function (\App\Models\User $user) {
+            $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'admin']);
+            $user->assignRole($role);
+        });
     }
 
     /**
@@ -59,6 +62,9 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'role' => 'editor',
-        ]);
+        ])->afterCreating(function (\App\Models\User $user) {
+            $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'editor']);
+            $user->assignRole($role);
+        });
     }
 }

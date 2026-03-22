@@ -22,6 +22,16 @@ class Project extends Model
 
     public $translatable = ['title', 'slug', 'description', 'meta_title', 'meta_description', 'og_image'];
 
+    protected static function booted()
+    {
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('all_projects');
+        });
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('all_projects');
+        });
+    }
+
     /**
      * Get the client for the project.
      */

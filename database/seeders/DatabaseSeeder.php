@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Admin User',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
+            'role' => 'admin',
         ]
         );
 
@@ -102,6 +103,7 @@ class DatabaseSeeder extends Seeder
          }
  
          $this->call([
+             SpatieRoleSeeder::class,
              AdminUiTranslationSeeder::class,
              MediaSeeder::class,
              PostSeeder::class,

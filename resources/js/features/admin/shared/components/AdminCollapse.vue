@@ -29,13 +29,12 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue';
-import { PhCaretDown } from '@phosphor-icons/vue';
-import * as PhosphorIcons from '@phosphor-icons/vue';
+import { PhCaretDown, PhCube } from '@phosphor-icons/vue';
 import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 
 const props = defineProps({
     title: { type: String, required: true },
-    icon: { type: String, default: null },
+    icon: { type: [String, Object, Function], default: null },
     modelValue: { type: Boolean, default: false },
     contentClass: { type: String, default: '' },
     open: { type: Boolean, default: false },
@@ -79,7 +78,10 @@ watch(() => store.sidebarCollapses[props.persistKey], (newVal) => {
 });
 
 const iconComponent = computed(() => {
-    if (!props.icon) return PhosphorIcons.PhCube;
-    return PhosphorIcons[props.icon] || PhosphorIcons.PhCube;
+    if (!props.icon) return PhCube;
+    if (typeof props.icon === 'object' || typeof props.icon === 'function') {
+        return props.icon;
+    }
+    return PhCube;
 });
 </script>

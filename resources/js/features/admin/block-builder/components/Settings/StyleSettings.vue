@@ -1,7 +1,7 @@
 <template>
     <div class="space-y-6">
         <!-- 1. Layout -->
-        <AdminCollapse :title="t('admin.theme.layout', 'Layout')" icon="PhLayout" persistKey="style_layout">
+        <AdminCollapse :title="t('admin.theme.layout', 'Layout')" :icon="PhLayout" persistKey="style_layout">
             <div class="space-y-4 pt-1">
                 <!-- Display -->
                 <div class="form-control">
@@ -169,7 +169,7 @@
         </AdminCollapse>
 
         <!-- 2. Sizing -->
-        <AdminCollapse :title="t('admin.builder.tab_sizing', 'Sizing')" icon="PhBoundingBox" persistKey="style_sizing">
+        <AdminCollapse :title="t('admin.builder.tab_sizing', 'Sizing')" :icon="PhBoundingBox" persistKey="style_sizing">
             <div class="space-y-6 pt-1">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="form-control">
@@ -223,7 +223,7 @@
         </AdminCollapse>
 
         <!-- 3. Position -->
-        <AdminCollapse :title="t('admin.builder.tab_position', 'Position')" icon="PhArrowUDownRight" persistKey="style_position">
+        <AdminCollapse :title="t('admin.builder.tab_position', 'Position')" :icon="PhArrowUDownRight" persistKey="style_position">
             <div class="space-y-6 pt-1">
                 <div class="form-control">
                     <label class="label"><span class="label-text text-[10px] uppercase">Z-Index</span></label>
@@ -279,7 +279,7 @@
         </AdminCollapse>
 
         <!-- 4. Typography -->
-        <AdminCollapse :title="t('admin.theme.typography', 'Typography')" icon="PhTextT" persistKey="style_typography" v-if="!['spacer', 'divider', 'image', 'video', 'gallery', 'carousel'].includes(blockType)">
+        <AdminCollapse :title="t('admin.theme.typography', 'Typography')" :icon="PhTextT" persistKey="style_typography" v-if="!['spacer', 'divider', 'image', 'video', 'gallery', 'carousel'].includes(blockType)">
             <div class="space-y-4 pt-1">
                 <div class="form-control">
                     <FillControl v-model="textFill" :label="t('admin.builder.style_color', 'Color')" />
@@ -347,7 +347,7 @@
         </AdminCollapse>
 
         <!-- 5. Background -->
-        <AdminCollapse :title="t('admin.builder.style_background', 'Background')" icon="PhPalette" persistKey="style_background">
+        <AdminCollapse :title="t('admin.builder.style_background', 'Background')" :icon="PhPalette" persistKey="style_background">
             <div class="space-y-6 pt-1">
                 <div class="form-control">
                     <FillControl v-model="backgroundFill" :label="t('admin.builder.style_background', 'Background')" />
@@ -400,7 +400,7 @@
         </AdminCollapse>
 
         <!-- 6. Effects -->
-        <AdminCollapse :title="t('admin.builder.style_effects', 'Effects')" icon="PhSelectionBackground" persistKey="style_effects">
+        <AdminCollapse :title="t('admin.builder.style_effects', 'Effects')" :icon="PhSelectionBackground" persistKey="style_effects">
             <div class="space-y-6 pt-1">
                 <div class="form-control">
                     <label class="label flex justify-between">
@@ -437,7 +437,7 @@
         </AdminCollapse>
 
         <!-- 7. Borders -->
-        <AdminCollapse :title="t('admin.builder.tab_borders', 'Borders')" icon="PhSquareHalf" persistKey="style_borders">
+        <AdminCollapse :title="t('admin.builder.tab_borders', 'Borders')" :icon="PhSquareHalf" persistKey="style_borders">
             <div class="space-y-6 pt-1">
                 <LinkedUnitInput 
                     v-model:top="modelValue.borderTopLeftRadius"
@@ -475,7 +475,7 @@
         </AdminCollapse>
 
         <!-- 8. Spacing -->
-        <AdminCollapse :title="t('admin.theme.spacing', 'Spacing')" icon="PhFrameCorners" persistKey="style_spacing">
+        <AdminCollapse :title="t('admin.theme.spacing', 'Spacing')" :icon="PhFrameCorners" persistKey="style_spacing">
             <div class="space-y-6 pt-1">
                 <LinkedUnitInput 
                     v-model:top="modelValue.marginTop"
@@ -496,7 +496,7 @@
         </AdminCollapse>
  
         <!-- 9. Advanced -->
-        <AdminCollapse :title="t('admin.builder.tab_advanced', 'Advanced')" icon="PhSlidersHorizontal" persistKey="style_advanced">
+        <AdminCollapse :title="t('admin.builder.tab_advanced', 'Advanced')" :icon="PhSlidersHorizontal" persistKey="style_advanced">
             <div class="space-y-4 pt-1">
                 <div class="form-control">
                     <label class="label"><span class="label-text text-[10px] uppercase">Overflow</span></label>

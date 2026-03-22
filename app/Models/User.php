@@ -62,12 +62,4 @@ class User extends Authenticatable
     {
         return $this->role === self::ROLE_EDITOR || $this->isAdmin();
     }
-
-    public function hasRole(string|array $roles): bool
-    {
-        if (is_array($roles)) {
-            return in_array($this->role, $roles);
-        }
-        return $this->role === $roles;
-    }
 }

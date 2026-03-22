@@ -44,21 +44,31 @@ class HandleInertiaRequests extends Middleware
         $themeConfig = null;
 
         try {
-            $settings = \App\Models\Setting::pluck('value', 'key')->toArray();
+            $settings = \Illuminate\Support\Facades\Cache::rememberForever('global_settings', function () {
+                return \App\Models\Setting::pluck('value', 'key')->toArray();
+            });
 
             $headerId = $settings['default_header_id'] ?? null;
             $footerId = $settings['default_footer_id'] ?? null;
 
-            $header = $headerId
-                ?\App\Models\Template::find($headerId)
-                : \App\Models\Template::where('type', 'header')->where('is_active', true)->first();
+            $header = \Illuminate\Support\Facades\Cache::rememberForever('global_header_' . ($headerId ?: 'default'), function () use ($headerId) {
+                return $headerId
+                    ? \App\Models\Template::find($headerId)
+                    : \App\Models\Template::where('type', 'header')->where('is_active', true)->first();
+            });
 
-            $footer = $footerId
-                ?\App\Models\Template::find($footerId)
-                : \App\Models\Template::where('type', 'footer')->where('is_active', true)->first();
+            $footer = \Illuminate\Support\Facades\Cache::rememberForever('global_footer_' . ($footerId ?: 'default'), function () use ($footerId) {
+                return $footerId
+                    ? \App\Models\Template::find($footerId)
+                    : \App\Models\Template::where('type', 'footer')->where('is_active', true)->first();
+            });
 
-            $languages = \App\Models\Language::where('is_active', true)->orderBy('is_default', 'desc')->get();
-            $allProjects = \App\Models\Project::orderBy('order')->get();
+            $languages = \Illuminate\Support\Facades\Cache::rememberForever('active_languages', function () {
+                return \App\Models\Language::where('is_active', true)->orderBy('is_default', 'desc')->get();
+            });
+            $allProjects = \Illuminate\Support\Facades\Cache::rememberForever('all_projects', function () {
+                return \App\Models\Project::orderBy('order')->get();
+            });
             
             $themeColors = isset($settings['theme_colors']) ? (is_array($settings['theme_colors']) ? $settings['theme_colors'] : json_decode($settings['theme_colors'], true)) : [];
             $themeRadius = isset($settings['theme_radius']) ? (is_array($settings['theme_radius']) ? $settings['theme_radius'] : json_decode($settings['theme_radius'], true)) : [];
@@ -109,8 +119,8 @@ class HandleInertiaRequests extends Middleware
             'header' => fn () => $header ? $header->content : null,
             'footer' => fn () => $footer ? $footer->content : null,
             'locale' => fn () => app()->getLocale(),
-            'languages' => fn () => \App\Models\Language::where('is_active', true)->orderBy('is_default', 'desc')->get(),
-            'all_projects' => fn () => \App\Models\Project::orderBy('order')->get(),
+            'languages' => fn () => $languages,
+            'all_projects' => fn () => $allProjects,
             'theme_config' => fn () => $themeConfig,
             'menus' => fn () => [], // Safe historical fallback
             'translations' => fn () => \Illuminate\Support\Facades\Cache::remember('translations.' . app()->getLocale(), 3600, function () {

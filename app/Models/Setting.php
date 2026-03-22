@@ -11,4 +11,14 @@ class Setting extends Model
     protected $casts = [
         'value' => 'array',
     ];
+
+    protected static function booted()
+    {
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('global_settings');
+        });
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('global_settings');
+        });
+    }
 }
