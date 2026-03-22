@@ -5,9 +5,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 
 Route::middleware('permission:view-admin')->name('dashboard.')->group(function () {
-    Route::get('/', function () {
-        return Inertia::render('Admin/Dashboard');
-    })->name('index');
+    Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('index');
 });
 
 // Content Section (Admin & Editor)
@@ -48,9 +46,7 @@ Route::middleware('permission:manage-content')->group(function () {
     Route::put('taxonomies/{taxonomy}', [\App\Http\Controllers\Admin\TaxonomyController::class, 'update'])->name('taxonomies.update');
     Route::delete('taxonomies/{taxonomy}', [\App\Http\Controllers\Admin\TaxonomyController::class, 'destroy'])->name('taxonomies.destroy');
     
-    Route::get('blocks', function () {
-        return Inertia::render('Admin/Blocks');
-    })->name('blocks');
+    Route::get('blocks', [\App\Http\Controllers\Admin\DashboardController::class, 'blocks'])->name('blocks');
 });
 
 // System Section (Admin Only)
@@ -64,9 +60,7 @@ Route::middleware('permission:manage-settings')->group(function () {
     Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class, 'store'])->name('settings.store');
 
     Route::name('theme.')->prefix('theme')->group(function () {
-        Route::get('/', function () {
-            return redirect()->route('admin.theme.colors');
-        })->name('index');
+        Route::get('/', [\App\Http\Controllers\Admin\ThemeController::class, 'index'])->name('index');
 
         Route::get('colors', [\App\Http\Controllers\Admin\ThemeController::class, 'colors'])->name('colors');
         Route::get('fonts', [\App\Http\Controllers\Admin\ThemeController::class, 'fonts'])->name('fonts');

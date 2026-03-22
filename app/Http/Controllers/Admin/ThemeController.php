@@ -139,6 +139,11 @@ class ThemeController extends Controller
         return $value;
     }
 
+    public function index()
+    {
+        return redirect()->route('admin.theme.colors');
+    }
+
     public function colors()
     {
         return Inertia::render('Admin/Theme/Colors', [
