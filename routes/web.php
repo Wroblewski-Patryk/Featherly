@@ -20,26 +20,16 @@ Route::get('lang/{lang}', [\App\Http\Controllers\LocaleController::class, 'switc
 // --- 2. Fallbacks dla nie-prefixed URLs ---
 // Przekierowania z /login, /admin oraz innych bez prefiksu językowego na lokalizowane wersje
 Route::group(['middleware' => ['locale']], function() {
-    Route::get('login', function() {
-        return redirect()->route('auth.login');
-    })->name('login');
+    Route::get('login', [\App\Http\Controllers\FallbackController::class, 'login'])->name('login');
     
-    Route::get('admin', function() {
-        return redirect('/' . app()->getLocale() . '/admin');
-    });
+    Route::get('admin', [\App\Http\Controllers\FallbackController::class, 'admin']);
 
-    Route::get('dashboard/{any?}', function($any = null) {
-        return redirect('/' . app()->getLocale() . '/admin' . ($any ? '/' . $any : ''));
-    })->where('any', '.*');
+    Route::get('dashboard/{any?}', [\App\Http\Controllers\FallbackController::class, 'dashboard'])->where('any', '.*');
 
-    Route::get('/', function() {
-        return redirect('/' . app()->getLocale());
-    });
+    Route::get('/', [\App\Http\Controllers\FallbackController::class, 'home']);
 
     // Przekieruj wszystkie niedopasowane trasy (które nie pasują do {locale}) na zaprefiksowaną wersję
-    Route::get('/{path}', function($path) {
-        return redirect('/' . app()->getLocale() . '/' . $path);
-    })->where('path', '^(?![a-z]{2}(?:/|$))(?!build|storage|api|livewire|sitemap|robots|admin|login|dashboard|lang).*$');
+    Route::get('/{path}', [\App\Http\Controllers\FallbackController::class, 'catchAll'])->where('path', '^(?![a-z]{2}(?:/|$))(?!build|storage|api|livewire|sitemap|robots|admin|login|dashboard|lang).*$');
 });
 
 // --- 3. Public Routes (Catch-all) ---
