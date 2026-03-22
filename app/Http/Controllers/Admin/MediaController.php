@@ -91,7 +91,7 @@ class MediaController extends Controller
         return redirect()->back()->with('success', 'media.upload_success');
     }
 
-    public function update(Request $request, Media $medium)
+    public function update(Request $request, Media $media)
     {
         $request->validate([
             'alt_text' => ['nullable', 'string', 'max:255'],
@@ -103,7 +103,7 @@ class MediaController extends Controller
 
         // Renaming logic
         if ($request->filled('filename')) {
-            $oldPath = $medium->path;
+            $oldPath = $media->path;
             $extension = pathinfo($oldPath, PATHINFO_EXTENSION);
             $newFilename = str($request->filename)->slug() . '.' . $extension;
             $newPath = 'media/' . $newFilename;
@@ -114,7 +114,7 @@ class MediaController extends Controller
             }
         }
 
-        $medium->update($data);
+        $media->update($data);
 
         return redirect()->back()->with('success', 'media.update_success');
     }
@@ -156,12 +156,12 @@ class MediaController extends Controller
         return redirect()->back()->with('success', 'media.folder_delete_success');
     }
 
-    public function destroy(Media $medium)
+    public function destroy(Media $media)
     {
-        if ($medium->path && Storage::disk('public')->exists($medium->path)) {
-            Storage::disk('public')->delete($medium->path);
+        if ($media->path && Storage::disk('public')->exists($media->path)) {
+            Storage::disk('public')->delete($media->path);
         }
-        $medium->delete();
+        $media->delete();
 
         return redirect()->back()->with('success', 'media.delete_success');
     }
