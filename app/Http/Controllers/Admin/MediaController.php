@@ -158,7 +158,7 @@ class MediaController extends Controller
 
     public function destroy(Media $medium)
     {
-        if (Storage::disk('public')->exists($medium->path)) {
+        if ($medium->path && Storage::disk('public')->exists($medium->path)) {
             Storage::disk('public')->delete($medium->path);
         }
         $medium->delete();
@@ -181,7 +181,7 @@ class MediaController extends Controller
         if ($request->action === 'delete') {
             $media = Media::whereIn('id', $mediaIds)->get();
             foreach ($media as $item) {
-                if (Storage::disk('public')->exists($item->path)) {
+                if ($item->path && Storage::disk('public')->exists($item->path)) {
                     Storage::disk('public')->delete($item->path);
                 }
                 $item->delete();
