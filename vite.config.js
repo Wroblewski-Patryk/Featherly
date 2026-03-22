@@ -13,6 +13,32 @@ export default defineConfig({
         vue(),
         tailwindcss(),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        if (id.includes('@vue') || id.includes('pinia')) {
+                            return 'vendor-vue';
+                        }
+                        if (id.includes('@inertiajs')) {
+                            return 'vendor-inertia';
+                        }
+                        if (id.includes('@phosphor-icons')) {
+                            return 'vendor-icons';
+                        }
+                        if (id.includes('gsap')) {
+                            return 'vendor-gsap';
+                        }
+                        if (id.includes('vuedraggable') || id.includes('sortablejs')) {
+                            return 'vendor-drag';
+                        }
+                        return 'vendor-core';
+                    }
+                }
+            }
+        }
+    },
     server: {
         watch: {
             ignored: ['**/storage/framework/views/**'],

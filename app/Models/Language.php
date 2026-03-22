@@ -24,12 +24,14 @@ class Language extends Model
                 static::where('id', '!=', $language->id)->update(['is_default' => false]);
                 $language->is_active = true; // Default language must be active
             }
+            \Illuminate\Support\Facades\Cache::forget('active_languages');
         });
 
         static::deleting(function ($language) {
             if ($language->is_default) {
                 throw new \Exception("Cannot delete the default language.");
             }
+            \Illuminate\Support\Facades\Cache::forget('active_languages');
         });
     }
 }

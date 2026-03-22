@@ -19,10 +19,21 @@ class Template extends Model
     {
         parent::boot();
 
+        static::saved(function ($template) {
+            \Illuminate\Support\Facades\Cache::forget('global_header_default');
+            \Illuminate\Support\Facades\Cache::forget('global_footer_default');
+            \Illuminate\Support\Facades\Cache::forget('global_header_' . $template->id);
+            \Illuminate\Support\Facades\Cache::forget('global_footer_' . $template->id);
+        });
+
         static::deleting(function ($template) {
             if ($template->is_system) {
                 throw new \Exception('Cannot delete system template.');
             }
+            \Illuminate\Support\Facades\Cache::forget('global_header_default');
+            \Illuminate\Support\Facades\Cache::forget('global_footer_default');
+            \Illuminate\Support\Facades\Cache::forget('global_header_' . $template->id);
+            \Illuminate\Support\Facades\Cache::forget('global_footer_' . $template->id);
         });
     }
 

@@ -19,16 +19,40 @@
               return redirect()->back()->with('error', 'Form is not active.');
           }
   
-          // 2. Data extraction
-          // We expect data under 'data' key or as flat request
-          $data = $request->except(['_token', '_method']);
-  
           // 3. Optional: Extract honeypot (website field if present)
           if ($request->has('website') && !empty($request->website)) {
               // Potential spam
               Log::info('Spam detected in form submission', ['form_id' => $form->id, 'ip' => $request->ip()]);
               return redirect()->back()->with('success', 'Thank you for your submission!');
           }
+
+          // 2. Data extraction & validation
+          $rules = [];
+          if (is_array($form->content)) {
+              foreach ($form->content as $field) {
+                  $label = $field['label'] ?? null;
+                  if (!$label) continue;
+                  
+                  // Handle translations directly via __() if its a string, or fallback
+                  $translatedLabel = is_array($label) ? ($label[app()->getLocale()] ?? current($label)) : __($label);
+                  if (empty($translatedLabel)) continue;
+
+                  $fieldRules = [];
+                  $fieldRules[] = !empty($field['required']) ? 'required' : 'nullable';
+
+                  if (isset($field['type'])) {
+                      if ($field['type'] === 'email') $fieldRules[] = 'email';
+                      if ($field['type'] === 'text') $fieldRules[] = 'string|max:500';
+                      if ($field['type'] === 'tel') $fieldRules[] = 'string|max:30';
+                  }
+
+                  $rules[$translatedLabel] = implode('|', $fieldRules);
+              }
+          }
+
+          // If valid rules exist, validate request. If empty, fallback to basic array extraction
+          $data = count($rules) > 0 ? $request->validate($rules) : $request->except(['_token', '_method', 'website']);
+
   
           // 4. Save submission
           try {

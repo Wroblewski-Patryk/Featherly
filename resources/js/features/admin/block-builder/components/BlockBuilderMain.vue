@@ -85,7 +85,7 @@
                             v-for="cat in paletteCategories" 
                             :key="cat.id" 
                             :title="cat.label || cat.name" 
-                            :icon="cat.icon" 
+                            :icon="iconMap[cat.icon] || PhCube" 
                             :persistKey="'palette_cat_' + cat.id"
                             contentClass="!p-2 !bg-base-200/50"
                         >
