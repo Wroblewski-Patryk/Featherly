@@ -15,6 +15,9 @@ use Illuminate\Validation\ValidationException;
 
 class MediaController extends Controller
 {
+    private const DEFAULT_PER_PAGE = 40;
+    private const MAX_PER_PAGE = 120;
+
     /**
      * MIME types accepted after server-side content sniffing.
      *
@@ -56,13 +59,19 @@ class MediaController extends Controller
         // Sorting
         $sortField = $request->get('sort', 'created_at');
         $sortDirection = $request->get('direction', 'desc');
+        if (!in_array($sortDirection, ['asc', 'desc'], true)) {
+            $sortDirection = 'desc';
+        }
 
         $allowedSorts = ['created_at', 'size', 'path'];
         if (in_array($sortField, $allowedSorts)) {
             $query->orderBy($sortField, $sortDirection);
         }
 
-        $media = $query->paginate(40)->withQueryString();
+        $requestedPerPage = (int) $request->integer('per_page', self::DEFAULT_PER_PAGE);
+        $perPage = min(self::MAX_PER_PAGE, max(1, $requestedPerPage));
+
+        $media = $query->paginate($perPage)->withQueryString();
         $folders = MediaFolder::with('children')->get();
         $currentFolder = $request->folder_id ?MediaFolder::find($request->folder_id) : null;
 
@@ -76,7 +85,7 @@ class MediaController extends Controller
             'folders' => $folders,
             'subfolders' => $subfolders,
             'currentFolder' => $currentFolder,
-            'filters' => $request->only(['search', 'folder_id', 'sort', 'direction', 'view_type'])
+            'filters' => $request->only(['search', 'folder_id', 'sort', 'direction', 'view_type', 'per_page'])
         ];
 
         if ($request->wantsJson()) {
