@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Project;
+use App\Models\Language;
 use App\Models\Setting;
 use App\Models\Template;
 use Illuminate\Http\Request;
@@ -17,8 +18,10 @@ class PageController extends Controller
      */
     public function show(Request $request, $localeOrPath = null, $path = null)
     {
+        $activeLocales = $this->getActiveLocaleCodes();
+
         // Dynamiczna obsługa locale i ścieżki (ze względu na opcjonalny prefiks w web.php)
-        if (in_array($localeOrPath, ['pl', 'en'])) {
+        if (in_array($localeOrPath, $activeLocales, true)) {
             $locale = $localeOrPath;
             app()->setLocale($locale);
         }
@@ -27,7 +30,7 @@ class PageController extends Controller
             $path = $localeOrPath;
         }
         
-        $fallbackLocale = config('app.fallback_locale', 'pl');
+        $fallbackLocale = (string) config('app.fallback_locale', app()->getLocale());
         $actualPath = $path ?: $localeOrPath;
         $segments = explode('/', trim($actualPath, '/'));
         $firstSegment = $segments[0] ?? '';
@@ -241,5 +244,24 @@ class PageController extends Controller
     {
         $id = $settings['coming_soon_page_id'] ?? null;
         return $id ? Page::find($id) : null;
+    }
+
+    private function getActiveLocaleCodes(): array
+    {
+        $codes = Language::query()
+            ->where('is_active', true)
+            ->pluck('code')
+            ->filter()
+            ->values()
+            ->all();
+
+        if (!empty($codes)) {
+            return $codes;
+        }
+
+        return array_values(array_unique(array_filter([
+            app()->getLocale(),
+            config('app.fallback_locale'),
+        ])));
     }
 }

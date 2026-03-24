@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Project;
+use App\Models\Language;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
@@ -13,6 +14,7 @@ class SeoController extends Controller
 {
     public function sitemap()
     {
+        $primaryLocale = $this->resolvePrimaryLocale();
         $sitemapEnabled = $this->getSetting('sitemap_enabled', true);
 
         if (!$sitemapEnabled) {
@@ -46,9 +48,9 @@ class SeoController extends Controller
         Post::where('status', 'published')
             ->where('seo_index', true)
             ->get()
-            ->each(function ($post) use (&$urls) {
-            // Determine slug (handle PL by default or active locales)
-            $slug = is_array($post->slug) ? ($post->slug['pl'] ?? reset($post->slug)) : $post->slug;
+            ->each(function ($post) use (&$urls, $primaryLocale) {
+            $slug = $post->getTranslation('slug', $primaryLocale, false)
+                ?: collect($post->getTranslations('slug'))->first();
             $urls[] = [
                 'loc' => url("/blog/{$slug}"),
                 'lastmod' => $post->updated_at->toAtomString(),
@@ -110,11 +112,19 @@ class SeoController extends Controller
             return $default;
 
         $value = $setting->value;
-        // If it's localized (array), try to get current or fallback, but for tech SEO booleans it's usually flat
-        if (is_array($value) && isset($value['pl'])) {
-            return $value['pl'];
+        if (is_array($value)) {
+            $locale = app()->getLocale();
+            $fallback = (string) config('app.fallback_locale', $locale);
+            return $value[$locale] ?? $value[$fallback] ?? reset($value) ?? $default;
         }
 
         return $value;
+    }
+
+    protected function resolvePrimaryLocale(): string
+    {
+        return (string) (Language::query()
+            ->where('is_default', true)
+            ->value('code') ?: config('app.fallback_locale', app()->getLocale()));
     }
 }
