@@ -246,6 +246,7 @@ import BlockBuilderTimeline from './BlockBuilderTimeline.vue';
 import AdminCollapse from '@/features/admin/shared/components/AdminCollapse.vue';
 import BlockPaletteTile from './Palette/BlockPaletteTile.vue';
 import MediaPickerModal from '@/features/admin/media/components/MediaPickerModal.vue';
+import { useBuilderPerfWatch } from '@/features/admin/block-builder/composables/useBuilderPerfWatch';
 import draggable from 'vuedraggable';
 import gsap from 'gsap';
 
@@ -281,6 +282,7 @@ provide('isEditor', true);
 const emit = defineEmits(['save', 'update:title', 'update:viewport']);
 
 const store = useBlockBuilderStore();
+useBuilderPerfWatch();
 const page = usePage();
 const { t } = useTranslations();
 const viewport = ref('desktop');
