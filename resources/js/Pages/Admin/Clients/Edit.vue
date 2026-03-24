@@ -14,7 +14,14 @@ const { t } = useTranslations();
 const toast = useToastStore();
 const props = defineProps(['client', 'languages']);
 
-const activeLocale = ref(usePage().props.locale || 'pl');
+const page = usePage();
+const activeLocale = ref(
+    page.props.locale
+    || page.props.default_locale
+    || page.props.languages?.find?.(lang => lang?.is_default)?.code
+    || page.props.languages?.[0]?.code
+    || 'en'
+);
 const form = useForm({
     title: props.client.title || {},
     slug: props.client.slug || {},

@@ -163,7 +163,14 @@ const { t } = useTranslations();
 const { formatDateTime } = useFormatter();
 
 const pageProps = usePage().props;
-const activeLocale = computed(() => store.editingLocale || pageProps.locale || 'pl');
+const fallbackLocale = computed(() => {
+    return pageProps.default_locale
+        || pageProps.locale
+        || pageProps.languages?.find?.(lang => lang?.is_default)?.code
+        || pageProps.languages?.[0]?.code
+        || 'en';
+});
+const activeLocale = computed(() => store.editingLocale || pageProps.locale || fallbackLocale.value);
 
 const props = defineProps({
     template: Object,
