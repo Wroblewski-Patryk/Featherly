@@ -5,7 +5,7 @@ import { useForm, usePage, Link } from '@inertiajs/vue3';
 // Self-import removed to avoid Vite recursion issues. 
 // Vue 3 naturally supports recursive components via their own name.
 import draggable from 'vuedraggable';
-import { PhArrowsOut, PhCopy, PhTrash, PhInfo, PhCheckCircle, PhSlidersHorizontal, PhPuzzlePiece, PhSquare, PhCube, PhLayout, PhCalendarBlank, PhUser } from '@phosphor-icons/vue';
+import { PhArrowsOut, PhCopy, PhTrash, PhInfo, PhCheckCircle, PhSlidersHorizontal, PhPuzzlePiece, PhSquare, PhCube, PhLayout, PhCalendarBlank, PhUser, PhStack } from '@phosphor-icons/vue';
 import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useTranslations } from '@/Composables/useTranslations';
 import placeholderImg from '@/../images/placeholder.png';
@@ -82,7 +82,7 @@ const resolveContent = (content) => {
     return content;
 };
 
-const resolvedContent = computed(() => resolveContent(props.block.content));
+const resolvedContent = computed(() => resolveContent(props.block?.content) || {});
 
 const menuItems = computed(() => {
     if (props.block.type !== 'menu' || !props.block.content.menu_id) return [];
@@ -100,11 +100,14 @@ const initAnimations = () => {
 };
 
 onMounted(() => {
+    if (isEditor && props.block && !Array.isArray(props.block.children)) {
+        props.block.children = [];
+    }
     initAnimations();
 });
 
 // Re-run animations if settings change in editor
-watch(() => props.block.settings?.animations, () => {
+watch(() => props.block?.settings?.animations, () => {
     initAnimations();
 }, { deep: true });
 
@@ -280,16 +283,16 @@ const styleObj = computed(() => {
 });
 
 const blockId = computed(() => {
-    return props.block.settings?.style?.htmlId || `block-${props.block.id}`;
+    return props.block?.settings?.style?.htmlId || `block-${props.block?.id}`;
 });
 
 const blockClasses = computed(() => {
-    let classes = [props.block.settings?.style?.customClass];
+    let classes = [props.block?.settings?.style?.customClass];
     // Existing container logic
-    if (props.block.type === 'container') {
-        const c = props.block.content;
+    if (props.block?.type === 'container') {
+        const c = props.block?.content || {};
         if (c.isBoxed) classes.push('container mx-auto');
-        if (c.layoutType === 'flex') {
+        if (c.layoutType === 'flex' && c.flexConfig) {
             classes.push('flex');
             classes.push(c.flexConfig.direction === 'row' ? 'flex-row' : 'flex-col');
         }
@@ -298,13 +301,13 @@ const blockClasses = computed(() => {
 });
 
 const containerClasses = computed(() => {
-    if (props.block.type !== 'container') return '';
-    const c = props.block.content;
+    if (props.block?.type !== 'container') return '';
+    const c = props.block?.content || {};
     let classes = [];
 
     if (c.isBoxed) classes.push('container mx-auto');
 
-    if (c.layoutType === 'flex') {
+    if (c.layoutType === 'flex' && c.flexConfig) {
         classes.push('flex');
         if (c.flexConfig.direction === 'row') classes.push('flex-row');
         else classes.push('flex-col');
@@ -326,7 +329,7 @@ const containerClasses = computed(() => {
         else if (c.flexConfig.justify === 'evenly') classes.push('justify-evenly');
 
         if (c.flexConfig.gap) classes.push(`gap-${c.flexConfig.gap}`);
-    } else if (c.layoutType === 'grid') {
+    } else if (c.layoutType === 'grid' && c.gridConfig) {
         classes.push('grid');
         classes.push(`grid-cols-${c.gridConfig.cols || '1'}`);
         if (c.gridConfig.gap) classes.push(`gap-${c.gridConfig.gap}`);
@@ -370,17 +373,6 @@ const textStyleObj = computed(() => {
     return textStyles;
 });
 
-const submitContact = () => {
-    // Basic implementation for the contact form block
-};
-
-const contactForm = useForm({
-    name: '',
-    email: '',
-    message: '',
-    website: '' // honeypot
-});
-
 // Runtime Form Handling (Phase J)
 const parentFormValues = inject('runtimeFormValues', null);
 const isFormBlock = computed(() => props.block.type === 'form');
@@ -420,35 +412,59 @@ const submitRuntimeForm = () => {
     });
 };
 
+const normalizeKey = (value) => String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+
+const getFieldStorageKey = (block) => {
+    if (!block) return null;
+
+    if (block.type === 'radio' && block.content?.group) {
+        return `group_${normalizeKey(block.content.group)}`;
+    }
+
+    if (block.id) {
+        return `field_${normalizeKey(block.id)}`;
+    }
+
+    if (block.content?.name) {
+        return `field_${normalizeKey(block.content.name)}`;
+    }
+
+    if (block.content?.label) {
+        return `field_${normalizeKey(t(block.content.label))}`;
+    }
+
+    return null;
+};
+
 // Phase J: Input binding helper
 const formValue = computed({
     get: () => {
         if (!parentFormValues) return null;
-        
-        // For radio, we use 'group' as the data key
-        if (props.block.type === 'radio' && props.block.content.group) {
-            return parentFormValues[props.block.content.group];
-        }
-        
-        if (!props.block.content.label) return null;
-        const key = t(props.block.content.label);
+
+        const key = getFieldStorageKey(props.block);
+        if (!key) return null;
         return parentFormValues[key];
     },
     set: (v) => {
         if (!parentFormValues) return;
 
-        // For radio, we use 'group' as the data key
-        if (props.block.type === 'radio' && props.block.content.group) {
-            parentFormValues[props.block.content.group] = v;
-            return;
-        }
-
-        if (props.block.content.label) {
-            const key = t(props.block.content.label);
-            parentFormValues[key] = v;
-        }
+        const key = getFieldStorageKey(props.block);
+        if (!key) return;
+        parentFormValues[key] = v;
     }
 });
+
+const openModal = (id) => {
+    if (!id || isEditor) return;
+    const modal = document.getElementById(id);
+    if (typeof modal?.showModal === 'function') {
+        modal.showModal();
+    }
+};
 
 
 </script>
@@ -499,7 +515,7 @@ const formValue = computed({
         </template>
         
         <!-- Container Block (Unified Layout) -->
-        <component :is="block.content.htmlTag || 'section'" 
+        <component :is="block.content?.htmlTag || 'section'" 
              v-if="block.type === 'container'" 
              class="w-full relative transition-colors"
              :class="[
@@ -510,17 +526,18 @@ const formValue = computed({
             <template v-if="isEditor">
                 <draggable 
                     v-model="block.children" 
+                    v-if="Array.isArray(block.children)"
                     :group="'admin.blocks'"
                     item-key="id"
                     handle=".drag-handle"
                     ghost-class="ghost-block"
                     class="min-h-[100px] w-full"
                     :class="[
-                        resolvedContent.layoutType === 'flex' ? 'flex' : '',
-                        resolvedContent.layoutType === 'flex' && resolvedContent.flexConfig.direction === 'row' ? 'flex-row' : 'flex-col',
-                        resolvedContent.layoutType === 'grid' ? 'grid' : '',
-                        resolvedContent.layoutType === 'grid' ? `grid-cols-${resolvedContent.gridConfig.cols || '1'}` : '',
-                        (resolvedContent.layoutType === 'flex' || resolvedContent.layoutType === 'grid') && resolvedContent.flexConfig?.gap ? `gap-${resolvedContent.flexConfig.gap}` : ''
+                        resolvedContent?.layoutType === 'flex' ? 'flex' : '',
+                        resolvedContent?.layoutType === 'flex' && resolvedContent?.flexConfig?.direction === 'row' ? 'flex-row' : 'flex-col',
+                        resolvedContent?.layoutType === 'grid' ? 'grid' : '',
+                        resolvedContent?.layoutType === 'grid' ? `grid-cols-${resolvedContent?.gridConfig?.cols || '1'}` : '',
+                        (resolvedContent?.layoutType === 'flex' || resolvedContent?.layoutType === 'grid') && resolvedContent?.flexConfig?.gap ? `gap-${resolvedContent?.flexConfig.gap}` : ''
                     ]"
                     :style="{ transformStyle: 'preserve-3d' }">
                     <template #item="{ element }">
@@ -530,26 +547,27 @@ const formValue = computed({
                 <div v-if="!block.children?.length" class="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none text-xs font-bold uppercase tracking-widest border border-dashed border-base-content/10 m-2 rounded-lg bg-base-100/30 backdrop-blur-sm">Drop blocks here</div>
             </template>
             <template v-else>
-                <DynamicBlock v-for="child in block.children" :key="child.id" :block="child" />
+                <DynamicBlock v-for="child in (block.children || [])" :key="child.id || child.type" :block="child" />
             </template>
         </component>
 
         <!-- 1. Typography -->
         <div v-else-if="block.type === 'paragraph'" 
              class="leading-relaxed" 
-             :class="{'opacity-80': !isEditor}" 
+             :class="[{'opacity-80': !isEditor}, block.settings?.style?.textColor]" 
              :style="textStyleObj" 
-             v-html="t(resolvedContent.text)"></div>
+             v-html="resolvedContent?.text || t(resolvedContent?.text)"></div>
         
         <div v-else-if="block.type === 'heading'">
-            <component :is="'h' + (resolvedContent.level || 2)" 
+            <component :is="'h' + (resolvedContent?.level || 2)" 
                        :style="textStyleObj"
                        class="font-black tracking-tighter pr-[0.2em] whitespace-pre-wrap"
                        :class="[
-                           !block.settings?.style?.fontSize ? (resolvedContent.level === 1 ? 'text-6xl md:text-8xl' : (resolvedContent.level === 2 ? 'text-4xl md:text-6xl' : 'text-2xl md:text-4xl')) : '',
-                           resolvedContent.align === 'center' ? 'text-center' : ''
+                           !block.settings?.style?.fontSize ? (resolvedContent?.level === 1 ? 'text-6xl md:text-8xl' : (resolvedContent?.level === 2 ? 'text-4xl md:text-6xl' : 'text-2xl md:text-4xl')) : '',
+                           resolvedContent?.align === 'center' ? 'text-center' : '',
+                           block.settings?.style?.textColor
                        ]"
-                       v-html="t(resolvedContent.text) || 'Heading'">
+                       v-html="resolvedContent?.text || t(resolvedContent?.text) || 'Heading'">
             </component>
         </div>
 
@@ -580,9 +598,9 @@ const formValue = computed({
         </div>
 
         <!-- 2. Actions -->
-        <div v-else-if="block.type === 'button'" :class="[resolvedContent.align === 'center' ? 'text-center' : resolvedContent.align === 'right' ? 'text-right' : 'text-left']">
-            <a :href="t(resolvedContent.url)" class="btn" :class="`btn-${resolvedContent.style || 'primary'}`">
-                {{ t(resolvedContent.label) }}
+        <div v-else-if="block.type === 'button'" :class="[resolvedContent?.align === 'center' ? 'text-center' : resolvedContent?.align === 'right' ? 'text-right' : 'text-left']">
+            <a :href="t(resolvedContent?.url)" class="btn" :class="`btn-${resolvedContent?.style || 'primary'}`">
+                {{ t(resolvedContent?.label) }}
             </a>
         </div>
 
@@ -594,7 +612,7 @@ const formValue = computed({
         </div>
 
         <div v-else-if="block.type === 'modal'">
-            <button class="btn" @click="isEditor ? null : document.getElementById(resolvedContent.id).showModal()">{{ t(resolvedContent.buttonLabel) }}</button>
+            <button class="btn" @click="openModal(resolvedContent.id)">{{ t(resolvedContent.buttonLabel) }}</button>
             <dialog :id="resolvedContent.id" class="modal">
                 <div class="modal-box">
                     <h3 class="font-bold text-lg">{{ t(resolvedContent.title) }}</h3>
@@ -742,7 +760,7 @@ const formValue = computed({
              ]">
             <!-- In Editor, show a badge indicating it's a form -->
             <div v-if="isEditor" class="absolute -top-3 left-4 badge badge-primary badge-sm gap-2 z-10">
-                <PhFiles weight="bold" class="w-3 h-3" />
+                <PhStack weight="bold" class="w-3 h-3" />
                 <span>Form Container</span>
             </div>
 
@@ -769,14 +787,14 @@ const formValue = computed({
             <template v-else>
                 <div class="w-full flex flex-col gap-6" 
                     :class="[
-                        resolvedContent.layoutType === 'flex' ? 'flex' : 'flex flex-col',
-                        resolvedContent.layoutType === 'flex' && resolvedContent.flexConfig?.direction === 'row' ? 'flex-row' : 'flex-col',
-                        resolvedContent.layoutType === 'grid' ? 'grid' : '',
-                        resolvedContent.layoutType === 'grid' ? `grid-cols-${resolvedContent.gridConfig?.cols || '1'}` : '',
-                        (resolvedContent.layoutType === 'flex' || resolvedContent.layoutType === 'grid') && resolvedContent.flexConfig?.gap ? `gap-${resolvedContent.flexConfig.gap}` : 'gap-4'
+                        resolvedContent?.layoutType === 'flex' ? 'flex' : 'flex flex-col',
+                        resolvedContent?.layoutType === 'flex' && resolvedContent?.flexConfig?.direction === 'row' ? 'flex-row' : 'flex-col',
+                        resolvedContent?.layoutType === 'grid' ? 'grid' : '',
+                        resolvedContent?.layoutType === 'grid' ? `grid-cols-${resolvedContent?.gridConfig?.cols || '1'}` : '',
+                        (resolvedContent?.layoutType === 'flex' || resolvedContent?.layoutType === 'grid') && resolvedContent?.flexConfig?.gap ? `gap-${resolvedContent?.flexConfig.gap}` : 'gap-4'
                     ]">
                     <DynamicBlock 
-                        v-for="child in block.children" 
+                        v-for="child in (block.children || [])" 
                         :key="child.id" 
                         :block="child" 
                     />
@@ -868,15 +886,15 @@ const formValue = computed({
                 block.appearance?.sticky ? 'sticky top-0 z-[50]' : 'relative'
              ]">
             <div class="flex-1">
-                <a class="btn btn-ghost text-xl font-black italic tracking-tighter uppercase">{{ t(resolvedContent.title) || 'Featherly' }}</a>
+                <a class="btn btn-ghost text-xl font-black italic tracking-tighter uppercase">{{ t(resolvedContent?.title) || 'Featherly' }}</a>
             </div>
             <div class="flex-none hidden lg:flex">
                 <ul v-if="page.props.menus" class="menu menu-horizontal px-1 font-bold uppercase tracking-widest text-xs opacity-70">
-                    <li v-for="(link, i) in resolvedContent.links" :key="i"><a>{{ t(link) }}</a></li>
+                    <li v-for="(link, i) in (resolvedContent?.links || [])" :key="i"><a>{{ t(link) }}</a></li>
                 </ul>
             </div>
             <div class="flex-none">
-                <a class="btn btn-primary btn-sm rounded-full px-6 ml-4" v-if="resolvedContent.actionButton">{{ t(resolvedContent.actionButton) }}</a>
+                <a class="btn btn-primary btn-sm rounded-full px-6 ml-4" v-if="resolvedContent?.actionButton">{{ t(resolvedContent.actionButton) }}</a>
             </div>
         </div>
 
