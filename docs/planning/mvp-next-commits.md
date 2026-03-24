@@ -2,13 +2,13 @@
 
 ## NOW (max 3)
 - [ ] SCL-011 Migrate CRUD validation to dedicated FormRequest classes
-- [ ] SCL-026 Reduce heavy global Inertia shared payloads
 - [ ] SCL-013 Add optimistic locking strategy for concurrent edits
+- [ ] SCL-006 Add bundle-size report artifact in CI
 
 ## NEXT
-- [ ] SCL-006 Add bundle-size report artifact in CI
 - [ ] SCL-007 Introduce PR checklist for regression-safe delivery
 - [ ] SCL-008 Introduce release checklist with rollback section
+- [ ] SCL-027 Add query profiling and remove N+1 in public render paths
 
 ## LATER
 - [ ] SCL-039 Remove locale hardcodes and use active language source everywhere

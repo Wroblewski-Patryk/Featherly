@@ -67,7 +67,10 @@ class HandleInertiaRequests extends Middleware
                 return \App\Models\Language::where('is_active', true)->orderBy('is_default', 'desc')->get();
             });
             $allProjects = \Illuminate\Support\Facades\Cache::rememberForever('all_projects', function () {
-                return \App\Models\Project::orderBy('order')->get();
+                return \App\Models\Project::query()
+                    ->select(['id', 'title', 'slug', 'category', 'desktop_image', 'mobile_image', 'order'])
+                    ->orderBy('order')
+                    ->get();
             });
             
             $themeColors = isset($settings['theme_colors']) ? (is_array($settings['theme_colors']) ? $settings['theme_colors'] : json_decode($settings['theme_colors'], true)) : [];
@@ -124,7 +127,7 @@ class HandleInertiaRequests extends Middleware
             'theme_config' => fn () => $themeConfig,
             'menus' => fn () => [], // Safe historical fallback
             'translations' => fn () => \Illuminate\Support\Facades\Cache::remember('translations.' . app()->getLocale(), 3600, function () {
-                return Translation::all()->reduce(function ($carry, $translation) {
+                return Translation::query()->select(['key', 'text'])->get()->reduce(function ($carry, $translation) {
                     $locale = app()->getLocale();
                     $fallback = config('app.fallback_locale', 'en');
                     $text = $translation->getTranslation('text', $locale, false) ?: $translation->getTranslation('text', $fallback, false);
