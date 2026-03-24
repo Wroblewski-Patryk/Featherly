@@ -18,7 +18,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-011 (P0, DONE) Migrate CRUD validation to dedicated FormRequest classes.
 - [x] SCL-012 (P0, DONE) Add DB transactions for multi-step content writes.
 - [x] SCL-013 (P0, DONE) Add optimistic locking strategy for concurrent edits.
-- [ ] SCL-014 (P1, TODO) Standardize API response envelopes for admin endpoints.
+- [ ] SCL-014 (P1, IN_PROGRESS) Standardize API response envelopes for admin endpoints.
 - [ ] SCL-015 (P1, TODO) Add policy-based authorization for core content models.
 - [ ] SCL-016 (P1, TODO) Add audit logging for RBAC and settings changes.
 - [ ] SCL-017 (P1, TODO) Remove legacy dual-source role ambiguity (`users.role` vs Spatie).
