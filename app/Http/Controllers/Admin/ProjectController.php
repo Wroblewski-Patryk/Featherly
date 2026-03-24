@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\Project\StoreProjectRequest;
+use App\Http\Requests\Admin\Project\UpdateProjectRequest;
 use App\Models\Project;
 use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
@@ -39,17 +41,9 @@ class ProjectController extends BaseAdminContentController
         ], $this->getSharedProps()));
     }
 
-    public function store(Request $request)
+    public function store(StoreProjectRequest $request)
     {
-        $validated = $request->validate(array_merge($this->getBaseValidationRules(), [
-            'description' => 'required|array',
-            'description.*' => 'nullable|string',
-            'client_id' => 'nullable|exists:clients,id',
-            'url' => 'nullable|string',
-            'completion_date' => 'nullable|date',
-            'desktop_image' => 'nullable|string',
-            'mobile_image' => 'nullable|string',
-        ]));
+        $validated = $request->validated();
 
         $this->applyStatusLogic(null, $validated);
 
@@ -71,17 +65,9 @@ class ProjectController extends BaseAdminContentController
         ));
     }
 
-    public function update(Request $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $project)
     {
-        $validated = $request->validate(array_merge($this->getBaseValidationRules($project), [
-            'description' => 'required|array',
-            'description.*' => 'nullable|string',
-            'client_id' => 'nullable|exists:clients,id',
-            'url' => 'nullable|string',
-            'completion_date' => 'nullable|date',
-            'desktop_image' => 'nullable|string',
-            'mobile_image' => 'nullable|string',
-        ]));
+        $validated = $request->validated();
 
         $this->applyStatusLogic($project, $validated);
 

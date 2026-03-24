@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\Page\StorePageRequest;
+use App\Http\Requests\Admin\Page\UpdatePageRequest;
 use App\Models\Page;
 use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
@@ -34,14 +36,9 @@ class PageController extends BaseAdminContentController
         ], $this->getSharedProps()));
     }
 
-    public function store(Request $request)
+    public function store(StorePageRequest $request)
     {
-        $validated = $request->validate(array_merge($this->getBaseValidationRules(), [
-            'header_override_id' => 'nullable|exists:templates,id',
-            'footer_override_id' => 'nullable|exists:templates,id',
-            'sidebar_override_id' => 'nullable|exists:templates,id',
-            'template_id' => 'nullable|exists:templates,id',
-        ]));
+        $validated = $request->validated();
 
         $this->applyStatusLogic(null, $validated);
 
@@ -62,14 +59,9 @@ class PageController extends BaseAdminContentController
         ]));
     }
 
-    public function update(Request $request, Page $page)
+    public function update(UpdatePageRequest $request, Page $page)
     {
-        $validated = $request->validate(array_merge($this->getBaseValidationRules($page), [
-            'header_override_id' => 'nullable|exists:templates,id',
-            'footer_override_id' => 'nullable|exists:templates,id',
-            'sidebar_override_id' => 'nullable|exists:templates,id',
-            'template_id' => 'nullable|exists:templates,id',
-        ]));
+        $validated = $request->validated();
 
         $this->applyStatusLogic($page, $validated);
 

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\Post\StorePostRequest;
+use App\Http\Requests\Admin\Post\UpdatePostRequest;
 use App\Models\Post;
 use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
@@ -39,14 +41,9 @@ class PostController extends BaseAdminContentController
         ], $this->getSharedProps()));
     }
 
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
-        $validated = $request->validate(array_merge($this->getBaseValidationRules(), [
-            'excerpt' => 'nullable|array',
-            'excerpt.*' => 'nullable|string',
-            'featured_image' => 'nullable|array',
-            'featured_image.*' => 'nullable|string',
-        ]));
+        $validated = $request->validated();
 
         $this->applyStatusLogic(null, $validated);
 
@@ -67,14 +64,9 @@ class PostController extends BaseAdminContentController
         ]));
     }
 
-    public function update(Request $request, Post $post)
+    public function update(UpdatePostRequest $request, Post $post)
     {
-        $validated = $request->validate(array_merge($this->getBaseValidationRules($post), [
-            'excerpt' => 'nullable|array',
-            'excerpt.*' => 'nullable|string',
-            'featured_image' => 'nullable|array',
-            'featured_image.*' => 'nullable|string',
-        ]));
+        $validated = $request->validated();
 
         $this->applyStatusLogic($post, $validated);
 
