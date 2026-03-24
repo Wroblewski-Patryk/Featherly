@@ -67,11 +67,15 @@ class MediaController extends Controller
         if (in_array($sortField, $allowedSorts)) {
             $query->orderBy($sortField, $sortDirection);
         }
+        $query->orderBy('id', $sortDirection);
 
         $requestedPerPage = (int) $request->integer('per_page', self::DEFAULT_PER_PAGE);
         $perPage = min(self::MAX_PER_PAGE, max(1, $requestedPerPage));
 
-        $media = $query->paginate($perPage)->withQueryString();
+        $useCursorPagination = $request->wantsJson() && $request->get('pagination') === 'cursor';
+        $media = $useCursorPagination
+            ? $query->cursorPaginate($perPage)->withQueryString()
+            : $query->paginate($perPage)->withQueryString();
         $folders = MediaFolder::with('children')->get();
         $currentFolder = $request->folder_id ?MediaFolder::find($request->folder_id) : null;
 
@@ -85,7 +89,7 @@ class MediaController extends Controller
             'folders' => $folders,
             'subfolders' => $subfolders,
             'currentFolder' => $currentFolder,
-            'filters' => $request->only(['search', 'folder_id', 'sort', 'direction', 'view_type', 'per_page'])
+            'filters' => $request->only(['search', 'folder_id', 'sort', 'direction', 'view_type', 'per_page', 'pagination'])
         ];
 
         if ($request->wantsJson()) {

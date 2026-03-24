@@ -64,4 +64,54 @@ class MediaManagementTest extends TestCase
             ->assertJsonPath('media.total', 150)
             ->assertJsonCount(120, 'media.data');
     }
+
+    public function test_admin_media_index_supports_cursor_pagination_for_json_requests(): void
+    {
+        Media::unguarded(function () {
+            for ($i = 0; $i < 6; $i++) {
+                Media::create([
+                    'path' => "media/cursor-{$i}.jpg",
+                    'mime' => 'image/jpeg',
+                    'size' => 3000 + $i,
+                    'alt_text' => "cursor-{$i}",
+                    'folder_id' => null,
+                    'created_at' => now()->subSeconds($i),
+                    'updated_at' => now()->subSeconds($i),
+                ]);
+            }
+        });
+
+        $firstPageResponse = $this->actingAs($this->admin)->getJson(route('admin.media.index', [
+            'pagination' => 'cursor',
+            'per_page' => 2,
+            'sort' => 'created_at',
+            'direction' => 'desc',
+        ]));
+
+        $firstPageResponse
+            ->assertOk()
+            ->assertJsonPath('media.per_page', 2)
+            ->assertJsonCount(2, 'media.data');
+
+        $nextCursor = $firstPageResponse->json('media.next_cursor');
+        $this->assertNotNull($nextCursor);
+
+        $secondPageResponse = $this->actingAs($this->admin)->getJson(route('admin.media.index', [
+            'pagination' => 'cursor',
+            'per_page' => 2,
+            'sort' => 'created_at',
+            'direction' => 'desc',
+            'cursor' => $nextCursor,
+        ]));
+
+        $secondPageResponse
+            ->assertOk()
+            ->assertJsonPath('media.per_page', 2)
+            ->assertJsonCount(2, 'media.data');
+
+        $this->assertNotEquals(
+            $firstPageResponse->json('media.data.0.id'),
+            $secondPageResponse->json('media.data.0.id')
+        );
+    }
 }
