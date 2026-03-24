@@ -19,7 +19,7 @@
 - [x] SCL-005 Add migration smoke workflow (`migrate:fresh --seed`)
 
 ## Workstream: Phase 1 - Core Stability
-- [ ] SCL-011 Migrate CRUD validation to dedicated FormRequest classes
+- [x] SCL-011 Migrate CRUD validation to dedicated FormRequest classes
 - [x] SCL-012 Add DB transactions for multi-step content writes
 - [ ] SCL-013 Add optimistic locking strategy for concurrent edits
 - [ ] SCL-015 Add policy-based authorization for core content models
@@ -49,3 +49,4 @@
 - 2026-03-24: Completed SCL-007 (regression-safe PR checklist template and engineering checklist document).
 - 2026-03-24: Completed SCL-008 (release candidate checklist and ops runbook rollback hardening).
 - 2026-03-24: Completed SCL-009 (task-linked commit and PR naming standard).
+- 2026-03-24: Completed SCL-011 (migrated admin page/post/project store/update validation to dedicated FormRequest classes).
