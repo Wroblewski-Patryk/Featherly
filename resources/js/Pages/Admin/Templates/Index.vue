@@ -9,7 +9,15 @@ import { useTranslations } from '@/Composables/useTranslations';
 const { t } = useTranslations();
 
 const props = defineProps(['templates']);
-const activeLocale = computed(() => usePage().props.locale);
+const pageProps = usePage().props;
+const fallbackLocale = computed(() => {
+    return pageProps.default_locale
+        || pageProps.locale
+        || pageProps.languages?.find?.(lang => lang?.is_default)?.code
+        || pageProps.languages?.[0]?.code
+        || 'en';
+});
+const activeLocale = computed(() => pageProps.locale || fallbackLocale.value);
 const tableRef = ref(null);
 const deleteForm = useForm({});
 
@@ -50,7 +58,7 @@ function deleteTemplate(item) {
             <template #cell-title="{ item }">
                 <div class="flex items-center gap-2">
                     <Link :href="route('admin.templates.edit', item.id)" class="font-medium hover:text-primary transition-colors">
-                        {{ typeof item.title === 'object' ? (item.title[activeLocale] || item.title['pl'] || Object.values(item.title)[0]) : item.title }}
+                        {{ typeof item.title === 'object' ? (item.title[activeLocale] || item.title[fallbackLocale] || Object.values(item.title)[0]) : item.title }}
                     </Link>
                     <div v-if="item.is_system" class="badge badge-primary badge-xs py-2 px-2 gap-1 text-[10px] font-bold uppercase tracking-wider">
                         SYSTEM

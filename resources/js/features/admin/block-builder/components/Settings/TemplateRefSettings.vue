@@ -12,7 +12,7 @@
                 <select v-model="modelValue.template_id" class="select select-bordered select-sm w-full focus:border-primary transition-all">
                     <option :value="null">None (Disconnected)</option>
                     <option v-for="t in templates" :key="t.id" :value="t.id">
-                        {{ typeof t.title === 'object' ? (t.title[store.editingLocale] || t.title['pl'] || Object.values(t.title)[0]) : t.title }} ({{ t.type }})
+                        {{ typeof t.title === 'object' ? (t.title[store.editingLocale] || t.title[fallbackLocale] || Object.values(t.title)[0]) : t.title }} ({{ t.type }})
                     </option>
                 </select>
                 <p class="text-[9px] opacity-40 italic mt-2 px-1 leading-relaxed">Note: Common template parts like Headers or Footers are shared globally across all languages.</p>
@@ -22,9 +22,19 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 
 const store = useBlockBuilderStore();
+const page = usePage();
+const fallbackLocale = computed(() => {
+    return page.props.default_locale
+        || page.props.locale
+        || page.props.languages?.find?.(lang => lang?.is_default)?.code
+        || page.props.languages?.[0]?.code
+        || 'en';
+});
 
 const props = defineProps({
     modelValue: {
@@ -41,4 +51,3 @@ const props = defineProps({
     }
 });
 </script>
-
