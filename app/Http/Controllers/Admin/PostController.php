@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\Post\UpdatePostRequest;
 use App\Models\Post;
 use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -20,6 +21,8 @@ class PostController extends BaseAdminContentController
 
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', Post::class);
+
         return Inertia::render("{$this->viewPath}/Index", [
             'posts' => $this->getBaseIndexQuery($request)->paginate(10)->withQueryString()
         ]);
@@ -27,6 +30,8 @@ class PostController extends BaseAdminContentController
 
     public function create()
     {
+        Gate::authorize('create', Post::class);
+
         $post = new Post();
         $locales = \App\Models\Language::where('is_active', true)->pluck('code')->toArray();
         $emptyLocales = array_fill_keys($locales, '');
@@ -43,6 +48,8 @@ class PostController extends BaseAdminContentController
 
     public function store(StorePostRequest $request)
     {
+        Gate::authorize('create', Post::class);
+
         $validated = $request->validated();
 
         $this->applyStatusLogic(null, $validated);
@@ -59,6 +66,8 @@ class PostController extends BaseAdminContentController
 
     public function edit(Post $post)
     {
+        Gate::authorize('update', $post);
+
         return Inertia::render("{$this->viewPath}/Edit", $this->getEditProps($post, [
             'title', 'slug', 'excerpt', 'featured_image', 'meta_title', 'meta_description', 'og_image'
         ]));
@@ -66,6 +75,8 @@ class PostController extends BaseAdminContentController
 
     public function update(UpdatePostRequest $request, Post $post)
     {
+        Gate::authorize('update', $post);
+
         $validated = $request->validated();
         $this->assertOptimisticLock($post, $request);
 
@@ -82,6 +93,8 @@ class PostController extends BaseAdminContentController
 
     public function destroy(Post $post)
     {
+        Gate::authorize('delete', $post);
+
         $post->delete();
         return redirect()->back()->with('success', 'posts.delete_success');
     }

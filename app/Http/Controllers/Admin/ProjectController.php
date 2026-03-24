@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\Project\UpdateProjectRequest;
 use App\Models\Project;
 use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -20,6 +21,8 @@ class ProjectController extends BaseAdminContentController
 
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', Project::class);
+
         return Inertia::render("{$this->viewPath}/Index", [
             'projects' => $this->getBaseIndexQuery($request)->paginate(10)->withQueryString()
         ]);
@@ -27,6 +30,8 @@ class ProjectController extends BaseAdminContentController
 
     public function create()
     {
+        Gate::authorize('create', Project::class);
+
         $project = new Project();
         $locales = \App\Models\Language::where('is_active', true)->pluck('code')->toArray();
         $emptyLocales = array_fill_keys($locales, '');
@@ -43,6 +48,8 @@ class ProjectController extends BaseAdminContentController
 
     public function store(StoreProjectRequest $request)
     {
+        Gate::authorize('create', Project::class);
+
         $validated = $request->validated();
 
         $this->applyStatusLogic(null, $validated);
@@ -59,6 +66,8 @@ class ProjectController extends BaseAdminContentController
 
     public function edit(Project $project)
     {
+        Gate::authorize('update', $project);
+
         return Inertia::render("{$this->viewPath}/Edit", array_merge(
             $this->getEditProps($project, ['title', 'slug', 'description', 'meta_title', 'meta_description', 'og_image']),
             ['availableClients' => \App\Models\Client::orderBy('title')->get()]
@@ -67,6 +76,8 @@ class ProjectController extends BaseAdminContentController
 
     public function update(UpdateProjectRequest $request, Project $project)
     {
+        Gate::authorize('update', $project);
+
         $validated = $request->validated();
         $this->assertOptimisticLock($project, $request);
 
@@ -83,6 +94,8 @@ class ProjectController extends BaseAdminContentController
 
     public function destroy(Project $project)
     {
+        Gate::authorize('delete', $project);
+
         $project->delete();
         return redirect()->back()->with('success', 'admin.projects.delete_success');
     }

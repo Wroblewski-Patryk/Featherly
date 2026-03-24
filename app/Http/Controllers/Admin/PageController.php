@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\Page\UpdatePageRequest;
 use App\Models\Page;
 use App\Traits\HandlePublishableStatus;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -21,6 +22,8 @@ class PageController extends BaseAdminContentController
 
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', Page::class);
+
         return Inertia::render("{$this->viewPath}/Index", [
             'pages' => $this->getBaseIndexQuery($request)->paginate(10)->withQueryString()
         ]);
@@ -28,6 +31,8 @@ class PageController extends BaseAdminContentController
 
     public function create()
     {
+        Gate::authorize('create', Page::class);
+
         $page = new Page();
         $page->setAttribute('revisions', []);
         
@@ -38,6 +43,8 @@ class PageController extends BaseAdminContentController
 
     public function store(StorePageRequest $request)
     {
+        Gate::authorize('create', Page::class);
+
         $validated = $request->validated();
 
         $this->applyStatusLogic(null, $validated);
@@ -54,6 +61,8 @@ class PageController extends BaseAdminContentController
 
     public function edit(Page $page)
     {
+        Gate::authorize('update', $page);
+
         return Inertia::render("{$this->viewPath}/Edit", $this->getEditProps($page, [
             'title', 'slug', 'meta_title', 'meta_description', 'og_image'
         ]));
@@ -61,6 +70,8 @@ class PageController extends BaseAdminContentController
 
     public function update(UpdatePageRequest $request, Page $page)
     {
+        Gate::authorize('update', $page);
+
         $validated = $request->validated();
         $this->assertOptimisticLock($page, $request);
 
@@ -77,6 +88,8 @@ class PageController extends BaseAdminContentController
 
     public function destroy(Page $page)
     {
+        Gate::authorize('delete', $page);
+
         $page->delete();
         return redirect()->back()->with('success', 'pages.delete_success');
     }
