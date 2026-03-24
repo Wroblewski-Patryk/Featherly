@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class PageManagementTest extends TestCase
@@ -26,6 +27,27 @@ class PageManagementTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertInertia(fn($page) => $page->component('Admin/Pages/Index'));
+    }
+
+    public function test_admin_can_search_pages_by_localized_title(): void
+    {
+        \App\Models\Page::factory()->create([
+            'title' => ['en' => 'Alpha landing', 'pl' => 'Alpha strona'],
+            'slug' => ['en' => 'alpha-landing', 'pl' => 'alpha-strona'],
+        ]);
+        $target = \App\Models\Page::factory()->create([
+            'title' => ['en' => 'Needle page', 'pl' => 'Szukana strona'],
+            'slug' => ['en' => 'needle-page', 'pl' => 'szukana-strona'],
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('admin.pages.index', ['search' => 'Needle']));
+
+        $response->assertStatus(200);
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Pages/Index')
+            ->has('pages.data', 1)
+            ->where('pages.data.0.id', $target->id)
+        );
     }
 
     public function test_admin_can_view_create_page(): void

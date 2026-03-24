@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class ProjectManagementTest extends TestCase
@@ -28,6 +29,27 @@ class ProjectManagementTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertInertia(fn($page) => $page->component('Admin/Projects/Index'));
+    }
+
+    public function test_admin_can_search_projects_by_localized_title(): void
+    {
+        Project::factory()->create([
+            'title' => ['en' => 'Alpha project', 'pl' => 'Alpha projekt'],
+            'slug' => ['en' => 'alpha-project', 'pl' => 'alpha-projekt'],
+        ]);
+        $target = Project::factory()->create([
+            'title' => ['en' => 'Needle project', 'pl' => 'Szukany projekt'],
+            'slug' => ['en' => 'needle-project', 'pl' => 'szukany-projekt'],
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('admin.projects.index', ['search' => 'Needle']));
+
+        $response->assertStatus(200);
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Projects/Index')
+            ->has('projects.data', 1)
+            ->where('projects.data.0.id', $target->id)
+        );
     }
 
     public function test_admin_can_create_project_page(): void
