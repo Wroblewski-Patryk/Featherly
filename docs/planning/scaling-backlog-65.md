@@ -33,7 +33,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 
 ## Phase 2 - Performance and Throughput
 - [x] SCL-026 (P0, DONE) Reduce heavy global Inertia shared payloads.
-- [ ] SCL-027 (P1, IN_PROGRESS) Add query profiling and remove N+1 in public render paths.
+- [x] SCL-027 (P1, DONE) Add query profiling and remove N+1 in public render paths.
 - [x] SCL-028 (P1, DONE) Index taxonomy-heavy paths (`module`, `type`, `order`).
 - [x] SCL-029 (P1, DONE) Index revisions by morph columns and timestamp.
 - [x] SCL-030 (P1, DONE) Add search strategy for JSON-translated content.
