@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Language;
 use App\Models\Taxonomy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -36,7 +37,7 @@ class TaxonomyController extends Controller
 
     public function store(Request $request)
     {
-        $locales = config('app.locales', ['pl', 'en']);
+        $locales = $this->resolveActiveLocales();
         $rules = [
             'type' => 'required|string',
             'module' => 'required|string',
@@ -67,7 +68,7 @@ class TaxonomyController extends Controller
 
     public function update(Request $request, Taxonomy $taxonomy)
     {
-        $locales = config('app.locales', ['pl', 'en']);
+        $locales = $this->resolveActiveLocales();
         $rules = [
             'type' => 'required|string',
             'module' => 'required|string',
@@ -93,5 +94,24 @@ class TaxonomyController extends Controller
     {
         $taxonomy->delete();
         return back()->with('success', 'admin.taxonomy.deleted');
+    }
+
+    private function resolveActiveLocales(): array
+    {
+        $codes = Language::query()
+            ->where('is_active', true)
+            ->pluck('code')
+            ->filter()
+            ->values()
+            ->all();
+
+        if (!empty($codes)) {
+            return $codes;
+        }
+
+        return array_values(array_unique(array_filter([
+            app()->getLocale(),
+            config('app.fallback_locale'),
+        ])));
     }
 }

@@ -72,7 +72,8 @@ class PublicFormController extends Controller
 
             if (is_array($successMessage)) {
                 $locale = app()->getLocale();
-                $successMessage = $successMessage[$locale] ?? $successMessage['pl'] ?? 'Sent!';
+                $fallbackLocale = (string) config('app.fallback_locale', $locale);
+                $successMessage = $successMessage[$locale] ?? $successMessage[$fallbackLocale] ?? collect($successMessage)->first() ?? 'Sent!';
             }
 
             return redirect()->back()->with('success', $successMessage);
