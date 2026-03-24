@@ -60,7 +60,7 @@ class MediaController extends Controller
         ];
 
         if ($request->wantsJson()) {
-            return response()->json($data);
+            return $this->jsonSuccess($data, 'media.index_success');
         }
 
         return Inertia::render('Admin/Media/Index', $data);
