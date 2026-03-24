@@ -1,15 +1,19 @@
-# Architecture Decision Records (ADR)
+﻿# Architecture Decision Records (ADR)
 
-Ten katalog zawiera zapisy kluczowych decyzji projektowych i architektonicznych podjętych w projekcie Featherly.
+This directory stores key technical and product-architecture decisions for Featherly.
 
-## Format
-Każdy rekord ADR powinien zawierać:
-- **Tytuł**: Krótki opis decyzji.
-- **Data**: Kiedy decyzja została podjęta.
-- **Status**: Proponowana, Zaakceptowana, Zastąpiona.
-- **Kontekst**: Jaki problem rozwiązujemy?
-- **Decyzja**: Co wybraliśmy i dlaczego?
-- **Konsekwencje**: Jakie są skutki tej decyzji (pozytywne i negatywne)?
+## Required ADR Format
+- Title
+- Date
+- Status (`PROPOSED`, `ACCEPTED`, `SUPERSEDED`)
+- Context
+- Decision
+- Consequences (positive and negative)
 
-## Lista rekordów
-- [ADR 0001: System skanowania i synchronizacji tłumaczeń](0001-translation-scanning-system.md)
+## Current Records
+- `0001-translation-scanning-system.md` - translation scan and integrity workflow.
+- `0001-template-governance-baseline.md` - baseline governance inherited from template bootstrap.
+
+## Notes
+- Keep ADR identifiers stable; do not overwrite old decisions.
+- If a decision changes, create a new ADR and reference the superseded one.

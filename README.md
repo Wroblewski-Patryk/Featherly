@@ -1,40 +1,52 @@
-# Featherly CMS
+﻿# Featherly CMS
 
-Custom CMS oparty o Laravel 12 + Vue 3 + Inertia.
+Featherly is a custom CMS built with Laravel 12, Inertia, and Vue 3.  
+It focuses on block-based content editing, multilingual content, and a custom admin panel.
 
-## Uruchamianie lokalnie
+## Local Development
 
-Masz dwie poprawne opcje:
+Use one of these options:
 
-1. Dwa terminale:
+1. Two terminals:
 - `php artisan serve`
 - `npm run dev`
 
-2. Jeden terminal:
+2. One terminal:
 - `composer run dev`
 
-`composer run dev` uruchamia server + queue + pail + vite.
+`composer run dev` starts server, queue, pail, and Vite together.
 
-## Aktualna architektura routingu
+## Current Routing Architecture
 
-Routing jest modularny i lokalizowany:
+Routing is modular and localized:
 
-- `routes/auth.php` pod prefiksem `/{locale}`
-- `routes/admin.php` pod prefiksem `/{locale}/admin`
-- `routes/public.php` pod prefiksem `/{locale}`
-- techniczne trasy bez prefiksu: `sitemap.xml`, `robots.txt`, `lang/{lang}`
+- `routes/auth.php` under `/{locale}`
+- `routes/admin.php` under `/{locale}/admin`
+- `routes/public.php` under `/{locale}`
+- technical routes without locale prefix: `sitemap.xml`, `robots.txt`, `lang/{lang}`
 
-Konfiguracja jest spinana w `bootstrap/app.php` (middleware `locale`, alias i redirecti auth).
+Locale behavior is wired in `bootstrap/app.php` and locale middleware.
 
-## Co aktualnie dziala
+## Current Status (2026-03-24)
 
-- Panel admin: pages, posts, media, projects, forms, templates, translations, languages, users, settings, theme, blocks.
-- i18n backend: tabela `languages`, tabela `translations`, share tlumaczen przez Inertia.
-- SEO techniczne: `sitemap.xml`, `robots.txt`.
+Implemented:
 
-## Co jest jeszcze do dopiecia
+- Admin modules: pages, posts, media, projects, forms, templates, translations, languages, users, settings, theme, blocks, clients.
+- i18n backend: `languages` + `translations`, shared to frontend via Inertia props.
+- SEO base: `sitemap.xml`, `robots.txt`, default meta handling.
+- Translation scanning workflow: `php artisan i18n:scan --scope=admin` + integrity test.
 
-- W `routes/admin.php` sa zarejestrowane `categories` i `clients`, ale brak odpowiadajacych kontrolerow/modeli.
-- W `routes/public.php` obecnie aktywne sa tylko: `/{locale}` i `/{locale}/forms/{id}/preview`.
-  Logika dynamicznych podstron/blog/projekty jest w `PageController`, ale ekspozycja tras publicznych jest jeszcze w trakcie porzadkowania.
-- Dynamiczny submit dla formularzy z modulu `forms` nie jest jeszcze domkniety.
+Known gaps:
+
+- Public dynamic routes for page/blog/project are partially prepared in controllers but not fully exposed in `routes/public.php`.
+- Category taxonomy routes were introduced before full implementation and still require validation against the current model set.
+
+## Documentation
+
+Primary docs are in `docs/`.
+Start from:
+
+- `docs/overview.md`
+- `docs/product/product.md`
+- `docs/architecture/system-architecture.md`
+- `docs/planning/mvp-next-commits.md`

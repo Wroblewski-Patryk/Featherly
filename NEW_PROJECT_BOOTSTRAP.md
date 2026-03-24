@@ -1,0 +1,11 @@
+﻿# New Project Bootstrap
+
+This checklist is kept for reference as a template artifact.
+
+For Featherly (existing project), do not treat this file as an active execution checklist.  
+Use planning and context files instead:
+
+- `docs/planning/mvp-execution-plan.md`
+- `docs/planning/mvp-next-commits.md`
+- `.codex/context/PROJECT_STATE.md`
+- `.codex/context/TASK_BOARD.md`
