@@ -25,7 +25,7 @@
 - [ ] SCL-015 Add policy-based authorization for core content models
 
 ## Workstream: Phase 2 - Performance and Throughput
-- [ ] SCL-026 Reduce heavy global Inertia shared payloads
+- [x] SCL-026 Reduce heavy global Inertia shared payloads
 - [ ] SCL-027 Add query profiling and remove N+1 in public render paths
 - [ ] SCL-036 Refine Vite chunk strategy to reduce oversized bundles
 
@@ -44,3 +44,4 @@
 - 2026-03-24: Completed SCL-001/SCL-003/SCL-004 (PHPStan baseline, split CI jobs, security audit gates).
 - 2026-03-24: Completed SCL-002/SCL-005 (frontend lint+format CI gate, migration smoke job with sqlite seeding).
 - 2026-03-24: Completed SCL-012 (transaction boundaries for create/update flows in page/post/project admin controllers).
+- 2026-03-24: Completed SCL-026 (trimmed global Inertia payload for projects and translation query shape).
