@@ -161,16 +161,50 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                     targetBlocks.forEach(target => {
                         const source = sourceBlocks.find(s => s.id === target.id);
                         if (source) {
-                            // Merge content
+                            // Merge content - only translation keys
+                            const translatableKeys = ['text', 'label', 'url', 'buttonLabel', 'title', 'description', 'img1', 'img2', 'html', 'js', 'placeholder', 'error_message', 'success_message', 'submit_label', 'actionButton', 'prefix', 'words', 'suffix', 'alt', 'caption', 'desc', 'value', 'unit'];
+                            
                             Object.keys(source.content).forEach(key => {
                                 const val = source.content[key];
-                                if (typeof val === 'string') {
+                                if (translatableKeys.includes(key) && typeof val === 'string') {
                                     if (typeof target.content[key] !== 'object' || target.content[key] === null) {
                                         const oldVal = target.content[key];
                                         target.content[key] = {};
                                         target.content[key][firstLocale] = oldVal;
                                     }
                                     target.content[key][locale] = val;
+                                } else if (key === 'items' && Array.isArray(val) && val.length > 0 && typeof val[0] === 'object') {
+                                  // specially handle accordion/tabs/timeline items which might have nested title/content
+                                    if (Array.isArray(target.content[key])) {
+                                        val.forEach((item, idx) => {
+                                            if (target.content[key][idx]) {
+                                               Object.keys(item).forEach(subKey => {
+                                                   if (translatableKeys.includes(subKey) && typeof item[subKey] === 'string') {
+                                                        if (typeof target.content[key][idx][subKey] !== 'object' || target.content[key][idx][subKey] === null) {
+                                                            const oldVal = target.content[key][idx][subKey];
+                                                            target.content[key][idx][subKey] = {};
+                                                            target.content[key][idx][subKey][firstLocale] = oldVal;
+                                                        }
+                                                        target.content[key][idx][subKey][locale] = item[subKey];
+                                                   }
+                                               });
+                                            }
+                                        });
+                                    }
+                                } else if (key === 'items' && Array.isArray(val) && val.length > 0 && typeof val[0] === 'string') {
+                                  // specially handle string arrays (like lists, menu)
+                                    if (Array.isArray(target.content[key])) {
+                                        val.forEach((item, idx) => {
+                                            if (target.content[key][idx] !== undefined) {
+                                                if (typeof target.content[key][idx] !== 'object' || target.content[key][idx] === null) {
+                                                    const oldVal = target.content[key][idx];
+                                                    target.content[key][idx] = {};
+                                                    target.content[key][idx][firstLocale] = oldVal;
+                                                }
+                                                target.content[key][idx][locale] = item;
+                                            }
+                                        });
+                                    }
                                 }
                             });
                             // Recurse children
