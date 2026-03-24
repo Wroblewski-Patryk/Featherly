@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\AuditLogger;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -36,6 +37,11 @@ class RoleController extends Controller
             $role->syncPermissions($request->permissions);
         }
 
+        AuditLogger::log('rbac.role.created', [
+            'role_name' => $role->name,
+            'permissions' => $role->permissions()->pluck('name')->toArray(),
+        ]);
+
         return redirect()->route('admin.roles.index')->with('success', 'admin.roles.created');
     }
 
@@ -57,6 +63,11 @@ class RoleController extends Controller
         $role->update(['name' => $request->name]);
         $role->syncPermissions($request->permissions);
 
+        AuditLogger::log('rbac.role.updated', [
+            'role_name' => $role->name,
+            'permissions' => $role->permissions()->pluck('name')->toArray(),
+        ]);
+
         return redirect()->route('admin.roles.index')->with('success', 'admin.roles.updated');
     }
 
@@ -65,6 +76,10 @@ class RoleController extends Controller
         if ($role->name === 'admin') {
             return back()->with('error', 'admin.roles.cannot_delete_admin');
         }
+
+        AuditLogger::log('rbac.role.deleted', [
+            'role_name' => $role->name,
+        ]);
 
         $role->delete();
         return redirect()->route('admin.roles.index')->with('success', 'admin.roles.deleted');
