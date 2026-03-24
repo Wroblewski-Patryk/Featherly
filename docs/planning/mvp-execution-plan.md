@@ -40,6 +40,7 @@
 - [x] SCL-031 Add pagination strategy for very large media collections
 - [x] SCL-032 Introduce cursor pagination where offset scaling hurts
 - [x] SCL-033 Define cache TTL matrix (what is forever vs expiring)
+- [x] SCL-034 Add route-level response time budget checks
 - [x] SCL-036 Refine Vite chunk strategy to reduce oversized bundles
 
 ## Workstream: Phase 3 - i18n and SEO Hardening
@@ -82,3 +83,4 @@
 - 2026-03-24: SCL-030 in progress (documented DB-aware JSON translated search strategy and staged rollout plan; adopted first reusable locale JSON search helper in admin content base listing query; added regression tests for localized search in page/post/project admin indexes).
 - 2026-03-24: Completed SCL-031 (added bounded media listing pagination controls with validated `per_page` cap and regression tests for JSON listing contract).
 - 2026-03-24: Completed SCL-032 (added opt-in cursor pagination mode for media JSON listing with deterministic ordering and regression coverage).
+- 2026-03-24: Completed SCL-034 (added opt-in route response budget checks middleware with latency header + warning logs and feature tests).
