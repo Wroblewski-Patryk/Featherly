@@ -63,25 +63,25 @@ parameters:
 		-
 			message: '#^Cannot access property \$footerOverride on class\-string\|object\.$#'
 			identifier: property.nonObject
-			count: 2
+			count: 1
 			path: app/Http/Controllers/PageController.php
 
 		-
 			message: '#^Cannot access property \$headerOverride on class\-string\|object\.$#'
 			identifier: property.nonObject
-			count: 2
+			count: 1
 			path: app/Http/Controllers/PageController.php
 
 		-
 			message: '#^Cannot access property \$sidebarOverride on class\-string\|object\.$#'
 			identifier: property.nonObject
-			count: 2
+			count: 1
 			path: app/Http/Controllers/PageController.php
 
 		-
 			message: '#^Cannot access property \$template on class\-string\|object\.$#'
 			identifier: property.nonObject
-			count: 2
+			count: 1
 			path: app/Http/Controllers/PageController.php
 
 		-

@@ -17,9 +17,6 @@ class PageController extends Controller
      */
     public function show(Request $request, $localeOrPath = null, $path = null)
     {
-        $blogId = \App\Models\Setting::where('key', 'blog_page_id')->value('value');
-        $projectsId = \App\Models\Setting::where('key', 'projects_page_id')->value('value');
-
         // Dynamiczna obsługa locale i ścieżki (ze względu na opcjonalny prefiks w web.php)
         if (in_array($localeOrPath, ['pl', 'en'])) {
             $locale = $localeOrPath;
@@ -39,6 +36,8 @@ class PageController extends Controller
         try {
             $settings = Setting::pluck('value', 'key')->toArray();
         } catch (\Exception $e) {}
+        $blogId = $settings['blog_page_id'] ?? null;
+        $projectsId = $settings['projects_page_id'] ?? null;
 
         $isAdmin = auth()->check();
         $comingSoonId = $settings['coming_soon_page_id'] ?? null;
@@ -197,11 +196,41 @@ class PageController extends Controller
      */
     private function resolveTemplates($entity = null)
     {
+        $types = ['header', 'footer', 'sidebar', 'page'];
+        $resolved = collect();
+
+        $overrides = [
+            'header' => ($entity && method_exists($entity, 'headerOverride')) ? $entity->headerOverride : null,
+            'footer' => ($entity && method_exists($entity, 'footerOverride')) ? $entity->footerOverride : null,
+            'sidebar' => ($entity && method_exists($entity, 'sidebarOverride')) ? $entity->sidebarOverride : null,
+            'page' => ($entity && method_exists($entity, 'template')) ? $entity->template : null,
+        ];
+
+        foreach ($overrides as $type => $override) {
+            if ($override) {
+                $resolved->put($type, $override);
+            }
+        }
+
+        $missingTypes = array_values(array_filter($types, fn ($type) => !$resolved->has($type)));
+        if (!empty($missingTypes)) {
+            $defaults = Template::query()
+                ->whereIn('type', $missingTypes)
+                ->where('is_active', true)
+                ->where('is_default', true)
+                ->get()
+                ->keyBy('type');
+
+            foreach ($missingTypes as $type) {
+                $resolved->put($type, $defaults->get($type));
+            }
+        }
+
         return [
-            'header' => ($entity && method_exists($entity, 'headerOverride') && $entity->headerOverride) ? $entity->headerOverride : Template::where('type', 'header')->where('is_active', true)->where('is_default', true)->first(),
-            'footer' => ($entity && method_exists($entity, 'footerOverride') && $entity->footerOverride) ? $entity->footerOverride : Template::where('type', 'footer')->where('is_active', true)->where('is_default', true)->first(),
-            'sidebar' => ($entity && method_exists($entity, 'sidebarOverride') && $entity->sidebarOverride) ? $entity->sidebarOverride : Template::where('type', 'sidebar')->where('is_active', true)->where('is_default', true)->first(),
-            'page' => ($entity && method_exists($entity, 'template') && $entity->template) ? $entity->template : Template::where('type', 'page')->where('is_active', true)->where('is_default', true)->first(),
+            'header' => $resolved->get('header'),
+            'footer' => $resolved->get('footer'),
+            'sidebar' => $resolved->get('sidebar'),
+            'page' => $resolved->get('page'),
         ];
     }
 
