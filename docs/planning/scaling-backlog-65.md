@@ -47,7 +47,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [ ] SCL-038 (P2, TODO) Add virtualized rendering for large admin lists/tables.
 
 ## Phase 3 - i18n and SEO Hardening
-- [ ] SCL-039 (P0, TODO) Remove locale hardcodes and use active language source everywhere.
+- [ ] SCL-039 (P0, IN_PROGRESS) Remove locale hardcodes and use active language source everywhere.
 - [ ] SCL-040 (P1, TODO) Standardize localized slug conflict policy.
 - [ ] SCL-041 (P1, TODO) Add slug normalization and reserved-path safeguards.
 - [ ] SCL-042 (P1, TODO) Improve canonical URL validation/normalization.
