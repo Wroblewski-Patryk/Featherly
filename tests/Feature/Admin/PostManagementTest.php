@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Post;
@@ -27,6 +28,27 @@ class PostManagementTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertInertia(fn($page) => $page->component('Admin/Posts/Index'));
+    }
+
+    public function test_admin_can_search_posts_by_localized_title(): void
+    {
+        Post::factory()->create([
+            'title' => ['en' => 'Alpha post', 'pl' => 'Alpha wpis'],
+            'slug' => ['en' => 'alpha-post', 'pl' => 'alpha-wpis'],
+        ]);
+        $target = Post::factory()->create([
+            'title' => ['en' => 'Needle post', 'pl' => 'Szukany wpis'],
+            'slug' => ['en' => 'needle-post', 'pl' => 'szukany-wpis'],
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('admin.posts.index', ['search' => 'Needle']));
+
+        $response->assertStatus(200);
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Posts/Index')
+            ->has('posts.data', 1)
+            ->where('posts.data.0.id', $target->id)
+        );
     }
 
     public function test_admin_can_store_post(): void
