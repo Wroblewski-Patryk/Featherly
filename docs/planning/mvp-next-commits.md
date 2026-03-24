@@ -3,7 +3,7 @@
 ## NOW (max 3)
 - [ ] SCL-027 Add query profiling and remove N+1 in public render paths
 - [ ] SCL-014 Standardize API response envelopes for admin endpoints
-- [ ] SCL-024 Add cache key versioning strategy for global datasets
+- [ ] SCL-030 Add search strategy for JSON-translated content
 
 ## NEXT
 - [ ] SCL-031 Add pagination strategy for very large media collections
@@ -13,7 +13,7 @@
 ## LATER
 - [ ] SCL-039 Remove locale hardcodes and use active language source everywhere
 - [ ] SCL-049 Add revision diff view (content comparison)
-- [ ] SCL-061 Add request correlation IDs in logs
+- [ ] SCL-062 Integrate backend+frontend error tracking platform
 
 ## Program Backlog
 - Full backlog source: `docs/planning/scaling-backlog-65.md`

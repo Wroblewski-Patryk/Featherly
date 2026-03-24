@@ -28,6 +28,7 @@
 - [x] SCL-019 Enforce single default language invariant in DB
 - [x] SCL-017 Remove legacy dual-source role ambiguity (`users.role` vs Spatie)
 - [x] SCL-021 Harden media upload validation (MIME sniff + file checks)
+- [x] SCL-024 Add cache key versioning strategy for global datasets
 - [x] SCL-061 Add request correlation IDs in logs
 - [x] SCL-028 Index taxonomy-heavy paths (`module`, `type`, `order`)
 - [x] SCL-029 Index revisions by morph columns and timestamp
@@ -69,6 +70,7 @@
 - 2026-03-24: Completed SCL-019 (added DB-level single-default-language enforcement triggers/functions across sqlite/mysql/pgsql).
 - 2026-03-24: Completed SCL-017 (runtime role source now Spatie-only; removed legacy `users.role` sync usage from app flow).
 - 2026-03-24: Completed SCL-021 (hardened media upload validation with server-side MIME sniffing and invalid/empty file guards).
+- 2026-03-24: Completed SCL-024 (introduced versioned cache key namespace for shared Inertia datasets and translation cache keys).
 - 2026-03-24: Completed SCL-061 (added global request correlation ID middleware with log context + `X-Request-Id` response header).
 - 2026-03-24: Completed SCL-028 (added composite taxonomy index for module/type/order/id listing paths).
 - 2026-03-24: Completed SCL-029 (added composite revisions index for revisionable lookup + chronological access).
