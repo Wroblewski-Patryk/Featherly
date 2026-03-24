@@ -171,13 +171,34 @@ const settingsMap = {
     custom_code: 'CustomCodeSettings'
 };
 
+const settingsLoaders = {
+    HeadingSettings: () => import('./Settings/HeadingSettings.vue'),
+    ParagraphSettings: () => import('./Settings/ParagraphSettings.vue'),
+    ListSettings: () => import('./Settings/ListSettings.vue'),
+    QuoteSettings: () => import('./Settings/QuoteSettings.vue'),
+    ImageSettings: () => import('./Settings/ImageSettings.vue'),
+    VideoSettings: () => import('./Settings/VideoSettings.vue'),
+    GallerySettings: () => import('./Settings/GallerySettings.vue'),
+    CarouselSettings: () => import('./Settings/CarouselSettings.vue'),
+    TemplateRefSettings: () => import('./Settings/TemplateRefSettings.vue'),
+    ContentSlotSettings: () => import('./Settings/ContentSlotSettings.vue'),
+    ContainerSettings: () => import('./Settings/ContainerSettings.vue'),
+    SpacerDividerSettings: () => import('./Settings/SpacerDividerSettings.vue'),
+    TableSettings: () => import('./Settings/TableSettings.vue'),
+    MockupSettings: () => import('./Settings/MockupSettings.vue'),
+    FormInputSettings: () => import('./Settings/FormInputSettings.vue'),
+    DisplaySettings: () => import('./Settings/DisplaySettings.vue'),
+    NavigationSettings: () => import('./Settings/NavigationSettings.vue'),
+    AppSpecificSettings: () => import('./Settings/AppSpecificSettings.vue'),
+    CustomCodeSettings: () => import('./Settings/CustomCodeSettings.vue'),
+};
+
 const settingsComponent = computed(() => {
     if (!props.activeBlock) return null;
     const componentName = settingsMap[props.activeBlock.type];
     if (!componentName) return null;
-    
-    return defineAsyncComponent(() => 
-        import(`./Settings/${componentName}.vue`)
-    );
+
+    const load = settingsLoaders[componentName];
+    return load ? defineAsyncComponent(load) : null;
 });
 </script>
