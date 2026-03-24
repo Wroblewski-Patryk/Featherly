@@ -36,6 +36,7 @@
 ## Workstream: Phase 2 - Performance and Throughput
 - [x] SCL-026 Reduce heavy global Inertia shared payloads
 - [ ] SCL-027 Add query profiling and remove N+1 in public render paths
+- [x] SCL-033 Define cache TTL matrix (what is forever vs expiring)
 - [x] SCL-036 Refine Vite chunk strategy to reduce oversized bundles
 
 ## Workstream: Phase 3 - i18n and SEO Hardening
@@ -74,3 +75,4 @@
 - 2026-03-24: Completed SCL-061 (added global request correlation ID middleware with log context + `X-Request-Id` response header).
 - 2026-03-24: Completed SCL-028 (added composite taxonomy index for module/type/order/id listing paths).
 - 2026-03-24: Completed SCL-029 (added composite revisions index for revisionable lookup + chronological access).
+- 2026-03-24: Completed SCL-033 (documented shared cache TTL policy matrix and invalidation ownership in planning docs).
