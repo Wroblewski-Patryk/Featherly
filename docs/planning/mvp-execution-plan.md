@@ -23,6 +23,7 @@
 - [x] SCL-012 Add DB transactions for multi-step content writes
 - [x] SCL-013 Add optimistic locking strategy for concurrent edits
 - [x] SCL-015 Add policy-based authorization for core content models
+- [x] SCL-016 Add audit logging for RBAC and settings changes
 
 ## Workstream: Phase 2 - Performance and Throughput
 - [x] SCL-026 Reduce heavy global Inertia shared payloads
@@ -56,3 +57,4 @@
 - 2026-03-24: SCL-027 in progress (removed template-reference N+1 in `BlockContentService` via batched template preload; query profiling pass remains).
 - 2026-03-24: SCL-014 in progress (introduced shared JSON success/error envelope and applied it to admin media JSON response with flat-key backward compatibility).
 - 2026-03-24: Completed SCL-015 (registered content policies for Page/Post/Project and enforced Gate checks in core admin content controllers).
+- 2026-03-24: Completed SCL-016 (added persistent audit logs for RBAC role mutations and settings updates, with best-effort logger fallback).
