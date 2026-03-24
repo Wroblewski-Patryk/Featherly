@@ -3,11 +3,11 @@
 Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 
 ## Phase 0 - Guardrails and Delivery Safety
-- [ ] SCL-001 (P0, TODO) Add PHP static analysis baseline (PHPStan/Psalm) and CI gate.
-- [ ] SCL-002 (P0, TODO) Add frontend lint/format validation in CI.
-- [ ] SCL-003 (P0, TODO) Split CI into isolated jobs (tests/build/lint/audit/migrations).
-- [ ] SCL-004 (P0, TODO) Add `composer audit` CI gate.
-- [ ] SCL-005 (P1, TODO) Add migration smoke workflow (`migrate:fresh --seed`).
+- [x] SCL-001 (P0, DONE) Add PHP static analysis baseline (PHPStan/Psalm) and CI gate.
+- [x] SCL-002 (P0, DONE) Add frontend lint/format validation in CI.
+- [x] SCL-003 (P0, DONE) Split CI into isolated jobs (tests/build/lint/audit/migrations).
+- [x] SCL-004 (P0, DONE) Add `composer audit` CI gate.
+- [x] SCL-005 (P1, DONE) Add migration smoke workflow (`migrate:fresh --seed`).
 - [ ] SCL-006 (P1, TODO) Add bundle-size report artifact in CI.
 - [ ] SCL-007 (P1, TODO) Introduce PR checklist for regression-safe delivery.
 - [ ] SCL-008 (P1, TODO) Introduce release checklist with rollback section.

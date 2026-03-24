@@ -1,14 +1,14 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-001 Add PHP static analysis baseline (PHPStan/Psalm) and CI gate
-- [ ] SCL-003 Split CI into isolated jobs (tests/build/lint/audit/migrations)
-- [ ] SCL-004 Add `composer audit` CI gate
-
-## NEXT
 - [ ] SCL-011 Migrate CRUD validation to dedicated FormRequest classes
 - [ ] SCL-012 Add DB transactions for multi-step content writes
 - [ ] SCL-026 Reduce heavy global Inertia shared payloads
+
+## NEXT
+- [ ] SCL-006 Add bundle-size report artifact in CI
+- [ ] SCL-007 Introduce PR checklist for regression-safe delivery
+- [ ] SCL-008 Introduce release checklist with rollback section
 
 ## LATER
 - [ ] SCL-039 Remove locale hardcodes and use active language source everywhere

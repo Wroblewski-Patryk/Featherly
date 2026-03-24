@@ -12,11 +12,11 @@
 - Active short queue: `docs/planning/mvp-next-commits.md`
 
 ## Workstream: Phase 0 - Guardrails and Delivery Safety
-- [ ] SCL-001 Add PHP static analysis baseline (PHPStan/Psalm) and CI gate
-- [ ] SCL-002 Add frontend lint/format validation in CI
-- [ ] SCL-003 Split CI into isolated jobs (tests/build/lint/audit/migrations)
-- [ ] SCL-004 Add `composer audit` CI gate
-- [ ] SCL-005 Add migration smoke workflow (`migrate:fresh --seed`)
+- [x] SCL-001 Add PHP static analysis baseline (PHPStan/Psalm) and CI gate
+- [x] SCL-002 Add frontend lint/format validation in CI
+- [x] SCL-003 Split CI into isolated jobs (tests/build/lint/audit/migrations)
+- [x] SCL-004 Add `composer audit` CI gate
+- [x] SCL-005 Add migration smoke workflow (`migrate:fresh --seed`)
 
 ## Workstream: Phase 1 - Core Stability
 - [ ] SCL-011 Migrate CRUD validation to dedicated FormRequest classes
@@ -41,3 +41,5 @@
 
 ## Progress Log
 - 2026-03-24: Introduced scaling execution documentation and 65-item backlog.
+- 2026-03-24: Completed SCL-001/SCL-003/SCL-004 (PHPStan baseline, split CI jobs, security audit gates).
+- 2026-03-24: Completed SCL-002/SCL-005 (frontend lint+format CI gate, migration smoke job with sqlite seeding).
