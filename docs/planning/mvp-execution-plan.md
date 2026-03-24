@@ -36,7 +36,7 @@
 
 ## Workstream: Phase 2 - Performance and Throughput
 - [x] SCL-026 Reduce heavy global Inertia shared payloads
-- [ ] SCL-027 Add query profiling and remove N+1 in public render paths
+- [x] SCL-027 Add query profiling and remove N+1 in public render paths
 - [x] SCL-030 Add search strategy for JSON-translated content
 - [x] SCL-031 Add pagination strategy for very large media collections
 - [x] SCL-032 Introduce cursor pagination where offset scaling hurts
@@ -69,7 +69,7 @@
 - 2026-03-24: Completed SCL-036 (refined Vite vendor chunking; reduced largest non-icon vendor chunk footprint).
 - 2026-03-24: Completed SCL-023 (centralized cache invalidation helper for shared Inertia datasets).
 - 2026-03-24: Completed SCL-013 (optimistic lock field + stale-write guard for admin page/post/project edits).
-- 2026-03-24: SCL-027 in progress (removed template-reference N+1 in `BlockContentService` via batched template preload; added opt-in slow-query profiling instrumentation and runbook for targeted query profiling pass; reduced shared Inertia archive slug lookup queries via batched page preload + null-safe fallback; optimized public `PageController` template resolution and removed duplicate settings lookups in page route flow).
+- 2026-03-24: Completed SCL-027 (removed public render-path query hotspots via batched template/reference lookups, added opt-in slow-query profiling instrumentation, and reduced shared/archive slug query overhead in Inertia + public page flows).
 - 2026-03-24: Completed SCL-014 (standardized shared JSON envelope for explicit app JSON responses, including admin media and permission middleware forbidden response path with compatibility-preserving message field).
 - 2026-03-24: Completed SCL-015 (registered content policies for Page/Post/Project and enforced Gate checks in core admin content controllers).
 - 2026-03-24: Completed SCL-016 (added persistent audit logs for RBAC role mutations and settings updates, with best-effort logger fallback).
