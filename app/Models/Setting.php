@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\SharedInertiaCache;
 use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
@@ -15,10 +16,10 @@ class Setting extends Model
     protected static function booted()
     {
         static::saved(function () {
-            \Illuminate\Support\Facades\Cache::forget('global_settings');
+            SharedInertiaCache::forgetSettingsAndTemplateDrivenSharedData();
         });
         static::deleted(function () {
-            \Illuminate\Support\Facades\Cache::forget('global_settings');
+            SharedInertiaCache::forgetSettingsAndTemplateDrivenSharedData();
         });
     }
 }
