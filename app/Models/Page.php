@@ -11,7 +11,7 @@ class Page extends Model
 {
     use HasFactory, HasTranslations, \App\Traits\HasContentFeatures;
 
-    public $translatable = ['title', 'slug', 'meta_title', 'meta_description', 'og_image'];
+    public $translatable = ['title', 'slug', 'content', 'settings', 'meta_title', 'meta_description', 'og_image'];
 
     protected $guarded = [];
 

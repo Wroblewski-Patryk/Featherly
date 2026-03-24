@@ -109,6 +109,7 @@ class DatabaseSeeder extends Seeder
              PostSeeder::class,
              ProjectSeeder::class,
              TemplateSeeder::class,
+             AlpineFuturaSeeder::class,
          ]);
     }
 }
