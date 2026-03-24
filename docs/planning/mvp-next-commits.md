@@ -3,12 +3,12 @@
 ## NOW (max 3)
 - [ ] SCL-027 Add query profiling and remove N+1 in public render paths
 - [ ] SCL-014 Standardize API response envelopes for admin endpoints
-- [ ] SCL-015 Add policy-based authorization for core content models
+- [ ] SCL-016 Add audit logging for RBAC and settings changes
 
 ## NEXT
-- [ ] SCL-016 Add audit logging for RBAC and settings changes
 - [ ] SCL-018 Add status value constraints at DB level
 - [ ] SCL-019 Enforce single default language invariant in DB
+- [ ] SCL-017 Remove legacy dual-source role ambiguity (`users.role` vs Spatie)
 
 ## LATER
 - [ ] SCL-039 Remove locale hardcodes and use active language source everywhere
