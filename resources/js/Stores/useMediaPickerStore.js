@@ -10,6 +10,12 @@ export const useMediaPickerStore = defineStore('mediaPicker', () => {
     });
 
     const open = (opts = {}) => {
+        if (rejectCallback.value) {
+            rejectCallback.value('replaced');
+            rejectCallback.value = null;
+            resolveCallback.value = null;
+        }
+
         options.value = { ...options.value, ...opts };
         isOpen.value = true;
 

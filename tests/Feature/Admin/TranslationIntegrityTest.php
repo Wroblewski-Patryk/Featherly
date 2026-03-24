@@ -36,22 +36,20 @@ class TranslationIntegrityTest extends TestCase
 
         $output = Artisan::output();
         
-        // If it failed or created something, let's look closer
+        $newKeysMessage = '';
         if (!str_contains($output, 'Created: 0')) {
-             $allAdminKeysAfter = \App\Models\Translation::where('group', 'admin')->pluck('key')->toArray();
-             sort($allAdminKeysAfter);
-             
-             $newKeys = array_diff($allAdminKeysAfter, $dbKeys);
-             
-             dump("DB KEYS BEFORE SCAN (Sample 5):", array_slice($dbKeys, 0, 5));
-             dump("NEW KEYS CREATED BY SCANNER (Total " . count($newKeys) . "):", array_values($newKeys));
+            $allAdminKeysAfter = \App\Models\Translation::where('group', 'admin')->pluck('key')->toArray();
+            sort($allAdminKeysAfter);
+
+            $newKeys = array_values(array_diff($allAdminKeysAfter, $dbKeys));
+            $newKeysMessage = ' Missing in seeder: ' . implode(', ', $newKeys);
         }
 
         $this->assertEquals(0, $exitCode, "i18n:scan command failed.");
         $this->assertStringContainsString(
             'Created: 0', 
             $output, 
-            "Detected new translation keys in code that were NOT in the database. Please update your seeder! Check dump for details."
+            "Detected new translation keys in code that were NOT in the database. Please update your seeder!{$newKeysMessage}"
         );
     }
 }
