@@ -61,18 +61,6 @@ parameters:
 			path: app/Http/Controllers/Admin/SettingController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Admin/UserController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 2
-			path: app/Http/Controllers/Admin/UserController.php
-
-		-
 			message: '#^Cannot access property \$footerOverride on class\-string\|object\.$#'
 			identifier: property.nonObject
 			count: 2
