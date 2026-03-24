@@ -113,7 +113,7 @@ class HandleInertiaRequests extends Middleware
                     'id' => $request->user()->id,
                     'name' => $request->user()->name,
                     'email' => $request->user()->email,
-                    'role' => $request->user()->role,
+                    'role' => $request->user()->getRoleNames()->first(),
                     'permissions' => $request->user()->getAllPermissions()->pluck('name')->mapWithKeys(function ($permission) {
                         return ['can_' . str_replace('-', '_', $permission) => true];
                     })->toArray(),

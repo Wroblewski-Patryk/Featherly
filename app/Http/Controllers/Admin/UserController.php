@@ -52,10 +52,6 @@ class UserController extends Controller
 
         if ($request->has('roles')) {
             $user->syncRoles($request->roles);
-            
-            // Sync legacy role column for compatibility
-            $user->role = $user->roles->first()?->name ?? 'editor';
-            $user->save();
         }
 
         return redirect()->route('admin.users.index')->with('success', 'users.create_success');
@@ -94,10 +90,6 @@ class UserController extends Controller
 
         if ($request->has('roles')) {
             $user->syncRoles($request->roles);
-            
-            // Sync legacy role column for compatibility
-            $user->role = $user->roles->first()?->name ?? 'editor';
-            $user->save();
         }
 
         return redirect()->route('admin.users.index')->with('success', 'users.update_success');

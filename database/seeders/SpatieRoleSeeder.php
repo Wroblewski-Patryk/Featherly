@@ -33,8 +33,12 @@ class SpatieRoleSeeder extends Seeder
         $editorRole = Role::firstOrCreate(['name' => 'editor']);
         $editorRole->syncPermissions(['view-admin', 'manage-content']);
 
-        // Migrate existing users
+        // One-way legacy migration: bootstrap Spatie roles from users.role only when needed.
         User::all()->each(function ($user) {
+            if ($user->roles()->exists()) {
+                return;
+            }
+
             if ($user->role === 'admin') {
                 $user->assignRole('admin');
             } elseif ($user->role === 'editor') {

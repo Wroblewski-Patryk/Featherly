@@ -14,10 +14,6 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
     
-    public const ROLE_ADMIN = 'admin';
-    public const ROLE_EDITOR = 'editor';
-    public const ROLE_USER = 'user';
-
     /**
      * The attributes that are mass assignable.
      *
@@ -55,11 +51,11 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === self::ROLE_ADMIN;
+        return $this->hasRole('admin');
     }
 
     public function isEditor(): bool
     {
-        return $this->role === self::ROLE_EDITOR || $this->isAdmin();
+        return $this->hasRole('editor') || $this->isAdmin();
     }
 }
