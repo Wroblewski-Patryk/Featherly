@@ -3,12 +3,12 @@
 ## NOW (max 3)
 - [ ] SCL-027 Add query profiling and remove N+1 in public render paths
 - [ ] SCL-014 Standardize API response envelopes for admin endpoints
-- [ ] SCL-029 Index revisions by morph columns and timestamp
+- [ ] SCL-024 Add cache key versioning strategy for global datasets
 
 ## NEXT
-- [ ] SCL-024 Add cache key versioning strategy for global datasets
 - [ ] SCL-031 Add pagination strategy for very large media collections
 - [ ] SCL-032 Introduce cursor pagination where offset scaling hurts
+- [ ] SCL-033 Define cache TTL matrix (what is forever vs expiring)
 
 ## LATER
 - [ ] SCL-039 Remove locale hardcodes and use active language source everywhere
