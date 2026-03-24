@@ -19,7 +19,11 @@ class PermissionMiddleware
     {
         if (!Gate::allows($permission)) {
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'Unauthorized.'], 403);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized.',
+                    'errors' => [],
+                ], 403);
             }
             
             abort(403, 'Nie masz uprawnień do wykonania tej akcji.');
