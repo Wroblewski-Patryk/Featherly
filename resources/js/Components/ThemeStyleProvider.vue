@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, watch } from 'vue';
+import { onMounted, onUnmounted, watch } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 
 // Rough conversion from HEX to HSL space for DaisyUI
@@ -133,14 +133,18 @@ const updateStyles = (config) => {
     loadGoogleFonts(config);
 };
 
+const handleThemeConfigUpdated = (e) => {
+    const liveConfig = { globals: e.detail };
+    updateStyles(liveConfig);
+};
+
 onMounted(() => {
     updateStyles(page.props.theme_config);
-    
-    // Listen to live updates from the configurator UI
-    window.addEventListener('theme-config-updated', (e) => {
-        const liveConfig = { globals: e.detail };
-        updateStyles(liveConfig);
-    });
+    window.addEventListener('theme-config-updated', handleThemeConfigUpdated);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('theme-config-updated', handleThemeConfigUpdated);
 });
 
 watch(() => page.props.theme_config, (newConfig) => {

@@ -26,11 +26,6 @@ const page = usePage();
 const activeLocale = computed(() => page.props.locale || 'pl');
 
 const switchLocale = (lang) => {
-    router.get(route('locale.switch', lang), {}, {
-        preserveScroll: true,
-        onSuccess: () => {
-            window.location.reload();
-        }
-    });
+    router.get(route('locale.switch', lang), {}, { preserveScroll: true });
 };
 </script>

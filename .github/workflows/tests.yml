@@ -1,6 +1,11 @@
 name: Tests
 
 on:
+  push:
+    branches:
+      - main
+      - 'codex/**'
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -46,7 +51,7 @@ jobs:
           node-version: '20'
 
       - name: Install NPM dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build frontend assets
         run: npm run build
