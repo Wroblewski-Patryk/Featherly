@@ -8,7 +8,7 @@
 ## NEXT
 - [ ] SCL-031 Add pagination strategy for very large media collections
 - [ ] SCL-032 Introduce cursor pagination where offset scaling hurts
-- [ ] SCL-033 Define cache TTL matrix (what is forever vs expiring)
+- [ ] SCL-034 Add route-level response time budget checks
 
 ## LATER
 - [ ] SCL-039 Remove locale hardcodes and use active language source everywhere

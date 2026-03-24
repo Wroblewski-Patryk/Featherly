@@ -39,7 +39,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [ ] SCL-030 (P1, TODO) Add search strategy for JSON-translated content.
 - [ ] SCL-031 (P1, TODO) Add pagination strategy for very large media collections.
 - [ ] SCL-032 (P1, TODO) Introduce cursor pagination where offset scaling hurts.
-- [ ] SCL-033 (P2, TODO) Define cache TTL matrix (what is forever vs expiring).
+- [x] SCL-033 (P2, DONE) Define cache TTL matrix (what is forever vs expiring).
 - [ ] SCL-034 (P2, TODO) Add route-level response time budget checks.
 - [ ] SCL-035 (P2, TODO) Build per-module performance smoke script.
 - [x] SCL-036 (P1, DONE) Refine Vite chunk strategy to reduce oversized bundles.
