@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\SharedInertiaCache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,14 +25,16 @@ class Language extends Model
                 static::where('id', '!=', $language->id)->update(['is_default' => false]);
                 $language->is_active = true; // Default language must be active
             }
-            \Illuminate\Support\Facades\Cache::forget('active_languages');
+            SharedInertiaCache::forgetLanguages();
+            SharedInertiaCache::forgetTranslationsForActiveLocales();
         });
 
         static::deleting(function ($language) {
             if ($language->is_default) {
                 throw new \Exception("Cannot delete the default language.");
             }
-            \Illuminate\Support\Facades\Cache::forget('active_languages');
+            SharedInertiaCache::forgetLanguages();
+            SharedInertiaCache::forgetTranslationsForActiveLocales();
         });
     }
 }

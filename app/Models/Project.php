@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\SharedInertiaCache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
@@ -25,10 +26,10 @@ class Project extends Model
     protected static function booted()
     {
         static::saved(function () {
-            \Illuminate\Support\Facades\Cache::forget('all_projects');
+            SharedInertiaCache::forgetProjects();
         });
         static::deleted(function () {
-            \Illuminate\Support\Facades\Cache::forget('all_projects');
+            SharedInertiaCache::forgetProjects();
         });
     }
 
