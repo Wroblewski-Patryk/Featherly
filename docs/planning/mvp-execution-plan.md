@@ -25,6 +25,7 @@
 - [x] SCL-015 Add policy-based authorization for core content models
 - [x] SCL-016 Add audit logging for RBAC and settings changes
 - [x] SCL-018 Add status value constraints at DB level
+- [x] SCL-019 Enforce single default language invariant in DB
 
 ## Workstream: Phase 2 - Performance and Throughput
 - [x] SCL-026 Reduce heavy global Inertia shared payloads
@@ -60,3 +61,4 @@
 - 2026-03-24: Completed SCL-015 (registered content policies for Page/Post/Project and enforced Gate checks in core admin content controllers).
 - 2026-03-24: Completed SCL-016 (added persistent audit logs for RBAC role mutations and settings updates, with best-effort logger fallback).
 - 2026-03-24: Completed SCL-018 (added DB-level status constraints for publishable tables; checks/triggers cover sqlite and check constraints for other engines).
+- 2026-03-24: Completed SCL-019 (added DB-level single-default-language enforcement triggers/functions across sqlite/mysql/pgsql).
