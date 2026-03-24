@@ -14,15 +14,22 @@ export default defineConfig({
         tailwindcss(),
     ],
     build: {
+        chunkSizeWarningLimit: 500,
         rollupOptions: {
             output: {
                 manualChunks(id) {
                     if (id.includes('node_modules')) {
-                        if (id.includes('vue') || id.includes('pinia')) {
-                            return 'vendor-framework';
-                        }
                         if (id.includes('@inertiajs')) {
                             return 'vendor-inertia';
+                        }
+                        if (id.includes('/node_modules/axios/')) {
+                            return 'vendor-axios';
+                        }
+                        if (id.includes('/node_modules/moment/')) {
+                            return 'vendor-moment';
+                        }
+                        if (id.includes('/node_modules/ziggy-js/')) {
+                            return 'vendor-ziggy';
                         }
                         if (id.includes('@phosphor-icons')) {
                             return 'vendor-icons';
