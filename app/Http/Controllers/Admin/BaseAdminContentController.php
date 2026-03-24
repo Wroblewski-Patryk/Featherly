@@ -59,7 +59,7 @@ abstract class BaseAdminContentController extends Controller
             if (in_array($sort, ['title', 'slug'])) {
                 if ($sort === 'slug' && !$this->useSlug) {
                     $query->latest();
-                    return;
+                    return $query;
                 }
                 $sort .= '->' . $locale;
             }

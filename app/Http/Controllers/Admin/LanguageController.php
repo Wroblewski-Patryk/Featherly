@@ -54,7 +54,7 @@ class LanguageController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        if ($validated['is_default']) {
+        if (($validated['is_default'] ?? false)) {
             Language::where('is_default', true)->update(['is_default' => false]);
         }
 
@@ -70,7 +70,7 @@ class LanguageController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        if ($validated['is_default']) {
+        if (($validated['is_default'] ?? false)) {
             Language::where('is_default', true)->update(['is_default' => false]);
         }
 

@@ -57,9 +57,11 @@ class ClientController extends BaseAdminContentController
 
     public function edit(Client $client)
     {
-        return Inertia::render("{$this->viewPath}/Edit", $this->getEditProps($client, [
-            'title', 'slug', 'description'
-        ]));
+        $props = $this->getEditProps($client, ['title', 'slug', 'description']);
+        $props['client'] = $props['item'] ?? null;
+        unset($props['item']);
+
+        return Inertia::render("{$this->viewPath}/Edit", $props);
     }
 
     public function update(Request $request, Client $client)
