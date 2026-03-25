@@ -26,7 +26,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-019 (P1, DONE) Enforce single default language invariant in DB.
 - [x] SCL-020 (P2, DONE) Add idempotency handling for duplicate-prone submissions.
 - [x] SCL-021 (P1, DONE) Harden media upload validation (MIME sniff + file checks).
-- [ ] SCL-022 (P2, TODO) Evaluate private media storage with signed access paths.
+- [x] SCL-022 (P2, DONE) Evaluate private media storage with signed access paths.
 - [x] SCL-023 (P1, DONE) Normalize cache invalidation for shared Inertia data.
 - [x] SCL-024 (P2, DONE) Add cache key versioning strategy for global datasets.
 - [ ] SCL-025 (P2, TODO) Introduce domain services for repetitive controller workflows.
