@@ -49,7 +49,7 @@
 
 ## Workstream: Phase 3 - i18n and SEO Hardening
 - [ ] SCL-039 Remove locale hardcodes and use active language source everywhere
-- [ ] SCL-042 Improve canonical URL validation/normalization
+- [x] SCL-042 Improve canonical URL validation/normalization
 - [ ] SCL-046 Add route-level locale edge-case tests
 
 ## Workstream: Phase 4 - Product Scalability Features
@@ -94,3 +94,4 @@
 - 2026-03-24: SCL-039 in progress (continued locale hardcode cleanup across admin clients/forms/templates and template reference settings using dynamic default/active locale resolution).
 - 2026-03-24: Completed SCL-037 (added opt-in Block Builder runtime perf watcher for slow frames, long tasks, and high heap usage diagnostics).
 - 2026-03-25: Completed SCL-038 (added threshold-based virtualized table windowing in shared admin `ResourceTable` with overscan/spacer strategy for large lists).
+- 2026-03-25: Completed SCL-042 (added shared canonical URL normalizer, strict `http/https` validation, and request-level canonical payload normalization across admin content forms).

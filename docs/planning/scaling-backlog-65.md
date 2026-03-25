@@ -50,7 +50,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [ ] SCL-039 (P0, IN_PROGRESS) Remove locale hardcodes and use active language source everywhere.
 - [ ] SCL-040 (P1, TODO) Standardize localized slug conflict policy.
 - [ ] SCL-041 (P1, TODO) Add slug normalization and reserved-path safeguards.
-- [ ] SCL-042 (P1, TODO) Improve canonical URL validation/normalization.
+- [x] SCL-042 (P1, DONE) Improve canonical URL validation/normalization.
 - [ ] SCL-043 (P1, TODO) Improve hreflang generation for nested and archive routes.
 - [ ] SCL-044 (P1, TODO) Add i18n coverage dashboard from translation scan output.
 - [ ] SCL-045 (P2, TODO) Add fallback-locale behavior test matrix.
