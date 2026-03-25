@@ -40,6 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'locale' => \App\Http\Middleware\LocaleMiddleware::class,
             'permission' => \App\Http\Middleware\PermissionMiddleware::class,
+            'api_token_scope' => \App\Http\Middleware\EnsureScopedApiToken::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
