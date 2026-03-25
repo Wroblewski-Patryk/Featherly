@@ -45,6 +45,7 @@
 - [x] SCL-035 Build per-module performance smoke script
 - [x] SCL-036 Refine Vite chunk strategy to reduce oversized bundles
 - [x] SCL-037 Add frontend runtime memory/perf watch for block builder
+- [x] SCL-038 Add virtualized rendering for large admin lists/tables
 
 ## Workstream: Phase 3 - i18n and SEO Hardening
 - [ ] SCL-039 Remove locale hardcodes and use active language source everywhere
@@ -92,3 +93,4 @@
 - 2026-03-24: SCL-039 in progress (replaced frontend locale hardcodes in shared layout/composables/public page + block builder and added shared `default_locale` Inertia prop).
 - 2026-03-24: SCL-039 in progress (continued locale hardcode cleanup across admin clients/forms/templates and template reference settings using dynamic default/active locale resolution).
 - 2026-03-24: Completed SCL-037 (added opt-in Block Builder runtime perf watcher for slow frames, long tasks, and high heap usage diagnostics).
+- 2026-03-25: Completed SCL-038 (added threshold-based virtualized table windowing in shared admin `ResourceTable` with overscan/spacer strategy for large lists).
