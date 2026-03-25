@@ -52,7 +52,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-041 (P1, DONE) Add slug normalization and reserved-path safeguards.
 - [x] SCL-042 (P1, DONE) Improve canonical URL validation/normalization.
 - [x] SCL-043 (P1, DONE) Improve hreflang generation for nested and archive routes.
-- [ ] SCL-044 (P1, TODO) Add i18n coverage dashboard from translation scan output.
+- [x] SCL-044 (P1, DONE) Add i18n coverage dashboard from translation scan output.
 - [ ] SCL-045 (P2, TODO) Add fallback-locale behavior test matrix.
 - [x] SCL-046 (P1, DONE) Add route-level locale edge-case tests.
 - [ ] SCL-047 (P2, TODO) Document SEO route contracts and locale behavior.
