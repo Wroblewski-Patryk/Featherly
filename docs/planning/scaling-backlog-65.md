@@ -77,7 +77,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-062 (P1, DONE) Integrate backend+frontend error tracking platform.
 - [x] SCL-063 (P1, DONE) Add core operational metrics (queue lag, slow queries, cache hit).
 - [x] SCL-064 (P1, DONE) Expand health checks for DB/cache/queue readiness.
-- [ ] SCL-065 (P1, TODO) Define production alerting thresholds and ownership map.
+- [x] SCL-065 (P1, DONE) Define production alerting thresholds and ownership map.
 
 ## Implementation Rules
 - Keep each task batch to <=10 files.

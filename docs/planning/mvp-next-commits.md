@@ -1,10 +1,10 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-065 Define production alerting thresholds and ownership map
+- [ ] Refill from backlog after NOW completion
 
 ## NEXT
-- [ ] Refill from backlog after NOW completion
+- [ ] Prioritize next P1/P2 items from backlog
 
 ## LATER
 - [ ] Refill from backlog after NOW/NEXT completion
