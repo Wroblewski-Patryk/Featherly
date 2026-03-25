@@ -52,6 +52,7 @@
 - [x] SCL-041 Add slug normalization and reserved-path safeguards
 - [x] SCL-043 Improve hreflang generation for nested and archive routes
 - [x] SCL-044 Add i18n coverage dashboard from translation scan output
+- [x] SCL-045 Add fallback-locale behavior test matrix
 - [x] SCL-042 Improve canonical URL validation/normalization
 - [x] SCL-046 Add route-level locale edge-case tests
 - [x] SCL-040 Standardize localized slug conflict policy
@@ -106,3 +107,4 @@
 - 2026-03-25: Completed SCL-041 (added shared localized slug normalization and reserved-route slug protection across page/post/project create+update validation flows, with unit coverage).
 - 2026-03-25: Completed SCL-043 (improved hreflang generation for nested and archive-prefixed routes, added `x-default`, and rendered alternate locale tags in shared SEO head component).
 - 2026-03-25: Completed SCL-044 (added admin translations coverage dashboard payload and UI cards based on scan-backed translation records, with feature test coverage for Inertia summary contract).
+- 2026-03-25: Completed SCL-045 (added fallback-locale routing behavior matrix tests for page, post-archive, and project-archive public routes with sqlite test compatibility shim).

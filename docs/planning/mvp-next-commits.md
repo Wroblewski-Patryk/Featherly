@@ -1,9 +1,9 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-045 Add fallback-locale behavior test matrix
 - [ ] SCL-047 Document SEO route contracts and locale behavior
 - [ ] SCL-048 Add validation for translation key consistency and namespaces
+- [ ] SCL-050 Add revision restore workflow with safeguards
 
 ## NEXT
 - [ ] SCL-047 Document SEO route contracts and locale behavior
