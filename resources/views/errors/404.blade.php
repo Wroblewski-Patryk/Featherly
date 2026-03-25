@@ -1,9 +1,24 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>404 - {{ app()->getLocale() === 'pl' ? 'Strona nie znaleziona' : 'Page Not Found' }}</title>
+    @php
+        $currentLocale = app()->getLocale();
+        $isEnglish = str_starts_with($currentLocale, 'en');
+        $copy = $isEnglish
+            ? [
+                'title' => 'Page Not Found',
+                'description' => 'The page you are looking for does not exist or has been moved.',
+                'back' => 'Back to Home',
+            ]
+            : [
+                'title' => 'Strona nie znaleziona',
+                'description' => 'Strona, ktorej szukasz, nie istnieje lub zostala przeniesiona.',
+                'back' => 'Wroc na strone glowna',
+            ];
+    @endphp
+    <title>404 - {{ $copy['title'] }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -102,17 +117,9 @@
 
     <div class="container">
         <div class="error-code">404</div>
-        <p class="message">
-            {{ app()->getLocale() === 'pl' ? 'Strona nie znaleziona' : 'Page Not Found' }}
-        </p>
-        <p class="description">
-            {{ app()->getLocale() === 'pl'
-                ? 'Strona, której szukasz, nie istnieje lub została przeniesiona.'
-                : 'The page you are looking for does not exist or has been moved.' }}
-        </p>
-        <a href="/" class="btn">
-            ← {{ app()->getLocale() === 'pl' ? 'Wróć na stronę główną' : 'Back to Home' }}
-        </a>
+        <p class="message">{{ $copy['title'] }}</p>
+        <p class="description">{{ $copy['description'] }}</p>
+        <a href="/" class="btn">&larr; {{ $copy['back'] }}</a>
     </div>
 </body>
 </html>
