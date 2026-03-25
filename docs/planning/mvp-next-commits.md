@@ -1,7 +1,6 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-020 Add idempotency handling for duplicate-prone submissions
 - [ ] SCL-022 Evaluate private media storage with signed access paths
 - [ ] SCL-025 Introduce domain services for repetitive controller workflows
 
