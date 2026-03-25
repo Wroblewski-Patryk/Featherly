@@ -56,7 +56,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-045 (P2, DONE) Add fallback-locale behavior test matrix.
 - [x] SCL-046 (P1, DONE) Add route-level locale edge-case tests.
 - [ ] SCL-047 (P2, TODO) Document SEO route contracts and locale behavior.
-- [ ] SCL-048 (P2, TODO) Add validation for translation key consistency and namespaces.
+- [x] SCL-048 (P2, DONE) Add validation for translation key consistency and namespaces.
 
 ## Phase 4 - Product Scalability Features
 - [x] SCL-049 (P1, DONE) Add revision diff view (content comparison).
