@@ -33,6 +33,7 @@
 - `architecture/admin-frontend-architecture.md`
 - `architecture/seo-route-contracts.md`
 - `architecture/headless-read-api-contract.md`
+- `architecture/multi-tenant-readiness-baseline.md`
 
 ## Module Deep Dives
 - `modules/README.md`
