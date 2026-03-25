@@ -64,6 +64,7 @@
 - [x] SCL-050 Add revision restore workflow with safeguards
 - [x] SCL-051 Add publication calendar view for planned content
 - [x] SCL-052 Add scheduler observability for publish command execution
+- [x] SCL-053 Add media deduplication by checksum
 - [x] SCL-055 Prepare read-only headless API contract for public content
 - [x] SCL-057 Add content export endpoint for external consumption
 
@@ -72,6 +73,7 @@
 - 2026-03-25: Completed SCL-050 revision restore workflow with server-side safeguards and tests.
 - 2026-03-25: Completed SCL-051 publication calendar view for planned content across pages, posts, and projects.
 - 2026-03-25: Completed SCL-052 scheduler observability for `publish:scheduled` (structured logs + command-level test coverage).
+- 2026-03-25: Completed SCL-053 media deduplication metadata (checksum + duplicate reference on upload, no auto-delete behavior).
 - 2026-03-25: Completed SCL-055 headless read API contract draft for public content (`v1` scope and compatibility rules).
 - 2026-03-25: Completed SCL-057 content export endpoint (admin protected JSON export contract for pages/posts/projects).
 - 2026-03-24: Completed SCL-001/SCL-003/SCL-004 (PHPStan baseline, split CI jobs, security audit gates).
