@@ -74,7 +74,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 
 ## Cross-Cutting Observability and Operations
 - [x] SCL-061 (P1, DONE) Add request correlation IDs in logs.
-- [ ] SCL-062 (P1, TODO) Integrate backend+frontend error tracking platform.
+- [x] SCL-062 (P1, DONE) Integrate backend+frontend error tracking platform.
 - [ ] SCL-063 (P1, TODO) Add core operational metrics (queue lag, slow queries, cache hit).
 - [ ] SCL-064 (P1, TODO) Expand health checks for DB/cache/queue readiness.
 - [ ] SCL-065 (P1, TODO) Define production alerting thresholds and ownership map.

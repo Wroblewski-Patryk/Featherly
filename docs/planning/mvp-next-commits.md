@@ -1,12 +1,12 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-062 Integrate backend+frontend error tracking platform
 - [ ] SCL-063 Add core operational metrics (queue lag, slow queries, cache hit)
 - [ ] SCL-064 Expand health checks for DB/cache/queue readiness
+- [ ] SCL-065 Define production alerting thresholds and ownership map
 
 ## NEXT
-- [ ] SCL-065 Define production alerting thresholds and ownership map
+- [ ] Refill from backlog after NOW completion
 
 ## LATER
 - [ ] Refill from backlog after NOW/NEXT completion
