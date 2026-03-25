@@ -1,18 +1,16 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-054 Add safe replace workflow for duplicate assets
 - [ ] SCL-056 Add token-scoped access model for headless read API
 - [ ] SCL-058 Draft multi-tenant readiness architecture baseline
+- [ ] SCL-059 Add tenant-aware key strategy for cache/session design
 
 ## NEXT
-- [ ] SCL-059 Add tenant-aware key strategy for cache/session design
 - [ ] SCL-060 Add media lifecycle policy (archive, retention, purge)
 - [ ] SCL-062 Integrate backend+frontend error tracking platform
+- [ ] SCL-063 Add core operational metrics (queue lag, slow queries, cache hit)
 
 ## LATER
-- [ ] SCL-062 Integrate backend+frontend error tracking platform
-- [ ] SCL-063 Add core operational metrics (queue lag, slow queries, cache hit)
 - [ ] SCL-064 Expand health checks for DB/cache/queue readiness
 
 ## Program Backlog

@@ -64,7 +64,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-051 (P1, DONE) Add publication calendar view for planned content.
 - [x] SCL-052 (P2, DONE) Add scheduler observability for publish command execution.
 - [x] SCL-053 (P2, DONE) Add media deduplication by checksum.
-- [ ] SCL-054 (P2, TODO) Add safe replace workflow for duplicate assets.
+- [x] SCL-054 (P2, DONE) Add safe replace workflow for duplicate assets.
 - [x] SCL-055 (P1, DONE) Prepare read-only headless API contract for public content.
 - [ ] SCL-056 (P2, TODO) Add token-scoped access model for headless read API.
 - [x] SCL-057 (P2, DONE) Add content export endpoint for external consumption.
