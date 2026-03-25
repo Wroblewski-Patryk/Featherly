@@ -29,7 +29,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-022 (P2, DONE) Evaluate private media storage with signed access paths.
 - [x] SCL-023 (P1, DONE) Normalize cache invalidation for shared Inertia data.
 - [x] SCL-024 (P2, DONE) Add cache key versioning strategy for global datasets.
-- [ ] SCL-025 (P2, TODO) Introduce domain services for repetitive controller workflows.
+- [x] SCL-025 (P2, DONE) Introduce domain services for repetitive controller workflows.
 
 ## Phase 2 - Performance and Throughput
 - [x] SCL-026 (P0, DONE) Reduce heavy global Inertia shared payloads.

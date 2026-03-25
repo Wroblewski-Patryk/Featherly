@@ -93,6 +93,7 @@
 - 2026-03-25: Completed SCL-010 architecture boundary checks (Deptrac config, composer script, CI job for layer dependency enforcement).
 - 2026-03-25: Completed SCL-020 idempotent form submission handling (hashed idempotency key support, DB uniqueness guard, and duplicate-safe success response path).
 - 2026-03-25: Completed SCL-022 private media signed-access evaluation (opt-in rollout strategy, risk matrix, and architecture references without default runtime change).
+- 2026-03-25: Completed SCL-025 domain service extraction for repetitive admin content persistence workflows (create/update transaction, revision, taxonomy sync).
 - 2026-03-24: Completed SCL-001/SCL-003/SCL-004 (PHPStan baseline, split CI jobs, security audit gates).
 - 2026-03-24: Completed SCL-002/SCL-005 (frontend lint+format CI gate, migration smoke job with sqlite seeding).
 - 2026-03-24: Completed SCL-012 (transaction boundaries for create/update flows in page/post/project admin controllers).
