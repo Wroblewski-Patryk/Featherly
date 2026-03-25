@@ -49,7 +49,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 ## Phase 3 - i18n and SEO Hardening
 - [x] SCL-039 (P0, DONE) Remove locale hardcodes and use active language source everywhere.
 - [x] SCL-040 (P1, DONE) Standardize localized slug conflict policy.
-- [ ] SCL-041 (P1, TODO) Add slug normalization and reserved-path safeguards.
+- [x] SCL-041 (P1, DONE) Add slug normalization and reserved-path safeguards.
 - [x] SCL-042 (P1, DONE) Improve canonical URL validation/normalization.
 - [ ] SCL-043 (P1, TODO) Improve hreflang generation for nested and archive routes.
 - [ ] SCL-044 (P1, TODO) Add i18n coverage dashboard from translation scan output.

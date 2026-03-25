@@ -49,6 +49,7 @@
 
 ## Workstream: Phase 3 - i18n and SEO Hardening
 - [x] SCL-039 Remove locale hardcodes and use active language source everywhere
+- [x] SCL-041 Add slug normalization and reserved-path safeguards
 - [x] SCL-042 Improve canonical URL validation/normalization
 - [x] SCL-046 Add route-level locale edge-case tests
 - [x] SCL-040 Standardize localized slug conflict policy
@@ -100,3 +101,4 @@
 - 2026-03-25: Completed SCL-046 (added route-level locale edge-case coverage for root fallback, locale switch validation, session-locale fallback safety, and dashboard/admin fallback redirects).
 - 2026-03-25: Completed SCL-049 (added revision-to-current content diff view in Template editor History tab with block-level added/removed/changed summaries).
 - 2026-03-25: Completed SCL-040 (introduced shared `UniqueLocalizedSlug` validation rule and unified slug-conflict handling across page/post/project create+update requests and base admin validation flow).
+- 2026-03-25: Completed SCL-041 (added shared localized slug normalization and reserved-route slug protection across page/post/project create+update validation flows, with unit coverage).
