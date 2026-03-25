@@ -4,7 +4,9 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Media;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class MediaManagementTest extends TestCase
@@ -113,5 +115,28 @@ class MediaManagementTest extends TestCase
             $firstPageResponse->json('media.data.0.id'),
             $secondPageResponse->json('media.data.0.id')
         );
+    }
+
+    public function test_upload_marks_duplicate_media_by_checksum_without_deleting_assets(): void
+    {
+        Storage::fake('public');
+
+        $firstFile = UploadedFile::fake()->createWithContent('duplicate-1.jpg', 'same-binary-content');
+        $secondFile = UploadedFile::fake()->createWithContent('duplicate-2.jpg', 'same-binary-content');
+
+        $this->actingAs($this->admin)->post(route('admin.media.store'), [
+            'files' => [$firstFile],
+        ])->assertRedirect();
+
+        $this->actingAs($this->admin)->post(route('admin.media.store'), [
+            'files' => [$secondFile],
+        ])->assertRedirect();
+
+        $media = Media::orderBy('id')->get();
+
+        $this->assertCount(2, $media);
+        $this->assertNotNull($media[0]->checksum);
+        $this->assertSame($media[0]->checksum, $media[1]->checksum);
+        $this->assertSame($media[0]->id, $media[1]->duplicate_of_id);
     }
 }

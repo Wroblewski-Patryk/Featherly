@@ -110,12 +110,19 @@ class MediaController extends Controller
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
                 $this->validateUploadedFile($file);
+                $checksum = hash_file('sha256', $file->getRealPath()) ?: null;
+                $duplicateOfId = null;
+                if ($checksum !== null) {
+                    $duplicateOfId = Media::where('checksum', $checksum)->value('id');
+                }
                 $path = $file->store('media', 'public');
 
                 Media::create([
                     'path' => $path,
                     'mime' => $file->getMimeType(),
                     'size' => $file->getSize(),
+                    'checksum' => $checksum,
+                    'duplicate_of_id' => $duplicateOfId,
                     'alt_text' => $request->alt_text,
                     'folder_id' => $request->folder_id
                 ]);

@@ -24,4 +24,9 @@ class Media extends Model
     {
         return $this->belongsTo(MediaFolder::class , 'folder_id');
     }
+
+    public function duplicateOf()
+    {
+        return $this->belongsTo(self::class, 'duplicate_of_id');
+    }
 }
