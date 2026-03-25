@@ -1,7 +1,6 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-063 Add core operational metrics (queue lag, slow queries, cache hit)
 - [ ] SCL-064 Expand health checks for DB/cache/queue readiness
 - [ ] SCL-065 Define production alerting thresholds and ownership map
 
