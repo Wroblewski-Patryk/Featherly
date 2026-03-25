@@ -1,10 +1,10 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-025 Introduce domain services for repetitive controller workflows
+- [ ] Refill backlog with newly discovered scaling tasks
 
 ## NEXT
-- [ ] Prioritize next P1/P2 items from backlog
+- [ ] Prepare next 20-item backlog extension from audit findings
 
 ## LATER
 - [ ] Refill from backlog after NOW/NEXT completion
