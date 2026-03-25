@@ -1,14 +1,14 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-047 Document SEO route contracts and locale behavior
 - [ ] SCL-050 Add revision restore workflow with safeguards
 - [ ] SCL-051 Add publication calendar view for planned content
+- [ ] SCL-052 Add scheduler observability for publish command execution
 
 ## NEXT
-- [ ] SCL-047 Document SEO route contracts and locale behavior
 - [ ] SCL-051 Add publication calendar view for planned content
 - [ ] SCL-055 Prepare read-only headless API contract for public content
+- [ ] SCL-057 Add content export endpoint for external consumption
 
 ## LATER
 - [ ] SCL-062 Integrate backend+frontend error tracking platform
