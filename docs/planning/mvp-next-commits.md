@@ -1,9 +1,9 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-043 Improve hreflang generation for nested and archive routes
 - [ ] SCL-044 Add i18n coverage dashboard from translation scan output
 - [ ] SCL-045 Add fallback-locale behavior test matrix
+- [ ] SCL-047 Document SEO route contracts and locale behavior
 
 ## NEXT
 - [ ] SCL-047 Document SEO route contracts and locale behavior
