@@ -1,14 +1,14 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-057 Add content export endpoint for external consumption
 - [ ] SCL-053 Add media deduplication by checksum
 - [ ] SCL-054 Add safe replace workflow for duplicate assets
+- [ ] SCL-056 Add token-scoped access model for headless read API
 
 ## NEXT
-- [ ] SCL-056 Add token-scoped access model for headless read API
 - [ ] SCL-058 Draft multi-tenant readiness architecture baseline
 - [ ] SCL-059 Add tenant-aware key strategy for cache/session design
+- [ ] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## LATER
 - [ ] SCL-062 Integrate backend+frontend error tracking platform
