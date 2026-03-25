@@ -30,7 +30,13 @@
 
         <!-- Table Section -->
         <div class="bg-base-100 rounded-box shadow-sm border border-base-300 overflow-hidden">
-            <div class="overflow-x-auto">
+            <div
+                ref="tableScrollRef"
+                class="overflow-x-auto"
+                :class="{ 'overflow-y-auto': shouldVirtualize }"
+                :style="tableContainerStyle"
+                @scroll="handleVirtualScroll"
+            >
                 <table class="table w-full">
                     <thead>
                         <tr class="bg-base-200/30">
@@ -54,7 +60,11 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-base-300">
-                        <tr v-for="item in resources.data" :key="item.id" class="hover:bg-base-200/30 transition-colors group">
+                        <tr v-if="shouldVirtualize && topSpacerHeight > 0" aria-hidden="true">
+                            <td :colspan="activeColumns.length" class="!p-0 border-0" :style="{ height: `${topSpacerHeight}px` }"></td>
+                        </tr>
+
+                        <tr v-for="(item, rowIndex) in renderedRows" :key="`${item.id}-${virtualStartIndex + rowIndex}`" class="hover:bg-base-200/30 transition-colors group">
                             <td v-for="col in activeColumns" :key="col.key"
                                 :class="[
                                     col.align === 'center' ? 'text-center' : (col.align === 'right' ? 'text-right' : ''),
@@ -70,9 +80,13 @@
                                 </slot>
                             </td>
                         </tr>
+
+                        <tr v-if="shouldVirtualize && bottomSpacerHeight > 0" aria-hidden="true">
+                            <td :colspan="activeColumns.length" class="!p-0 border-0" :style="{ height: `${bottomSpacerHeight}px` }"></td>
+                        </tr>
                         
                         <!-- Empty State -->
-                        <tr v-if="resources.data.length === 0">
+                        <tr v-if="allRows.length === 0">
                             <td :colspan="activeColumns.length" class="py-20 text-center">
                                 <div class="flex flex-col items-center opacity-20">
                                     <PhFolderOpen class="text-6xl mb-4" />
@@ -140,7 +154,12 @@ const props = defineProps({
     // Optional: persistence key for visible columns
     persistenceKey: String,
     // Optional: automatically handle deletion
-    deleteRoute: String
+    deleteRoute: String,
+    // Optional: virtualization controls for very large datasets
+    virtualizeThreshold: Number,
+    virtualizedRowHeight: Number,
+    virtualizedOverscan: Number,
+    virtualizedViewportHeight: Number
 });
 
 const emit = defineEmits(['delete-confirmed']);
@@ -148,6 +167,8 @@ const emit = defineEmits(['delete-confirmed']);
 const search = ref(new URLSearchParams(window.location.search).get('search') || '');
 const sortField = ref(new URLSearchParams(window.location.search).get('sort') || '');
 const sortDirection = ref(new URLSearchParams(window.location.search).get('direction') || '');
+const tableScrollRef = ref(null);
+const virtualStartIndex = ref(0);
 
 // Delete Modal State
 const showDeleteModal = ref(false);
@@ -229,6 +250,64 @@ const activeColumns = computed(() => {
         col.key === 'actions' || 
         col.key === 'id'
     );
+});
+
+const allRows = computed(() => props.resources?.data || []);
+const virtualizeThreshold = computed(() => props.virtualizeThreshold ?? 120);
+const virtualizedRowHeight = computed(() => props.virtualizedRowHeight ?? 72);
+const virtualizedOverscan = computed(() => props.virtualizedOverscan ?? 8);
+const virtualizedViewportHeight = computed(() => props.virtualizedViewportHeight ?? 680);
+
+const shouldVirtualize = computed(() => allRows.value.length >= virtualizeThreshold.value);
+const virtualVisibleRows = computed(() => {
+    return Math.ceil(virtualizedViewportHeight.value / virtualizedRowHeight.value) + (virtualizedOverscan.value * 2);
+});
+
+const renderedRows = computed(() => {
+    if (!shouldVirtualize.value) return allRows.value;
+    return allRows.value.slice(virtualStartIndex.value, virtualStartIndex.value + virtualVisibleRows.value);
+});
+
+const virtualEndIndex = computed(() => {
+    return Math.min(allRows.value.length, virtualStartIndex.value + renderedRows.value.length);
+});
+
+const topSpacerHeight = computed(() => {
+    if (!shouldVirtualize.value) return 0;
+    return virtualStartIndex.value * virtualizedRowHeight.value;
+});
+
+const bottomSpacerHeight = computed(() => {
+    if (!shouldVirtualize.value) return 0;
+    return Math.max(0, (allRows.value.length - virtualEndIndex.value) * virtualizedRowHeight.value);
+});
+
+const tableContainerStyle = computed(() => {
+    if (!shouldVirtualize.value) return {};
+
+    return {
+        maxHeight: `${virtualizedViewportHeight.value}px`,
+    };
+});
+
+const handleVirtualScroll = (event) => {
+    if (!shouldVirtualize.value) return;
+
+    const target = event?.target;
+    const scrollTop = target?.scrollTop ?? 0;
+    const nextStart = Math.max(0, Math.floor(scrollTop / virtualizedRowHeight.value) - virtualizedOverscan.value);
+
+    if (nextStart !== virtualStartIndex.value) {
+        virtualStartIndex.value = nextStart;
+    }
+};
+
+watch(allRows, () => {
+    virtualStartIndex.value = 0;
+
+    if (tableScrollRef.value) {
+        tableScrollRef.value.scrollTop = 0;
+    }
 });
 
 
