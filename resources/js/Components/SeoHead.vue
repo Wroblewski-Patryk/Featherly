@@ -17,6 +17,13 @@
     
     <!-- Canonical -->
     <link v-if="canonical" rel="canonical" :href="canonical" />
+    <link
+      v-for="(href, localeCode) in normalizedAlternateLocales"
+      :key="`alternate-${localeCode}`"
+      rel="alternate"
+      :hreflang="localeCode"
+      :href="href"
+    />
     <meta v-if="robots" name="robots" :content="robots" />
     
     <slot />
@@ -36,12 +43,26 @@ const props = defineProps({
   image: String,
   canonical: String,
   robots: String,
+  alternate_locales: {
+    type: Object,
+    default: () => ({}),
+  },
 })
 
 const page = usePage()
 const { t } = useTranslations()
 
 const seoSettings = computed(() => page.props.seo_settings || {})
+
+const normalizedAlternateLocales = computed(() => {
+  if (!props.alternate_locales || typeof props.alternate_locales !== 'object') {
+    return {}
+  }
+
+  return Object.fromEntries(
+    Object.entries(props.alternate_locales).filter(([_, href]) => typeof href === 'string' && href.trim() !== '')
+  )
+})
 
 const finalTitle = computed(() => {
   if (props.full_title) return props.full_title
