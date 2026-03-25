@@ -62,7 +62,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-049 (P1, DONE) Add revision diff view (content comparison).
 - [x] SCL-050 (P1, DONE) Add revision restore workflow with safeguards.
 - [x] SCL-051 (P1, DONE) Add publication calendar view for planned content.
-- [ ] SCL-052 (P2, TODO) Add scheduler observability for publish command execution.
+- [x] SCL-052 (P2, DONE) Add scheduler observability for publish command execution.
 - [ ] SCL-053 (P2, TODO) Add media deduplication by checksum.
 - [ ] SCL-054 (P2, TODO) Add safe replace workflow for duplicate assets.
 - [x] SCL-055 (P1, DONE) Prepare read-only headless API contract for public content.
