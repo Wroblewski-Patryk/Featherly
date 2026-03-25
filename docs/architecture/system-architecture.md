@@ -30,3 +30,4 @@
 - Keep route exposure explicit and documented.
 - Keep translation integrity check in routine validation.
 - Keep release and smoke checklist evidence in ops/engineering docs.
+- For media access hardening strategy, see `docs/architecture/private-media-signed-access-evaluation.md`.

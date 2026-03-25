@@ -17,3 +17,6 @@ Zgodnie z wymaganiami, struktura składowania plików mediów została spłaszcz
    Seeder skanuje bezwzględnie zawartość folderu `storage/app/public/media/` przywracając plikom ich obiekty `Media` w bazie danych. **MediaSeeder nie generuje już struktury 'Seeded Content'.** Wszystkie wgrane pliki demonstracyjne (seeded) posiadają `folder_id = null`, lądując na pierwszej stronie interfejsu (Flat Level Directory) – mieszając się naturalnie z plikami ręcznie wgranymi przez użytkownika.
 3. **Frontend components (Vue):**
    Renderowane adresy URL bazują bezpośrednio na dynamicznej własności `item.url` z back-endu, ignorując stary system ręcznego przedrostka `'/storage/' + item.path`.
+
+## Bezpieczenstwo i dostep
+- Ocena strategii prywatnego storage i signed URLs: docs/architecture/private-media-signed-access-evaluation.md.
