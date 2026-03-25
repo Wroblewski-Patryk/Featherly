@@ -1,7 +1,7 @@
 import { 
     PhFileText, PhFeather, PhCards, PhTextbox, PhPaintRoller, 
     PhCube, PhLayout, PhImageSquare, PhGlobe, PhGearSix, 
-    PhUsers, PhTag, PhHash, PhList, PhPlus, PhPalette, PhTextT, PhTextH, PhSelectionAll, PhMagicWand, PhCardsThree
+    PhUsers, PhTag, PhHash, PhList, PhPlus, PhPalette, PhTextT, PhTextH, PhSelectionAll, PhMagicWand, PhCardsThree, PhCalendarBlank
 } from '@phosphor-icons/vue';
 
 export const navigation = (t) => [
@@ -61,6 +61,13 @@ export const navigation = (t) => [
                     { label: t('admin.common.all', 'All'), route: 'admin.forms.index', active: '/admin/forms', exact: true, icon: PhList },
                     { label: t('admin.common.add', 'Add New'), route: 'admin.forms.create', active: '/admin/forms/create', icon: PhPlus }
                 ]
+            },
+            {
+                label: 'Publication Calendar',
+                icon: PhCalendarBlank,
+                route: 'admin.publication-calendar',
+                active: '/admin/publication-calendar',
+                color: 'primary',
             },
         ]
     },
