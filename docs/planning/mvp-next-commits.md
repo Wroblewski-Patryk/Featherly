@@ -1,14 +1,14 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] SCL-040 Standardize localized slug conflict policy
 - [ ] SCL-041 Add slug normalization and reserved-path safeguards
 - [ ] SCL-043 Improve hreflang generation for nested and archive routes
+- [ ] SCL-045 Add fallback-locale behavior test matrix
 
 ## NEXT
-- [ ] SCL-045 Add fallback-locale behavior test matrix
 - [ ] SCL-047 Document SEO route contracts and locale behavior
 - [ ] SCL-051 Add publication calendar view for planned content
+- [ ] SCL-055 Prepare read-only headless API contract for public content
 
 ## LATER
 - [ ] SCL-062 Integrate backend+frontend error tracking platform
