@@ -10,6 +10,7 @@ Route::middleware('permission:view-admin')->name('dashboard.')->group(function (
 
 // Content Section (Admin & Editor)
 Route::middleware('permission:manage-content')->group(function () {
+    Route::get('publication-calendar', [\App\Http\Controllers\Admin\DashboardController::class, 'publicationCalendar'])->name('publication-calendar');
     Route::resource('pages', AdminPageController::class)->except(['show']);
     Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->except(['show']);
     Route::post('pages/{page}/revisions/{revision}/restore', [AdminPageController::class, 'restoreRevision'])->name('pages.revisions.restore');
