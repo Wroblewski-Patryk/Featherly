@@ -2,8 +2,8 @@
 
 ## NOW (max 3)
 - [ ] SCL-047 Document SEO route contracts and locale behavior
-- [ ] SCL-048 Add validation for translation key consistency and namespaces
 - [ ] SCL-050 Add revision restore workflow with safeguards
+- [ ] SCL-051 Add publication calendar view for planned content
 
 ## NEXT
 - [ ] SCL-047 Document SEO route contracts and locale behavior
