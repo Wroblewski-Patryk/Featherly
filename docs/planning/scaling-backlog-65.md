@@ -76,7 +76,7 @@ Status legend: `TODO`, `IN_PROGRESS`, `DONE`, `BLOCKED`
 - [x] SCL-061 (P1, DONE) Add request correlation IDs in logs.
 - [x] SCL-062 (P1, DONE) Integrate backend+frontend error tracking platform.
 - [x] SCL-063 (P1, DONE) Add core operational metrics (queue lag, slow queries, cache hit).
-- [ ] SCL-064 (P1, TODO) Expand health checks for DB/cache/queue readiness.
+- [x] SCL-064 (P1, DONE) Expand health checks for DB/cache/queue readiness.
 - [ ] SCL-065 (P1, TODO) Define production alerting thresholds and ownership map.
 
 ## Implementation Rules
