@@ -1,20 +1,21 @@
 <template>
-    <details
+    <div
         ref="rootRef"
         class="dropdown dropdown-end"
+        :class="{ 'dropdown-open': isOpen }"
     >
-        <summary
+        <button
+            type="button"
             :tabindex="tabindex"
             :class="triggerClasses"
-            role="button"
-            @click.prevent="toggleOpen"
+            @click.stop="toggleOpen"
         >
             <slot name="trigger" />
-        </summary>
+        </button>
         <ul :tabindex="tabindex" :class="menuClasses" @click="handleMenuClick">
             <slot />
         </ul>
-    </details>
+    </div>
 </template>
 
 <script setup>
@@ -36,6 +37,8 @@ const props = defineProps({
 });
 
 const rootRef = ref(null);
+const isOpen = ref(false);
+const instanceId = `topbar-dropdown-${Math.random().toString(36).slice(2)}`;
 
 const triggerClasses = computed(() => [
     'btn btn-ghost border border-base-200 bg-base-100/70 shadow-sm transition-all hover:border-base-300 hover:bg-base-200/60 cursor-pointer list-none pointer-events-auto',
@@ -48,33 +51,24 @@ const menuClasses = computed(() => [
 ]);
 
 function closeDropdown() {
-    if (rootRef.value?.open) {
-        rootRef.value.open = false;
+    if (isOpen.value) {
+        isOpen.value = false;
     }
 }
 
-function closeOtherDropdowns() {
-    const all = document.querySelectorAll('details.dropdown.dropdown-end[open]');
-    all.forEach((el) => {
-        if (el !== rootRef.value) {
-            el.open = false;
-        }
-    });
-}
-
 function toggleOpen() {
-    if (!rootRef.value) return;
-
-    const shouldOpen = !rootRef.value.open;
-    rootRef.value.open = shouldOpen;
+    const shouldOpen = !isOpen.value;
+    isOpen.value = shouldOpen;
 
     if (shouldOpen) {
-        closeOtherDropdowns();
+        window.dispatchEvent(new CustomEvent('topbar-dropdown-open', {
+            detail: { id: instanceId }
+        }));
     }
 }
 
 function handleDocumentPointerDown(event) {
-    if (!rootRef.value?.open) return;
+    if (!isOpen.value || !rootRef.value) return;
     if (!rootRef.value.contains(event.target)) {
         closeDropdown();
     }
@@ -93,19 +87,21 @@ function handleMenuClick(event) {
     }
 }
 
+function handleOtherDropdownOpened(event) {
+    if (event?.detail?.id !== instanceId) {
+        closeDropdown();
+    }
+}
+
 onMounted(() => {
     document.addEventListener('pointerdown', handleDocumentPointerDown);
     document.addEventListener('keydown', handleEscape);
+    window.addEventListener('topbar-dropdown-open', handleOtherDropdownOpened);
 });
 
 onBeforeUnmount(() => {
     document.removeEventListener('pointerdown', handleDocumentPointerDown);
     document.removeEventListener('keydown', handleEscape);
+    window.removeEventListener('topbar-dropdown-open', handleOtherDropdownOpened);
 });
 </script>
-
-<style scoped>
-summary::-webkit-details-marker {
-    display: none;
-}
-</style>
