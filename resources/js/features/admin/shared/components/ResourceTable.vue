@@ -126,26 +126,24 @@
                 :filters="{ search, sort: sortField, direction: sortDirection }" 
             >
                 <template #controls>
-                    <div v-if="selectionEnabled && selectedCount > 0" class="flex items-center gap-2 flex-wrap">
+                    <div v-if="selectionEnabled && selectedCount > 0" class="flex items-center gap-2 whitespace-nowrap overflow-x-auto">
                         <span class="text-[10px] font-bold uppercase tracking-widest opacity-50">
                             {{ selectedCount }} selected
                         </span>
-                        <select v-model="selectedBulkAction" class="select select-bordered select-sm min-w-[140px]">
-                            <option value="">Choose action</option>
-                            <option v-for="action in resolvedBulkActions" :key="action.value" :value="action.value">
-                                {{ action.label }}
-                            </option>
-                        </select>
                         <button
+                            v-for="action in resolvedBulkActions"
+                            :key="action.value"
                             type="button"
-                            class="btn btn-sm btn-primary"
-                            :disabled="isApplyingBulk || !selectedBulkAction"
-                            @click="applyBulkAction"
+                            :class="[
+                                'btn btn-sm btn-square',
+                                action.value === 'delete' ? 'btn-error btn-outline' : 'btn-ghost',
+                            ]"
+                            :title="action.label"
+                            :aria-label="action.label"
+                            :disabled="isApplyingBulk"
+                            @click="applyBulkAction(action.value)"
                         >
-                            {{ isApplyingBulk ? 'Applying...' : 'Apply' }}
-                        </button>
-                        <button type="button" class="btn btn-sm btn-ghost" @click="clearSelection">
-                            Clear
+                            <component :is="getBulkActionIcon(action.value)" class="text-base" />
                         </button>
                     </div>
                 </template>
@@ -165,7 +163,15 @@
 <script setup>
 import { ref, watch, computed, onMounted } from 'vue';
 import { router } from '@inertiajs/vue3';
-import { PhCaretUp, PhCaretDown, PhFolderOpen } from '@phosphor-icons/vue';
+import {
+    PhArchiveBox,
+    PhCaretDown,
+    PhCaretUp,
+    PhEye,
+    PhEyeSlash,
+    PhFolderOpen,
+    PhTrash,
+} from '@phosphor-icons/vue';
 import ModuleHeader from '@/features/admin/shared/components/ModuleHeader.vue';
 import TableToolbar from './ResourceTable/TableToolbar.vue';
 import TablePagination from './ResourceTable/TablePagination.vue';
@@ -227,7 +233,6 @@ const sortDirection = ref(new URLSearchParams(window.location.search).get('direc
 const tableScrollRef = ref(null);
 const virtualStartIndex = ref(0);
 const selectedIds = ref([]);
-const selectedBulkAction = ref('');
 const isApplyingBulk = ref(false);
 const tableRows = ref([]);
 
@@ -384,7 +389,6 @@ watch(allRows, () => {
     virtualStartIndex.value = 0;
     selectedIds.value = [];
     emit('selection-change', selectedIds.value);
-    selectedBulkAction.value = '';
 
     if (tableScrollRef.value) {
         tableScrollRef.value.scrollTop = 0;
@@ -470,17 +474,31 @@ function toggleSelectAllVisible(checked) {
 
 function clearSelection() {
     selectedIds.value = [];
-    selectedBulkAction.value = '';
     emit('selection-change', selectedIds.value);
 }
 
-function applyBulkAction() {
-    if (!selectionEnabled.value || !selectedBulkAction.value || selectedIds.value.length === 0 || isApplyingBulk.value) {
+function getBulkActionIcon(action) {
+    switch (action) {
+        case 'publish':
+            return PhEye;
+        case 'unpublish':
+            return PhEyeSlash;
+        case 'archive':
+            return PhArchiveBox;
+        case 'delete':
+            return PhTrash;
+        default:
+            return PhEye;
+    }
+}
+
+function applyBulkAction(actionValue) {
+    if (!selectionEnabled.value || !actionValue || selectedIds.value.length === 0 || isApplyingBulk.value) {
         return;
     }
 
-    if (['archive', 'delete'].includes(selectedBulkAction.value)) {
-        const confirmed = window.confirm(`Confirm bulk ${selectedBulkAction.value} for ${selectedIds.value.length} item(s)?`);
+    if (['archive', 'delete'].includes(actionValue)) {
+        const confirmed = window.confirm(`Confirm bulk ${actionValue} for ${selectedIds.value.length} item(s)?`);
         if (!confirmed) {
             return;
         }
@@ -488,10 +506,10 @@ function applyBulkAction() {
 
     isApplyingBulk.value = true;
     const snapshotRows = cloneRows(allRows.value);
-    tableRows.value = applyBulkOptimistic(allRows.value, selectedBulkAction.value, selectedIds.value);
+    tableRows.value = applyBulkOptimistic(allRows.value, actionValue, selectedIds.value);
 
     router.post(props.bulkRoute, {
-        action: selectedBulkAction.value,
+        action: actionValue,
         ids: selectedIds.value,
     }, {
         preserveScroll: true,
