@@ -225,24 +225,6 @@ const userAvatarUrl = computed(() => {
             </div>
             
             <div class="flex-none gap-2">
-                <!-- Color Themes Dropdown -->
-                <TopbarDropdown trigger-class="btn-circle h-10 w-10 min-h-10 p-0" menu-class="w-52">
-                    <template #trigger>
-                        <PhPalette weight="regular" class="w-5 h-5 text-base-content/70" />
-                    </template>
-                    <li class="menu-title"><span>{{ t('admin.theme.select_theme', 'Choose Theme') }}</span></li>
-                    <li v-for="theme in themesList" :key="theme">
-                        <a :class="['flex items-center justify-between gap-3', { 'active': currentTheme === theme }]" @click="currentTheme = theme">
-                            <span class="capitalize">{{ theme }}</span>
-                            <span :data-theme="theme" class="flex items-center gap-1.5 rounded-full px-1.5 py-1 bg-base-100/80 border border-base-300/60">
-                                <span class="w-2.5 h-2.5 rounded-full bg-primary border border-base-300/50"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-secondary border border-base-300/50"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-accent border border-base-300/50"></span>
-                            </span>
-                        </a>
-                    </li>
-                </TopbarDropdown>
-
                 <!-- Language Dropdown -->
                 <TopbarDropdown trigger-class="h-10 min-h-10 px-3 rounded-full sm:rounded-box flex flex-nowrap items-center gap-2" menu-class="w-52">
                     <template #trigger>
@@ -263,6 +245,24 @@ const userAvatarUrl = computed(() => {
                             </a>
                         </li>
                     </template>
+                </TopbarDropdown>
+
+                <!-- Color Themes Dropdown -->
+                <TopbarDropdown trigger-class="btn-circle h-10 w-10 min-h-10 p-0" menu-class="w-52">
+                    <template #trigger>
+                        <PhPalette weight="regular" class="w-5 h-5 text-base-content/70" />
+                    </template>
+                    <li class="menu-title"><span>{{ t('admin.theme.select_theme', 'Choose Theme') }}</span></li>
+                    <li v-for="theme in themesList" :key="theme">
+                        <a :class="['flex items-center justify-between gap-3', { 'active': currentTheme === theme }]" @click="currentTheme = theme">
+                            <span class="capitalize">{{ theme }}</span>
+                            <span :data-theme="theme" class="flex items-center gap-1.5 rounded-full px-1.5 py-1 bg-base-100/80 border border-base-300/60">
+                                <span class="w-2.5 h-2.5 rounded-full bg-primary border border-base-300/50"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-secondary border border-base-300/50"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-accent border border-base-300/50"></span>
+                            </span>
+                        </a>
+                    </li>
                 </TopbarDropdown>
 
                 <!-- Admin Profile/Logout Dropdown -->
