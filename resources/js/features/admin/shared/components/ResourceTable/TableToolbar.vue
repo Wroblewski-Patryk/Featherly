@@ -1,6 +1,6 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import { PhSlidersHorizontal, PhColumns, PhPlus } from '@phosphor-icons/vue';
+import { PhSlidersHorizontal, PhPlus } from '@phosphor-icons/vue';
 import { useTranslations } from '@/Composables/useTranslations';
 
 const { t } = useTranslations();
@@ -46,19 +46,17 @@ function toggleColumn(key) {
             <label tabindex="0" class="btn btn-square bg-base-100 border-base-200 shadow-sm hover:shadow-md hover:border-primary/40 text-base-content/60 hover:text-primary transition-all">
                 <PhSlidersHorizontal class="text-lg" />
             </label>
-            <div tabindex="0" class="dropdown-content z-[20] p-4 shadow-2xl bg-base-100 rounded-box w-64 mt-3 border border-base-200">
-                <div class="flex items-center gap-3 mb-4 pb-3 border-b border-base-200">
-                    <div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                        <PhColumns class="text-sm" />
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-sm leading-tight text-base-content">{{ t('admin.common.layout', 'Layout') }}</h3>
-                        <p class="text-[10px] opacity-50 uppercase tracking-widest font-bold">{{ t('admin.common.toggle_columns', 'Toggle Columns') }}</p>
-                    </div>
-                </div>
-                <div class="space-y-1">
-                    <label v-for="col in toggleableColumns" :key="col.key" class="label cursor-pointer hover:bg-base-200/50 px-3 py-2.5 rounded-xl transition-all border border-transparent hover:border-base-300 group/item">
-                        <span class="label-text font-semibold group-hover/item:text-primary transition-colors">{{ col.label }}</span>
+            <div tabindex="0" class="dropdown-content z-[20] p-2 shadow-2xl bg-base-100 rounded-box w-56 mt-3 border border-base-200">
+                <p class="px-2 py-1 text-xs uppercase tracking-wider font-bold opacity-60">
+                    {{ t('admin.common.toggle_columns', 'Toggle columns') }}
+                </p>
+                <div class="space-y-0.5 mt-1">
+                    <label
+                        v-for="col in toggleableColumns"
+                        :key="col.key"
+                        class="w-full flex items-center justify-between gap-2 cursor-pointer hover:bg-base-200 px-2 py-2 rounded-box transition-colors group/item"
+                    >
+                        <span class="label-text font-semibold group-hover/item:text-primary transition-colors text-left">{{ col.label }}</span>
                         <input
                             type="checkbox"
                             :checked="visibleColumns.includes(col.key)"
