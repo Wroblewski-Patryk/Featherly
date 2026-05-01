@@ -144,6 +144,9 @@ Every meaningful runtime path should provide:
   up the current release path, preserves `.env`, `storage`, and
   `public/storage`, switches staged release files, and records
   `archive_switch_status=switched` plus `archive_backup_path`.
+- Rollback execution: `php artisan updates:rollback-archive --force` restores
+  the configured release path from the recorded `archive_backup_path`, preserves
+  local runtime paths, and records `archive_switch_status=rolled_back`.
 
 ## Incident Learning
 

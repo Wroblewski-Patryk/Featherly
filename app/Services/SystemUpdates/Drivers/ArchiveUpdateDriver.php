@@ -224,6 +224,67 @@ class ArchiveUpdateDriver implements UpdateDriver
         ];
     }
 
+    public function rollback(array $status): array
+    {
+        $backupPath = $this->stringValue($status['archive_backup_path'] ?? null);
+
+        if ($backupPath === '' || !is_dir($backupPath)) {
+            return [
+                'ok' => false,
+                'apply_status' => 'archive_rollback_unavailable',
+                'message' => 'Archive rollback requires a recorded archive backup path.',
+                'operator_instructions' => [
+                    'Verify system_update_status.archive_backup_path before retrying rollback.',
+                ],
+            ];
+        }
+
+        $missingBackupFiles = $this->missingRequiredFiles($backupPath);
+        if ($missingBackupFiles !== []) {
+            return [
+                'ok' => false,
+                'apply_status' => 'archive_rollback_failed',
+                'message' => 'Archive backup validation failed. Missing: ' . implode(', ', $missingBackupFiles) . '.',
+                'operator_instructions' => [
+                    'Do not overwrite the release path with this backup.',
+                    'Inspect the recorded backup and choose a different recovery path.',
+                ],
+            ];
+        }
+
+        $releasePath = $this->ensureReleaseDirectory();
+
+        $this->removeReleaseContentsExceptPreserved($releasePath);
+        $this->copyDirectoryContents($backupPath, $releasePath, $this->preservePaths());
+
+        $missingReleaseFiles = $this->missingRequiredFiles($releasePath);
+        if ($missingReleaseFiles !== []) {
+            return [
+                'ok' => false,
+                'apply_status' => 'archive_rollback_failed',
+                'message' => 'Archive rollback validation failed. Missing: ' . implode(', ', $missingReleaseFiles) . '.',
+                'operator_instructions' => [
+                    'Inspect the release path and backup path before retrying.',
+                    'Use the hosting provider backup if release validation cannot pass.',
+                ],
+            ];
+        }
+
+        return [
+            'ok' => true,
+            'apply_status' => 'archive_rolled_back',
+            'message' => 'Archive release rollback completed from the recorded backup path.',
+            'operator_instructions' => [
+                'Run post-deploy smoke checks immediately.',
+                'Run php artisan updates:confirm after the runtime reports the restored APP_VERSION.',
+            ],
+            'rollback_note' => 'Archive release path was restored from the recorded backup while preserving local runtime paths.',
+            'archive_switch_status' => 'rolled_back',
+            'archive_rolled_back_at' => Carbon::now()->toIso8601String(),
+            'archive_backup_path' => $backupPath,
+        ];
+    }
+
     private function stagingPath(): string
     {
         $value = config('updates.drivers.archive.staging_path');

@@ -20,9 +20,11 @@ Document the first safe rollback path before the first production deploy.
     `storage`, and `public/storage` paths unless the incident requires a full
     release-path restore, then run post-deploy smoke and
     `php artisan updates:confirm`.
-  - Archive rollback is currently an operator procedure, not an automated
-    command. Do not enable unattended archive auto-apply until rollback command
-    coverage or an explicit v1 deferral decision exists.
+  - Archive rollback command: run
+    `php artisan updates:rollback-archive --force` after confirming the
+    recorded backup path is the intended recovery point. The command restores
+    release files from `archive_backup_path` and preserves local `.env`,
+    `storage`, and `public/storage`.
 - Migration rollback or forward-fix rule:
 - Worker rollback:
 - Cache or queue considerations:

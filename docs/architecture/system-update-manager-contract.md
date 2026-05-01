@@ -47,6 +47,10 @@ Current implemented baseline:
   `FEATHERLY_UPDATE_ARCHIVE_SWITCH_ENABLED=true`; it backs up the current
   release path, preserves `.env`, `storage`, and `public/storage`, switches the
   staged release files, and records rollback evidence
+- archive rollback execution is implemented through
+  `php artisan updates:rollback-archive --force`; it restores the configured
+  release path from the recorded archive backup while preserving local runtime
+  paths
 
 Not implemented yet:
 
@@ -55,7 +59,6 @@ Not implemented yet:
 - Coolify live rollout validation and production rollback evidence
 - Docker and Git runtime drivers, intentionally deferred from v1
 - driver-specific rollback execution
-- archive rollback execution command
 
 Until those items are complete, Featherly must treat update availability as a
 notification/status/manual-instructions feature by default. Archive file
@@ -159,11 +162,11 @@ The current archive implementation can stop after download, SHA-256
 verification, staging extraction validation, and switch-plan generation by
 default. When `FEATHERLY_UPDATE_ARCHIVE_SWITCH_ENABLED=true`, it can switch the
 validated staged release into the configured release path, preserve local state,
-and record a backup path. It still must not run migrations automatically, and a
-dedicated rollback command remains pending. If the PHP `ZipArchive` extension
-is unavailable, extraction is recorded as unavailable and the operator must
-enable ZIP support before the archive driver can progress to extraction
-validation.
+and record a backup path. `updates:rollback-archive --force` can restore that
+backup while preserving local state. Archive apply still must not run
+migrations automatically. If the PHP `ZipArchive` extension is unavailable,
+extraction is recorded as unavailable and the operator must enable ZIP support
+before the archive driver can progress to extraction validation.
 
 ## Shared Hosting Strategy
 
@@ -255,8 +258,10 @@ expected `APP_VERSION` and pass operational health checks before
 For Coolify, rollback can rely on the platform deployment history when
 configured, but the rollout must capture the evidence described in
 `docs/operations/coolify-update-rollout-runbook.md` before the driver is marked
-production-ready. For archive or Git updates, rollback must be designed
-explicitly before the driver is marked production-ready.
+production-ready. For archive updates, rollback uses the recorded
+`archive_backup_path` through `updates:rollback-archive --force`. For Git
+updates, rollback must be designed explicitly before the driver is marked
+production-ready.
 
 ## Architecture Fit
 

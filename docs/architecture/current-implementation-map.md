@@ -223,6 +223,9 @@ without relying on chat history or stale planning notes.
     `FEATHERLY_UPDATE_ARCHIVE_SWITCH_ENABLED`; it preserves `.env`, `storage`,
     and `public/storage`, backs up the previous release path, and records
     switch evidence
+  - archive rollback execution is available through
+    `updates:rollback-archive --force` and restores the release path from the
+    recorded backup while preserving local runtime paths
   - archive apply execution remains disabled by default and must be explicitly
     enabled by the operator before live files are switched
 - Safety posture:
@@ -257,5 +260,5 @@ without relying on chat history or stale planning notes.
   confirmation plus an operator rollout runbook, but still needs captured
   live-environment rollout evidence; archive apply has a no-switch
   download/verification, staging extraction validation, and switch-plan evidence
-  path plus gated switch execution but still needs a dedicated rollback command;
-  Docker and Git runtime drivers are deferred from v1 by DEC-009.
+  path plus gated switch and rollback execution; Docker and Git runtime drivers
+  are deferred from v1 by DEC-009.

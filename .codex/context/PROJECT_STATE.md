@@ -73,6 +73,9 @@ Last updated: 2026-05-01
   `FEATHERLY_UPDATE_ARCHIVE_SWITCH_ENABLED`; tests verify previous release
   backup, `.env`/`storage`/`public/storage` preservation, staged release file
   switch, and status update without enabling automatic archive apply by default.
+- 2026-05-01: Archive rollback execution was added through
+  `updates:rollback-archive --force`; tests verify the recorded backup path
+  restores release files while preserving current `.env` and `storage`.
 
 ## Technical Baseline
 - Backend: Laravel 12 + PHP 8.2+
@@ -89,8 +92,9 @@ Last updated: 2026-05-01
   replacement remains unavailable; archive verification can download and verify
   a staged artifact, validate extracted staging structure, and record a switch
   plan; gated archive switch can replace a configured release path with backup
-  evidence when explicitly enabled, Docker/Git runtime drivers are deferred
-  from v1, and Coolify production readiness still requires captured
+  evidence when explicitly enabled, archive rollback can restore the recorded
+  backup path, Docker/Git runtime drivers are deferred from v1, and Coolify
+  production readiness still requires captured
   staging/live rollout evidence
 - External services: optional Sentry and media/integration surfaces as configured
 - MCP / external tools: design-source workflows may use Figma or Stitch where applicable
