@@ -1,8 +1,8 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] Resolve `FEA-015` production gate blocker by capturing Coolify
-  staging/live rollout evidence in the target environment
+- [ ] Fix public DNS/reachability for `https://test.luckusparrow.ch`, then
+  resume `FEA-015` Coolify staging rollout evidence capture
 - [ ] Refill the local task queue from `docs/planning/scaling-backlog-65.md`
   if no external Coolify evidence is available
 
