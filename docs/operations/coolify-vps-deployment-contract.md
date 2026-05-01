@@ -7,8 +7,9 @@ production target in `.codex/context/PROJECT_STATE.md`.
 ## Deployment Target
 
 - VPS provider:
-- Coolify project or environment:
-- Public domains:
+- Coolify project or environment: staging target identified, exact Coolify
+  project name pending operator evidence
+- Public domains: `https://test.luckusparrow.ch`
 - Private services:
 
 ## Runtime Inventory
@@ -38,7 +39,9 @@ production target in `.codex/context/PROJECT_STATE.md`.
 ## Release Requirements
 
 - Required checks before deploy:
-- Required smoke checks after deploy:
+- Required smoke checks after deploy: `docs/operations/post-deploy-smoke.md`;
+  current staging evidence is blocked because `test.luckusparrow.ch` does not
+  resolve publicly from this workspace
 - Rollback trigger:
 - Rollback method:
 

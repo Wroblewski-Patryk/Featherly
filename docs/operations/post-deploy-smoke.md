@@ -26,11 +26,15 @@ Use this file to record the minimum checks after each deploy.
 
 ## Evidence
 
-- Timestamp:
-- Environment:
+- Timestamp: 2026-05-02T01:45:15+02:00
+- Environment: staging, `https://test.luckusparrow.ch`
 - Commands run:
-- Screenshots or logs:
+  - `Resolve-DnsName test.luckusparrow.ch`
+  - `Invoke-WebRequest -Uri https://test.luckusparrow.ch -MaximumRedirection 5 -TimeoutSec 20`
+  - `curl.exe -I -L --max-time 20 https://test.luckusparrow.ch`
+- Screenshots or logs: DNS lookup and HTTP smoke are blocked by unresolved
+  domain from this workspace
 - Coolify update rollout evidence, when applicable:
-  - deployment history entry:
-  - target version:
-  - `updates:confirm` result:
+  - deployment history entry: pending operator evidence
+  - target version: pending target environment evidence
+  - `updates:confirm` result: pending target environment evidence

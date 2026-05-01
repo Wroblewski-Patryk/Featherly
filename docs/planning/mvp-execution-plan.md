@@ -74,6 +74,11 @@
 - [x] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## Progress Log
+- 2026-05-02: Continued FEA-015 external evidence capture after the staging
+  target was identified as `https://test.luckusparrow.ch`. Public smoke remains
+  blocked because DNS does not resolve from this workspace, so the deployment
+  gate still cannot pass. Evidence was recorded in
+  `docs/operations/coolify-staging-rollout-evidence-test-luckusparrow-2026-05-02.md`.
 - 2026-05-02: Completed FEA-019 as a planning slice by documenting the
   data-safe project category fallback retirement path: target environment
   inventory, deterministic mapping rules, dry-run report, transactional

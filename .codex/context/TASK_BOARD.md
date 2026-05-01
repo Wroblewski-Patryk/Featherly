@@ -21,9 +21,10 @@ Last updated: 2026-05-01
   - Owner: Backend Builder
   - Depends on: FEA-015P
   - Priority: P1
-  - Blocker: Coolify staging/live rollout evidence requires an external
-    configured Coolify environment that is not available in this local
-    workspace.
+  - Blocker: Coolify staging target is identified as
+    `https://test.luckusparrow.ch`, but DNS does not resolve from this
+    workspace, so public smoke checks and target-environment confirmation
+    evidence cannot pass yet.
   - Done when:
     - Coolify staging/live rollout evidence is captured from the runbook
     - deployment gate evidence is attached for the target environment
