@@ -69,6 +69,10 @@ Last updated: 2026-05-01
 - 2026-05-01: Archive staging validation now writes a no-switch switch/rollback
   plan with preserve paths, required pre-switch approvals, and rollback
   strategy before any future live file replacement is allowed.
+- 2026-05-01: Archive live switch execution was added behind
+  `FEATHERLY_UPDATE_ARCHIVE_SWITCH_ENABLED`; tests verify previous release
+  backup, `.env`/`storage`/`public/storage` preservation, staged release file
+  switch, and status update without enabling automatic archive apply by default.
 
 ## Technical Baseline
 - Backend: Laravel 12 + PHP 8.2+
@@ -81,10 +85,11 @@ Last updated: 2026-05-01
   `docs/architecture/system-update-manager-contract.md`; current runtime
   implementation supports update discovery/status/manual instructions and
   config-gated fake apply tests plus a config-gated Coolify webhook trigger
-  with CLI version and operational health confirmation; archive/Docker/Git code
+  with CLI version and operational health confirmation; Docker/Git code
   replacement remains unavailable; archive verification can download and verify
   a staged artifact, validate extracted staging structure, and record a switch
-  plan without switching live files, Docker/Git runtime drivers are deferred
+  plan; gated archive switch can replace a configured release path with backup
+  evidence when explicitly enabled, Docker/Git runtime drivers are deferred
   from v1, and Coolify production readiness still requires captured
   staging/live rollout evidence
 - External services: optional Sentry and media/integration surfaces as configured

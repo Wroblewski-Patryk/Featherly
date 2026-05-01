@@ -401,8 +401,9 @@ evidence, while keeping production code replacement fail-closed.
 - [x] Learning journal was updated if a recurring pitfall was confirmed.
 
 ## Result Report
-- Task summary: continued the System Update Manager by adding no-switch archive
-  switch/rollback plan evidence.
+- Task summary: continued the System Update Manager through the archive driver
+  safe-switch segment. The latest slice adds explicitly gated archive live
+  switch execution with backup evidence and local-state preservation.
 - Files changed: `config/updates.php`,
   `app/Services/SystemUpdates/UpdateManager.php`,
   `app/Services/SystemUpdates/UpdateDriver.php`,
@@ -429,10 +430,10 @@ evidence, while keeping production code replacement fail-closed.
   `docs/planning/tasks/FEA-015-system-update-manager.md`
 - How tested: targeted PHPUnit feature tests for update commands and settings;
   `git diff --check`.
-- What is incomplete: archive live switch execution, rollback execution, audit
-  history UI, and captured staging/live Coolify rollout evidence.
-- Next steps: implement guarded live switch only after explicit approval, or
-  capture Coolify staging/live evidence using the runbook.
+- What is incomplete: archive rollback execution command, audit history UI,
+  and captured staging/live Coolify rollout evidence.
+- Next steps: add archive rollback command coverage or capture Coolify
+  staging/live evidence using the runbook.
 - Decisions made: first implementation slice remains manual-only for apply
   behavior and stores status in existing `settings` instead of creating a new
   model.
@@ -443,5 +444,7 @@ evidence, while keeping production code replacement fail-closed.
 The first production-ready auto-apply target should be Coolify because rollback
 and deployment execution can be delegated to the platform. The archive driver is
 required for shared hosting support but must be treated as higher risk until
-staging, checksum verification, local-state preservation, and rollback are
-proven.
+staging, checksum verification, local-state preservation, switch execution, and
+rollback are proven. The archive switch path is now implemented only behind
+`FEATHERLY_UPDATE_ARCHIVE_SWITCH_ENABLED`; rollback remains operator-owned until
+a dedicated command or explicit v1 deferral is recorded.

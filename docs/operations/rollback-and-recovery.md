@@ -13,6 +13,16 @@ Document the first safe rollback path before the first production deploy.
 - App rollback:
   - Coolify update driver rollbacks use the previous successful deployment in
     Coolify deployment history, then re-run `php artisan updates:confirm`.
+  - Archive update driver rollbacks use the recorded
+    `system_update_status.archive_backup_path` from the failed switch attempt.
+    Restore that backup over the configured
+    `FEATHERLY_UPDATE_ARCHIVE_RELEASE_PATH`, preserve the live `.env`,
+    `storage`, and `public/storage` paths unless the incident requires a full
+    release-path restore, then run post-deploy smoke and
+    `php artisan updates:confirm`.
+  - Archive rollback is currently an operator procedure, not an automated
+    command. Do not enable unattended archive auto-apply until rollback command
+    coverage or an explicit v1 deferral decision exists.
 - Migration rollback or forward-fix rule:
 - Worker rollback:
 - Cache or queue considerations:

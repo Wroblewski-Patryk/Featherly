@@ -42,20 +42,24 @@ Current implemented baseline:
   archive to staging and validate the required Laravel release files without
   switching live files
 - archive staging validation records a switch/rollback plan that must be
-  reviewed before any live file replacement is implemented
+  reviewed before any live file replacement is executed
+- archive switch execution is implemented only when
+  `FEATHERLY_UPDATE_ARCHIVE_SWITCH_ENABLED=true`; it backs up the current
+  release path, preserves `.env`, `storage`, and `public/storage`, switches the
+  staged release files, and records rollback evidence
 
 Not implemented yet:
 
 - automatic update application
-- archive apply execution
+- unattended archive apply execution
 - Coolify live rollout validation and production rollback evidence
 - Docker and Git runtime drivers, intentionally deferred from v1
 - driver-specific rollback execution
-- release archive file switch execution during apply
+- archive rollback execution command
 
 Until those items are complete, Featherly must treat update availability as a
-notification/status/manual-instructions feature, not a self-mutating runtime
-update feature.
+notification/status/manual-instructions feature by default. Archive file
+replacement is available only as an explicitly enabled operator path.
 
 ## Supported Hosting Models
 
@@ -151,13 +155,15 @@ The update manager must verify release integrity before applying an archive or
 image. If integrity metadata is missing or invalid, automatic application must
 fail closed.
 
-The current archive implementation stops after download, SHA-256 verification,
-staging extraction validation, and switch-plan generation. It records
-verification, staging, and rollback-planning evidence but must not migrate,
-switch live files, or mark the update applied until switching and rollback are
-implemented. If the PHP `ZipArchive` extension is unavailable, extraction is
-recorded as unavailable and the operator must enable ZIP support before the
-archive driver can progress to extraction validation.
+The current archive implementation can stop after download, SHA-256
+verification, staging extraction validation, and switch-plan generation by
+default. When `FEATHERLY_UPDATE_ARCHIVE_SWITCH_ENABLED=true`, it can switch the
+validated staged release into the configured release path, preserve local state,
+and record a backup path. It still must not run migrations automatically, and a
+dedicated rollback command remains pending. If the PHP `ZipArchive` extension
+is unavailable, extraction is recorded as unavailable and the operator must
+enable ZIP support before the archive driver can progress to extraction
+validation.
 
 ## Shared Hosting Strategy
 

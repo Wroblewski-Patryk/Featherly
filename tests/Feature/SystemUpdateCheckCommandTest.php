@@ -615,6 +615,80 @@ class SystemUpdateCheckCommandTest extends TestCase
         $this->assertSame('1.0.0', $status['current_version']);
     }
 
+    public function test_archive_apply_switches_release_when_explicitly_enabled_and_preserves_local_state(): void
+    {
+        if (!class_exists(ZipArchive::class)) {
+            $this->markTestSkipped('ZipArchive extension is required for archive switch validation.');
+        }
+
+        $archiveBody = $this->buildReleaseArchive([
+            'artisan' => '#!/usr/bin/env php',
+            'composer.json' => '{"name":"featherly/release"}',
+            'bootstrap/app.php' => '<?php return true;',
+            'public/index.php' => '<?php echo "new";',
+            'storage/new-release-file.txt' => 'should not overwrite preserved storage',
+        ]);
+        $archiveSha256 = hash('sha256', $archiveBody);
+        $basePath = storage_path('framework/testing/archive-switch-success');
+        $stagingPath = $basePath . '/staging/current';
+        $releasePath = $basePath . '/release/current';
+
+        $this->prepareArchivePaths($stagingPath, $releasePath);
+        if (!is_dir($releasePath . '/storage')) {
+            mkdir($releasePath . '/storage', 0777, true);
+        }
+        if (!is_dir($releasePath . '/public/storage')) {
+            mkdir($releasePath . '/public/storage', 0777, true);
+        }
+        file_put_contents($releasePath . '/.env', 'APP_KEY=old');
+        file_put_contents($releasePath . '/storage/local.txt', 'local storage');
+        file_put_contents($releasePath . '/public/storage/media.txt', 'local media');
+        file_put_contents($releasePath . '/old.php', 'old release file');
+
+        config()->set('updates.drivers.archive.staging_path', $stagingPath);
+        config()->set('updates.drivers.archive.release_path', $releasePath);
+        config()->set('updates.drivers.archive.switch_enabled', true);
+
+        Setting::updateOrCreate(['key' => 'preferred_update_driver'], ['value' => 'archive']);
+        Setting::updateOrCreate(['key' => 'system_update_status'], ['value' => [
+            'current_version' => '1.0.0',
+            'latest_version' => '1.1.0',
+            'release_archive_url' => 'https://example.test/releases/featherly-1.1.0.zip',
+            'release_archive_sha256' => $archiveSha256,
+            'update_available' => true,
+            'manual_review_required' => false,
+            'php_requirement_ok' => true,
+            'status' => 'available',
+            'status_label' => 'Update available',
+        ]]);
+
+        Http::fake([
+            'https://example.test/releases/featherly-1.1.0.zip' => Http::response($archiveBody, 200),
+        ]);
+
+        $this->artisan('updates:apply --force')
+            ->expectsOutputToContain('Release archive downloaded, verified, staged, and switched')
+            ->assertSuccessful();
+
+        $status = Setting::query()->where('key', 'system_update_status')->firstOrFail()->value;
+
+        $this->assertSame('archive_switched', $status['apply_status']);
+        $this->assertSame('switched', $status['archive_switch_status']);
+        $this->assertSame('1.1.0', $status['current_version']);
+        $this->assertFalse($status['update_available']);
+        $this->assertSame('current', $status['status']);
+        $this->assertTrue(is_file($releasePath . '/artisan'));
+        $this->assertTrue(is_file($releasePath . '/bootstrap/app.php'));
+        $this->assertFalse(is_file($releasePath . '/old.php'));
+        $this->assertSame('APP_KEY=old', file_get_contents($releasePath . '/.env'));
+        $this->assertSame('local storage', file_get_contents($releasePath . '/storage/local.txt'));
+        $this->assertSame('local media', file_get_contents($releasePath . '/public/storage/media.txt'));
+        $this->assertFalse(is_file($releasePath . '/storage/new-release-file.txt'));
+        $this->assertTrue(is_dir($status['archive_backup_path']));
+        $this->assertTrue(is_file($status['archive_backup_path'] . '/old.php'));
+        $this->assertSame('APP_KEY=old', file_get_contents($status['archive_backup_path'] . '/.env'));
+    }
+
     /**
      * @param  array<string, string>  $files
      */

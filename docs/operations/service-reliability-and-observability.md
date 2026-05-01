@@ -137,8 +137,13 @@ Every meaningful runtime path should provide:
   `bootstrap/app.php`, and `public/index.php` before recording
   `archive_extraction_status=validated`.
 - Switch planning: validated archive staging writes a switch plan with preserve
-  paths, required pre-switch approvals, and rollback strategy. This plan is
-  evidence only; live files are not replaced in the current v1 slice.
+  paths, required pre-switch approvals, and rollback strategy. By default this
+  plan is evidence only and live files are not replaced.
+- Switch execution: archive live switching is disabled unless
+  `FEATHERLY_UPDATE_ARCHIVE_SWITCH_ENABLED=true`. When enabled, the driver backs
+  up the current release path, preserves `.env`, `storage`, and
+  `public/storage`, switches staged release files, and records
+  `archive_switch_status=switched` plus `archive_backup_path`.
 
 ## Incident Learning
 
