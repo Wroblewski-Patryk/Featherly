@@ -22,11 +22,17 @@ Those belong in:
 1. `architecture-source-of-truth.md`
 2. `system-architecture.md`
 3. `tech-stack.md`
-4. `modules.md`
-5. task-relevant architecture contracts
+4. `current-implementation-map.md`
+5. `modules.md`
+6. `system-update-manager-contract.md` when update or deployment behavior is in
+   scope
+7. task-relevant architecture contracts
 
 ## Architecture Rules
 - One file should have one clear responsibility.
 - Resolved architecture decisions belong here, not only in planning notes.
 - Module docs may explain implementation details, but do not override this
   folder.
+- `current-implementation-map.md` records the verified runtime surfaces that
+  exist in code. When it conflicts with older notes, treat the conflict as an
+  architecture drift item and resolve it before building on the older note.

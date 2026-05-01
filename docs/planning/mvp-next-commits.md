@@ -1,12 +1,16 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] Refill NOW from `docs/planning/scaling-backlog-65.md` (next execution lane)
-- [ ] Select first tiny reversible task (<=10 files) from scaling backlog
-- [ ] Execute selected task with validation + docs/context sync
+- [ ] Execute `FEA-011` module contract audit for pages/posts/projects/forms/templates
+- [ ] Start `FEA-015` with the smallest safe System Update Manager slice:
+  update settings, release manifest check, admin status, and manual/fake driver
+- [ ] Plan the next `projects.category` compatibility-debt slice after the admin UI removal
 
 ## NEXT
-- [ ] Continue scaling backlog slices in priority order (P0 -> P1 -> P2 -> P3)
+- [ ] Audit remaining runtime persistence surfaces still depending on legacy
+  `projects.category`
+- [ ] Decide whether retiring the `projects.category` column needs a dedicated
+  migration/backfill plan
 - [ ] Keep per-task validation evidence in `mvp-execution-plan` progress log
 
 ## LATER

@@ -16,6 +16,14 @@ Last updated: 2026-05-01
   user-collaboration, world-class delivery, UX quality, security lifecycle,
   deployment, rollback, and observability guidance while preserving
   Featherly-specific Laravel/Vue/i18n constraints.
+- 2026-05-01: automatic updates were defined as an environment-adaptive Update
+  Manager contract: update checks are application-owned, update application is
+  delegated to safe drivers such as Coolify, Docker, Git, archive, or manual
+  workflows, and unsupported hosts must fail closed to notification/manual mode.
+- 2026-05-01: `docs/architecture` was synchronized with verified current
+  implementation surfaces through `current-implementation-map.md`, including
+  routing, admin/content boundaries, headless export, media lifecycle,
+  operations, reliability, and known architecture debt.
 
 ## Technical Baseline
 - Backend: Laravel 12 + PHP 8.2+
@@ -23,6 +31,9 @@ Last updated: 2026-05-01
 - Mobile: none in repository scope
 - Database: relational DB with JSON fields for localized and block content
 - Infra: Laravel runtime + Vite frontend build/dev
+- Updates: application-owned update discovery with environment-specific
+  application drivers, documented in
+  `docs/architecture/system-update-manager-contract.md`
 - External services: optional Sentry and media/integration surfaces as configured
 - MCP / external tools: design-source workflows may use Figma or Stitch where applicable
 
@@ -63,6 +74,7 @@ Last updated: 2026-05-01
 - `docs/product/product.md`
 - `docs/product/mvp_scope.md`
 - `docs/architecture/system-architecture.md`
+- `docs/architecture/current-implementation-map.md`
 - `docs/architecture/modules.md`
 - `docs/planning/mvp-execution-plan.md`
 - `docs/planning/mvp-next-commits.md`

@@ -1,0 +1,187 @@
+# System Update Manager Contract
+
+## Purpose
+
+Featherly supports WordPress-like update behavior across different hosting
+models without assuming that every installation runs on Coolify or on an
+operator-controlled VPS.
+
+The application owns update discovery, admin preferences, status visibility,
+preflight checks, audit evidence, and user-facing controls. Code replacement
+and service restart are delegated to an environment-specific update driver.
+
+## Supported Hosting Models
+
+- Coolify or similar platform-as-a-service on a VPS.
+- Generic VPS with Docker, Docker Compose, Git, or shell access.
+- Shared hosting where shell access, Git, Composer, Node, or process restarts
+  may be unavailable.
+- Third-party self-hosted installations where the Featherly maintainers do not
+  have server access.
+
+## Core Decision
+
+Featherly must not assume direct control over every runtime environment. The
+update system must be environment-adaptive:
+
+- update checks are application-owned and enabled by default
+- automatic update application is available only when a safe driver passes
+  preflight checks
+- users can disable automatic updates in the admin settings
+- an environment-level kill switch must be able to disable automatic update
+  application even if the database setting is enabled
+- unsupported environments must fall back to update notification and manual
+  instructions instead of attempting unsafe self-mutation
+
+## Responsibilities
+
+### Application Core
+
+The application core is responsible for:
+
+- storing update preferences and status
+- checking the current installed version against the release manifest
+- showing current version, latest version, last check, last attempt, and
+  failure details in the admin panel
+- running scheduler-based update checks
+- selecting a configured update driver
+- running preflight validation before update application
+- recording audit logs for checks and update attempts
+- refusing automatic application when risk controls are missing
+
+### Update Drivers
+
+Drivers are responsible for applying a known release through the hosting model
+they support.
+
+Initial driver set:
+
+- `coolify`: trigger a Coolify deploy webhook or API-backed deployment
+- `docker`: pull a published image and restart the configured service
+- `git`: fetch a trusted tag or release branch and run the required build,
+  dependency, migration, and cache commands
+- `archive`: download a built release archive, verify it, unpack it into a
+  staging path, preserve local state, and switch the application files safely
+- `manual`: report availability and produce operator instructions only
+
+Drivers must expose:
+
+- whether the driver is configured
+- whether the current host supports the driver
+- preflight result
+- apply result
+- rollback or recovery notes
+- operator-facing failure message
+
+## Release Source
+
+Automatic updates must use a trusted release source, not an arbitrary moving
+branch.
+
+The preferred release source is a stable release manifest containing:
+
+- latest version
+- release channel
+- minimum PHP version
+- release archive or image reference
+- checksum
+- migration risk
+- manual-review requirement
+- release notes URL
+
+The update manager must verify release integrity before applying an archive or
+image. If verification is not possible, automatic application must fail closed.
+
+## Shared Hosting Strategy
+
+Shared hosting must prefer the `archive` driver because the host may not have
+Git, Composer, Node, queue workers, or deploy hooks.
+
+Release archives intended for this driver should include:
+
+- production PHP application files
+- installed PHP dependencies or a documented requirement when they cannot be
+  bundled
+- built Vite assets under the public build path
+- migrations
+- version metadata
+
+The archive driver must preserve local runtime state, including:
+
+- `.env`
+- `storage`
+- uploaded media
+- public storage links or equivalent hosting-specific media paths
+- installation-specific cache, logs, and generated files where appropriate
+
+If the host cannot safely unpack, verify, stage, or switch a release, the
+driver must degrade to `manual`.
+
+## Safety Rules
+
+- No deploy secrets may be exposed to the browser.
+- Update settings and actions must be protected by the existing admin
+  permission boundary.
+- Update application must run server-side only.
+- Destructive file replacement must use staging and verification before
+  switching live files.
+- Migrations must run with explicit risk handling.
+- High-risk or manual-review releases must not auto-apply.
+- Failed updates must leave the installation in the previous working state or
+  provide a deterministic recovery path.
+- Logs must not include secrets, webhook tokens, or sensitive environment
+  values.
+
+## Admin Settings
+
+The admin update settings should include:
+
+- update checks enabled, default `true`
+- automatic update application enabled, default `true` when a safe driver is
+  configured
+- release channel, default `stable`
+- preferred update driver, default `auto`
+- maintenance window
+- last check and last attempt status
+- manual "check now" action
+- manual "apply update" action when a supported update is available
+
+An environment override must be able to disable automatic application for
+operators who manage deployment outside the application.
+
+## Scheduler Contract
+
+The Laravel scheduler should run update checks daily. The scheduled task should:
+
+1. read admin and environment settings
+2. fetch and verify release manifest metadata
+3. store update availability and status
+4. auto-apply only when enabled, supported, and safe
+5. record result evidence
+
+The scheduler must not block public page serving if the update source is
+unavailable.
+
+## Reliability And Rollback
+
+Every automatic update driver must define:
+
+- preflight checks
+- expected downtime or restart behavior
+- health/readiness checks
+- post-update smoke checks
+- failure and rollback behavior
+- operator-visible logs or status
+
+For Coolify, rollback can rely on the platform deployment history when
+configured. For archive or Git updates, rollback must be designed explicitly
+before the driver is marked production-ready.
+
+## Architecture Fit
+
+This contract extends the existing configuration and delivery domains. It does
+not change localized routing, admin/public boundaries, block-builder content
+contracts, or the Laravel/Vite stack.
+
+Implementation must update operations documentation before runtime update
+application is released.
