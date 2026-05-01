@@ -217,6 +217,8 @@ without relying on chat history or stale planning notes.
   - when `ZipArchive` is available, archive driver extracts the verified
     archive into staging and validates required release files without switching
     live files
+  - archive staging validation writes a switch plan that records preserve
+    paths, required pre-switch approvals, and rollback strategy
   - archive apply execution is not enabled yet
 - Safety posture:
   - no deploy secrets are exposed to the browser
@@ -249,6 +251,6 @@ without relying on chat history or stale planning notes.
   Coolify has a gated webhook trigger path plus version and operational health
   confirmation plus an operator rollout runbook, but still needs captured
   live-environment rollout evidence; archive apply has a no-switch
-  download/verification and staging extraction validation path but still needs
-  switch execution and rollback; Docker and Git runtime drivers are deferred
-  from v1 by DEC-009.
+  download/verification, staging extraction validation, and switch-plan evidence
+  path but still needs switch execution and rollback; Docker and Git runtime
+  drivers are deferred from v1 by DEC-009.

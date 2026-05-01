@@ -166,13 +166,16 @@ class ArchiveUpdateDriver implements UpdateDriver
             ];
         }
 
+        $switchPlan = $this->writeSwitchPlan($targetVersion, $filename, $extraction);
+
         return [
             'ok' => true,
             'applied' => false,
             'apply_status' => 'archive_staged',
-            'message' => 'Release archive downloaded, verified, and extracted to staging. No live files were changed.',
+            'message' => 'Release archive downloaded, verified, extracted to staging, and switch plan recorded. No live files were changed.',
             'operator_instructions' => [
                 'Review the validated staging directory before enabling file switching.',
+                'Review the generated switch plan before any live file replacement.',
                 'Back up .env, storage, uploaded media, and the database before replacing files.',
                 'Run the later archive switch task before any live file replacement.',
             ],
@@ -185,6 +188,9 @@ class ArchiveUpdateDriver implements UpdateDriver
             'archive_extraction_message' => 'Archive extracted to staging and required files were found.',
             'archive_extracted_directory' => $extraction['directory'] ?? null,
             'archive_extracted_file_count' => $extraction['file_count'] ?? null,
+            'archive_switch_status' => 'planned',
+            'archive_switch_plan_path' => $switchPlan['path'],
+            'archive_switch_plan_generated_at' => $switchPlan['generated_at'],
         ];
     }
 
@@ -379,6 +385,51 @@ class ArchiveUpdateDriver implements UpdateDriver
         }
 
         return $count;
+    }
+
+    /**
+     * @param  array<string, mixed>  $extraction
+     * @return array{path: string, generated_at: string}
+     */
+    private function writeSwitchPlan(string $targetVersion, string $archiveFilename, array $extraction): array
+    {
+        $generatedAt = Carbon::now()->toIso8601String();
+        $planPath = $this->ensureStagingDirectory()
+            . DIRECTORY_SEPARATOR
+            . 'switch-plan-' . (preg_replace('/[^A-Za-z0-9._-]/', '-', $targetVersion) ?: 'release') . '.json';
+
+        $plan = [
+            'generated_at' => $generatedAt,
+            'target_version' => $targetVersion,
+            'archive_filename' => $archiveFilename,
+            'extracted_directory' => $extraction['directory'] ?? null,
+            'release_path' => $this->releasePath(),
+            'preserve_paths' => [
+                '.env',
+                'storage',
+                'public/storage',
+            ],
+            'required_before_switch' => [
+                'database backup captured',
+                'current release backup captured',
+                'maintenance mode decision recorded',
+                'operator approval recorded',
+            ],
+            'rollback' => [
+                'strategy' => 'restore previous release path and database backup',
+                'live_files_changed_by_this_step' => false,
+            ],
+        ];
+
+        $encoded = json_encode($plan, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if (!is_string($encoded) || file_put_contents($planPath, $encoded, LOCK_EX) === false) {
+            throw new RuntimeException('Archive switch plan could not be written.');
+        }
+
+        return [
+            'path' => $planPath,
+            'generated_at' => $generatedAt,
+        ];
     }
 
     private function stringValue(mixed $value): string

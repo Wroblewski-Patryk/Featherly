@@ -41,6 +41,8 @@ Current implemented baseline:
 - when PHP `ZipArchive` is available, archive driver can extract the verified
   archive to staging and validate the required Laravel release files without
   switching live files
+- archive staging validation records a switch/rollback plan that must be
+  reviewed before any live file replacement is implemented
 
 Not implemented yet:
 
@@ -150,11 +152,12 @@ image. If integrity metadata is missing or invalid, automatic application must
 fail closed.
 
 The current archive implementation stops after download, SHA-256 verification,
-and staging extraction validation. It records verification and staging evidence
-but must not migrate, switch live files, or mark the update applied until
-switching and rollback are implemented. If the PHP `ZipArchive` extension is
-unavailable, extraction is recorded as unavailable and the operator must enable
-ZIP support before the archive driver can progress to extraction validation.
+staging extraction validation, and switch-plan generation. It records
+verification, staging, and rollback-planning evidence but must not migrate,
+switch live files, or mark the update applied until switching and rollback are
+implemented. If the PHP `ZipArchive` extension is unavailable, extraction is
+recorded as unavailable and the operator must enable ZIP support before the
+archive driver can progress to extraction validation.
 
 ## Shared Hosting Strategy
 

@@ -74,6 +74,11 @@
 - [x] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## Progress Log
+- 2026-05-01: Completed FEA-015M by writing archive switch/rollback plan
+  evidence after staging validation; the plan records the target version,
+  archive, extracted directory, release path, preserve paths, required
+  pre-switch approvals, and rollback strategy while still leaving live files
+  untouched.
 - 2026-05-01: Completed FEA-015L by adding no-switch archive extraction
   staging validation for runtimes with PHP `ZipArchive`: verified archives are
   extracted into staging, required Laravel release files are checked, missing

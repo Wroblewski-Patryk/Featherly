@@ -546,7 +546,6 @@ class SystemUpdateCheckCommandTest extends TestCase
         ]);
 
         $this->artisan('updates:apply --force')
-            ->expectsOutputToContain('Release archive downloaded, verified, and extracted to staging.')
             ->assertSuccessful();
 
         $status = Setting::query()->where('key', 'system_update_status')->firstOrFail()->value;
@@ -555,6 +554,13 @@ class SystemUpdateCheckCommandTest extends TestCase
         $this->assertSame('validated', $status['archive_extraction_status']);
         $this->assertSame(4, $status['archive_extracted_file_count']);
         $this->assertTrue(is_file($status['archive_extracted_directory'] . '/artisan'));
+        $this->assertSame('planned', $status['archive_switch_status']);
+        $this->assertTrue(is_file($status['archive_switch_plan_path']));
+        $switchPlan = json_decode((string) file_get_contents($status['archive_switch_plan_path']), true);
+        $this->assertSame('1.1.0', $switchPlan['target_version']);
+        $this->assertSame($releasePath, $switchPlan['release_path']);
+        $this->assertContains('storage', $switchPlan['preserve_paths']);
+        $this->assertFalse($switchPlan['rollback']['live_files_changed_by_this_step']);
         $this->assertTrue($status['update_available']);
         $this->assertSame('1.0.0', $status['current_version']);
     }
