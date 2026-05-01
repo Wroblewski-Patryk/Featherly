@@ -66,6 +66,9 @@ Last updated: 2026-05-01
   validation when PHP `ZipArchive` is available; tests verify required release
   files are present and missing-file archives fail closed without touching live
   files.
+- 2026-05-01: Archive staging validation now writes a no-switch switch/rollback
+  plan with preserve paths, required pre-switch approvals, and rollback
+  strategy before any future live file replacement is allowed.
 
 ## Technical Baseline
 - Backend: Laravel 12 + PHP 8.2+
@@ -80,9 +83,10 @@ Last updated: 2026-05-01
   config-gated fake apply tests plus a config-gated Coolify webhook trigger
   with CLI version and operational health confirmation; archive/Docker/Git code
   replacement remains unavailable; archive verification can download and verify
-  a staged artifact and validate extracted staging structure without switching
-  live files, Docker/Git runtime drivers are deferred from v1, and Coolify
-  production readiness still requires captured staging/live rollout evidence
+  a staged artifact, validate extracted staging structure, and record a switch
+  plan without switching live files, Docker/Git runtime drivers are deferred
+  from v1, and Coolify production readiness still requires captured
+  staging/live rollout evidence
 - External services: optional Sentry and media/integration surfaces as configured
 - MCP / external tools: design-source workflows may use Figma or Stitch where applicable
 

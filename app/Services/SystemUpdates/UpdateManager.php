@@ -224,6 +224,9 @@ class UpdateManager
                 'archive_extraction_message',
                 'archive_extracted_directory',
                 'archive_extracted_file_count',
+                'archive_switch_status',
+                'archive_switch_plan_path',
+                'archive_switch_plan_generated_at',
             ] as $archiveField) {
                 if (array_key_exists($archiveField, $result)) {
                     $updates[$archiveField] = $result[$archiveField];
@@ -443,6 +446,9 @@ class UpdateManager
             'archive_extracted_file_count' => is_numeric($normalized['archive_extracted_file_count'] ?? null)
                 ? (int) $normalized['archive_extracted_file_count']
                 : null,
+            'archive_switch_status' => $this->toString($normalized['archive_switch_status'] ?? null, null),
+            'archive_switch_plan_path' => $this->toString($normalized['archive_switch_plan_path'] ?? null, null),
+            'archive_switch_plan_generated_at' => $this->toString($normalized['archive_switch_plan_generated_at'] ?? null, null),
             'manual_review_required' => $this->toBool($normalized['manual_review_required'] ?? false, false),
             'minimum_php_version' => $this->toString($normalized['minimum_php_version'] ?? null, null),
             'php_requirement_ok' => $this->toBool($normalized['php_requirement_ok'] ?? true, true),

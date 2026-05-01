@@ -147,6 +147,10 @@ Out of scope for the first implementation slice:
   for runtimes with PHP `ZipArchive`; verified archives are extracted into
   staging and required Laravel release files are checked before any future
   switch can be considered.
+- Implementation notes: added archive switch/rollback plan evidence after
+  staging validation; the generated JSON plan records preserve paths, required
+  pre-switch approvals, and rollback strategy while keeping live files
+  untouched.
 
 ### 5. Verify and Test
 - Validation performed: targeted backend feature tests for settings and update
@@ -178,6 +182,9 @@ Out of scope for the first implementation slice:
 - Result: eleventh slice verified with targeted backend coverage, including a
   direct PHPUnit run with `php -d extension=zip`; archive staging validation now
   passes for complete archives and fails closed for missing required files.
+- Result: twelfth slice verified with targeted backend coverage, including a
+  direct PHPUnit run with `php -d extension=zip`; archive staging now records a
+  switch plan before any live file replacement can be implemented.
 
 ### 6. Self-Review
 - Simpler option considered: Coolify-only auto-deploy.
@@ -221,8 +228,8 @@ Out of scope for the first implementation slice:
 - Post-launch learning needed: yes
 
 ## Deliverable For This Stage
-Verified eleventh implementation slice: no-switch archive extraction staging
-validation, while keeping production code replacement fail-closed.
+Verified twelfth implementation slice: no-switch archive switch/rollback plan
+evidence, while keeping production code replacement fail-closed.
 
 ## Constraints
 - use existing settings, scheduler, admin permission, and audit patterns first
@@ -282,6 +289,8 @@ validation, while keeping production code replacement fail-closed.
   dedicated staging, secret, migration, health, and rollback contracts.
 - High-risk checks: archive extraction validates required files in staging and
   removes failed extraction output without switching live files.
+- High-risk checks: generated switch plans explicitly record that no live files
+  were changed by this step and list pre-switch approvals required later.
 - Coverage ledger updated: not applicable.
 - Coverage rows closed or changed:
 
@@ -393,7 +402,7 @@ validation, while keeping production code replacement fail-closed.
 
 ## Result Report
 - Task summary: continued the System Update Manager by adding no-switch archive
-  extraction staging validation.
+  switch/rollback plan evidence.
 - Files changed: `config/updates.php`,
   `app/Services/SystemUpdates/UpdateManager.php`,
   `app/Services/SystemUpdates/UpdateDriver.php`,
@@ -420,10 +429,10 @@ validation, while keeping production code replacement fail-closed.
   `docs/planning/tasks/FEA-015-system-update-manager.md`
 - How tested: targeted PHPUnit feature tests for update commands and settings;
   `git diff --check`.
-- What is incomplete: archive switch execution, rollback execution, audit
+- What is incomplete: archive live switch execution, rollback execution, audit
   history UI, and captured staging/live Coolify rollout evidence.
-- Next steps: design the archive switch/rollback gate or capture Coolify
-  staging/live evidence using the runbook.
+- Next steps: implement guarded live switch only after explicit approval, or
+  capture Coolify staging/live evidence using the runbook.
 - Decisions made: first implementation slice remains manual-only for apply
   behavior and stores status in existing `settings` instead of creating a new
   model.

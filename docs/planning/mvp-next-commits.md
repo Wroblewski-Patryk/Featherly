@@ -3,8 +3,8 @@
 ## NOW (max 3)
 - [ ] Execute `FEA-011` module contract audit for pages/posts/projects/forms/templates
 - [ ] Continue `FEA-015` with the next safe System Update Manager slice:
-  archive extraction staging validation is done; next design archive
-  switch/rollback gate or capture Coolify staging/live evidence
+  archive switch-plan evidence is done; next implement guarded live switch
+  only after explicit approval or capture Coolify staging/live evidence
 - [ ] Plan the next `projects.category` compatibility-debt slice after the admin UI removal
 
 ## NEXT

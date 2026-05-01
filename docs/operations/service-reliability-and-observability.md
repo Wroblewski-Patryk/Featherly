@@ -136,6 +136,9 @@ Every meaningful runtime path should provide:
   extract the archive to staging and requires `artisan`, `composer.json`,
   `bootstrap/app.php`, and `public/index.php` before recording
   `archive_extraction_status=validated`.
+- Switch planning: validated archive staging writes a switch plan with preserve
+  paths, required pre-switch approvals, and rollback strategy. This plan is
+  evidence only; live files are not replaced in the current v1 slice.
 
 ## Incident Learning
 
