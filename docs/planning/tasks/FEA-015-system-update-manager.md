@@ -402,8 +402,8 @@ evidence, while keeping production code replacement fail-closed.
 
 ## Result Report
 - Task summary: continued the System Update Manager through the archive driver
-  safe-switch segment. The latest slice adds explicitly gated archive live
-  switch execution with backup evidence and local-state preservation.
+  safe-switch segment. The latest slices add explicitly gated archive live
+  switch execution and archive rollback from the recorded backup path.
 - Files changed: `config/updates.php`,
   `app/Services/SystemUpdates/UpdateManager.php`,
   `app/Services/SystemUpdates/UpdateDriver.php`,
@@ -430,10 +430,10 @@ evidence, while keeping production code replacement fail-closed.
   `docs/planning/tasks/FEA-015-system-update-manager.md`
 - How tested: targeted PHPUnit feature tests for update commands and settings;
   `git diff --check`.
-- What is incomplete: archive rollback execution command, audit history UI,
-  and captured staging/live Coolify rollout evidence.
-- Next steps: add archive rollback command coverage or capture Coolify
-  staging/live evidence using the runbook.
+- What is incomplete: audit history UI and captured staging/live Coolify
+  rollout evidence.
+- Next steps: capture Coolify staging/live evidence using the runbook, or
+  explicitly record the environment blocker for v1.
 - Decisions made: first implementation slice remains manual-only for apply
   behavior and stores status in existing `settings` instead of creating a new
   model.
@@ -446,5 +446,6 @@ and deployment execution can be delegated to the platform. The archive driver is
 required for shared hosting support but must be treated as higher risk until
 staging, checksum verification, local-state preservation, switch execution, and
 rollback are proven. The archive switch path is now implemented only behind
-`FEATHERLY_UPDATE_ARCHIVE_SWITCH_ENABLED`; rollback remains operator-owned until
-a dedicated command or explicit v1 deferral is recorded.
+`FEATHERLY_UPDATE_ARCHIVE_SWITCH_ENABLED`; rollback is available through
+`php artisan updates:rollback-archive --force` using the recorded
+`archive_backup_path`.

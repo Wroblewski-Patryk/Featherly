@@ -74,6 +74,12 @@
 - [x] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## Progress Log
+- 2026-05-01: Completed FEA-015O by adding
+  `updates:rollback-archive --force`: archive rollback now restores the
+  configured release path from the recorded `archive_backup_path`, preserves
+  `.env`, `storage`, and `public/storage`, records rollback status evidence,
+  and has regression coverage for restored release files plus preserved local
+  state.
 - 2026-05-01: Completed FEA-015N by adding gated archive live switch execution
   behind `FEATHERLY_UPDATE_ARCHIVE_SWITCH_ENABLED`: the driver backs up the
   existing release path, preserves `.env`, `storage`, and `public/storage`,

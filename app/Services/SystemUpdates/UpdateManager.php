@@ -373,6 +373,67 @@ class UpdateManager
         return $this->getStatus();
     }
 
+    public function rollbackArchiveUpdate(): array
+    {
+        $status = $this->normalizeStatus($this->readSetting(self::STATUS_KEY));
+        $driver = new ArchiveUpdateDriver();
+        $attemptedAt = Carbon::now()->toIso8601String();
+
+        try {
+            $result = $driver->rollback($status);
+            $ok = (bool) ($result['ok'] ?? false);
+            $message = $this->toString($result['message'] ?? null, $ok ? 'Archive rollback completed.' : 'Archive rollback failed.');
+
+            $updates = [
+                'last_attempted_at' => $attemptedAt,
+                'apply_status' => $this->toString($result['apply_status'] ?? null, $ok ? 'archive_rolled_back' : 'archive_rollback_failed'),
+                'failure_message' => $ok ? null : $message,
+                'operator_message' => $message,
+                'operator_instructions' => $result['operator_instructions'] ?? [],
+                'rollback_note' => $this->toString($result['rollback_note'] ?? null, $status['rollback_note'] ?? null),
+                'effective_driver' => $driver->key(),
+            ];
+
+            foreach ([
+                'archive_switch_status',
+                'archive_rolled_back_at',
+                'archive_backup_path',
+            ] as $archiveField) {
+                if (array_key_exists($archiveField, $result)) {
+                    $updates[$archiveField] = $result[$archiveField];
+                }
+            }
+
+            if ($ok) {
+                $updates['status'] = 'rollback_completed';
+                $updates['status_label'] = 'Rollback completed';
+            }
+
+            $this->writeApplyStatus($status, $updates);
+
+            AuditLogger::log($ok ? 'updates.archive_rolled_back' : 'updates.archive_rollback_failed', [
+                'driver' => $driver->key(),
+                'backup_path' => $result['archive_backup_path'] ?? $status['archive_backup_path'] ?? null,
+                'message' => $message,
+            ]);
+        } catch (Throwable $exception) {
+            $this->writeApplyStatus($status, [
+                'last_attempted_at' => $attemptedAt,
+                'apply_status' => 'archive_rollback_failed',
+                'failure_message' => $exception->getMessage(),
+                'operator_message' => $exception->getMessage(),
+                'effective_driver' => $driver->key(),
+            ]);
+
+            AuditLogger::log('updates.archive_rollback_failed', [
+                'driver' => $driver->key(),
+                'message' => $exception->getMessage(),
+            ]);
+        }
+
+        return $this->getStatus();
+    }
+
     private function fetchManifest(string $channel): array
     {
         $manifestUrl = $this->toString(config('updates.manifest_url'), '');
@@ -452,6 +513,7 @@ class UpdateManager
             'archive_switch_plan_path' => $this->toString($normalized['archive_switch_plan_path'] ?? null, null),
             'archive_switch_plan_generated_at' => $this->toString($normalized['archive_switch_plan_generated_at'] ?? null, null),
             'archive_switched_at' => $this->toString($normalized['archive_switched_at'] ?? null, null),
+            'archive_rolled_back_at' => $this->toString($normalized['archive_rolled_back_at'] ?? null, null),
             'archive_backup_path' => $this->toString($normalized['archive_backup_path'] ?? null, null),
             'manual_review_required' => $this->toBool($normalized['manual_review_required'] ?? false, false),
             'minimum_php_version' => $this->toString($normalized['minimum_php_version'] ?? null, null),

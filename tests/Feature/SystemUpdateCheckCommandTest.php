@@ -689,6 +689,70 @@ class SystemUpdateCheckCommandTest extends TestCase
         $this->assertSame('APP_KEY=old', file_get_contents($status['archive_backup_path'] . '/.env'));
     }
 
+    public function test_archive_rollback_restores_backup_and_preserves_local_state(): void
+    {
+        $basePath = storage_path('framework/testing/archive-rollback-success');
+        $stagingPath = $basePath . '/staging/current';
+        $releasePath = $basePath . '/release/current';
+        $backupPath = $basePath . '/staging/current/backups/1.1.0-rollback';
+
+        $this->prepareArchivePaths($stagingPath, $releasePath);
+        foreach ([$releasePath . '/bootstrap', $releasePath . '/public', $releasePath . '/storage', $backupPath . '/bootstrap', $backupPath . '/public', $backupPath . '/storage'] as $directory) {
+            if (!is_dir($directory)) {
+                mkdir($directory, 0777, true);
+            }
+        }
+
+        file_put_contents($releasePath . '/artisan', 'new artisan');
+        file_put_contents($releasePath . '/composer.json', '{"name":"featherly/new"}');
+        file_put_contents($releasePath . '/bootstrap/app.php', '<?php return "new";');
+        file_put_contents($releasePath . '/public/index.php', '<?php echo "new";');
+        file_put_contents($releasePath . '/new-only.php', 'new release');
+        file_put_contents($releasePath . '/.env', 'APP_KEY=current');
+        file_put_contents($releasePath . '/storage/local.txt', 'current storage');
+
+        file_put_contents($backupPath . '/artisan', 'old artisan');
+        file_put_contents($backupPath . '/composer.json', '{"name":"featherly/old"}');
+        file_put_contents($backupPath . '/bootstrap/app.php', '<?php return "old";');
+        file_put_contents($backupPath . '/public/index.php', '<?php echo "old";');
+        file_put_contents($backupPath . '/old-only.php', 'old release');
+        file_put_contents($backupPath . '/.env', 'APP_KEY=backup');
+        file_put_contents($backupPath . '/storage/backup.txt', 'backup storage');
+
+        config()->set('updates.drivers.archive.staging_path', $stagingPath);
+        config()->set('updates.drivers.archive.release_path', $releasePath);
+
+        Setting::updateOrCreate(['key' => 'system_update_status'], ['value' => [
+            'current_version' => '1.1.0',
+            'latest_version' => '1.1.0',
+            'update_available' => false,
+            'apply_status' => 'archive_switched',
+            'archive_switch_status' => 'switched',
+            'archive_backup_path' => $backupPath,
+            'status' => 'current',
+            'status_label' => 'Up to date',
+        ]]);
+
+        $this->artisan('updates:rollback-archive --force')
+            ->expectsOutputToContain('Archive release rollback completed from the recorded backup path.')
+            ->assertSuccessful();
+
+        $status = Setting::query()->where('key', 'system_update_status')->firstOrFail()->value;
+
+        $this->assertSame('archive_rolled_back', $status['apply_status']);
+        $this->assertSame('rolled_back', $status['archive_switch_status']);
+        $this->assertSame('rollback_completed', $status['status']);
+        $this->assertNotEmpty($status['archive_rolled_back_at']);
+        $this->assertSame($backupPath, $status['archive_backup_path']);
+        $this->assertSame('old artisan', file_get_contents($releasePath . '/artisan'));
+        $this->assertSame('<?php return "old";', file_get_contents($releasePath . '/bootstrap/app.php'));
+        $this->assertTrue(is_file($releasePath . '/old-only.php'));
+        $this->assertFalse(is_file($releasePath . '/new-only.php'));
+        $this->assertSame('APP_KEY=current', file_get_contents($releasePath . '/.env'));
+        $this->assertSame('current storage', file_get_contents($releasePath . '/storage/local.txt'));
+        $this->assertFalse(is_file($releasePath . '/storage/backup.txt'));
+    }
+
     /**
      * @param  array<string, string>  $files
      */
