@@ -1,11 +1,10 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] Execute `FEA-011` module contract audit for pages/posts/projects/forms/templates
+- [ ] Execute `FEA-017` forms/templates admin ownership hardening decision
 - [ ] Resolve `FEA-015` production gate blocker by capturing Coolify
   staging/live rollout evidence in the target environment
-- [ ] Use the FEA-011 audit to decide whether another `projects.category`
-  compatibility-debt slice is still required
+- [ ] Execute `FEA-018` project category compatibility retirement decision
 
 ## NEXT
 - [ ] Audit remaining runtime persistence surfaces still depending on legacy

@@ -253,8 +253,11 @@ without relying on chat history or stale planning notes.
   grouping for projects is module-scoped taxonomy.
 - The documented full `/api/v1/headless/*` API is not fully implemented; the
   implemented integration route is `/headless/content-export`.
-- Some module-level docs may lag behind this map and should be reconciled
-  during FEA-011 module contract audit.
+- FEA-011 verified that pages/posts/projects align with the strongest shared
+  content contract. Forms/templates are working modules but still need an
+  explicit ownership hardening decision because they use inline validation and
+  settings-route middleware rather than dedicated FormRequests and
+  policy-backed controllers.
 - System Update Manager real apply drivers are not fully production-ready yet.
   Coolify has a gated webhook trigger path plus version and operational health
   confirmation plus an operator rollout runbook, but still needs captured
