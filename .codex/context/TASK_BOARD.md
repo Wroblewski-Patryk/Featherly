@@ -1,8 +1,20 @@
 # TASK_BOARD
 
-Last updated: 2026-04-16
+Last updated: 2026-05-01
 
 ## READY
+
+- [ ] FEA-015 Design and implement environment-adaptive System Update Manager
+  - Status: READY
+  - Owner: Backend Builder
+  - Depends on: architecture approval in
+    `docs/architecture/system-update-manager-contract.md`
+  - Priority: P1
+  - Done when:
+    - update settings, scheduler checks, release manifest parsing, and admin
+      status are implemented
+    - Coolify and archive/manual driver paths are covered by tests or fakes
+    - deployment, rollback, security, and smoke docs are synchronized
 
 - [ ] FEA-001 Finalize public dynamic routes for page/post/project
   - Status: READY
@@ -52,5 +64,6 @@ Last updated: 2026-04-16
 
 ## DONE
 
+- [x] DOC-ARCH-001 Synchronize architecture folder with current implementation map
 - [x] DOC-001 Migrate Featherly docs and agent files to template-aligned structure with project-specific content
 - [x] FEX-001..FEX-080 Prior feature execution waves completed and recorded in docs/project state
