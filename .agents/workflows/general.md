@@ -42,6 +42,12 @@ description: Workspace rules for Featherly
 ## Delivery Rules
 - Keep changes scoped and reversible.
 - Require acceptance evidence before completion.
+- For release readiness, handoffs, incidents, stale queues, or broad confidence
+  reviews, use `docs/governance/function-coverage-ledger-standard.md` to map
+  Featherly module functions, evidence gaps, blockers, and the next smallest
+  verification or fix task.
+- If a function coverage ledger exists, update the smallest truthful row after
+  verification, fixes, deferrals, or release-gate reruns.
 - Follow the loop: plan -> implement -> test -> architecture review -> sync context -> repeat.
 - Run the relevant validation commands from `.codex/context/PROJECT_STATE.md` before every commit.
 - Use subagents only according to `.agents/workflows/subagent-orchestration.md`.

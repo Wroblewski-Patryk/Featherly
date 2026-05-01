@@ -9,6 +9,9 @@ Workflow:
    - `docs/planning/mvp-next-commits.md`
    - `docs/planning/mvp-execution-plan.md`
    - `docs/planning/open-decisions.md`
+   - `docs/governance/function-coverage-ledger-standard.md` and any active
+     `docs/operations/*function-coverage*` artifacts when the queue is stale,
+     release confidence is unclear, or a handoff/incident needs a module map
 3. Implement exactly one tiny task.
 4. Run relevant checks.
 5. Review whether a better architectural follow-up or smaller task split should be captured.
@@ -19,6 +22,12 @@ Hard rules:
 - Tiny commits only.
 - Fix/cleanup/update before broadening scope.
 - Never skip plan synchronization.
+- Do not invent feature work from an evidence gap. If a coverage ledger row is
+  `PARTIAL`, `NEEDS_TARGET_SAMPLE`, `NEEDS_TARGET_UI_CHECK`, or equivalent,
+  plan verification first and create a narrow fix only after proof or code
+  inspection finds a defect.
+- Every task derived from a coverage ledger must list the row IDs it closes or
+  updates.
 - For UX/UI tasks, require design source and evidence fields.
 - Keep localization and translation integrity in scope when copy or route labels change.
 - Delegate only independent side tasks with explicit ownership.

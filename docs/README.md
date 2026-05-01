@@ -13,6 +13,8 @@
 - `governance/subagent-delegation-policy.md`
 - `governance/repository-structure-policy.md`
 - `governance/code-quality-guardrails.md` (optional)
+- `governance/function-coverage-ledger-standard.md`
+- `governance/function-coverage-ledger-template.csv`
 
 ## ADR
 - `adr/README.md`
