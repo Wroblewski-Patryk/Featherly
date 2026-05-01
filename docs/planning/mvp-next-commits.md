@@ -4,7 +4,8 @@
 - [ ] Execute `FEA-011` module contract audit for pages/posts/projects/forms/templates
 - [ ] Resolve `FEA-015` production gate blocker by capturing Coolify
   staging/live rollout evidence in the target environment
-- [ ] Plan the next `projects.category` compatibility-debt slice after the admin UI removal
+- [ ] Use the FEA-011 audit to decide whether another `projects.category`
+  compatibility-debt slice is still required
 
 ## NEXT
 - [ ] Audit remaining runtime persistence surfaces still depending on legacy

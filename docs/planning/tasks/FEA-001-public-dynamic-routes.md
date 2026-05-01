@@ -252,3 +252,10 @@ Verified routing contract, regression evidence, and synchronized docs/context.
 No architecture deviation was required; the task documents the chosen explicit
 resolver contract rather than hardcoding archive prefixes into route
 definitions.
+
+## 2026-05-02 Reconciliation Addendum
+- `php artisan test --filter=PublicRouteContractTest` passed again with
+  7 tests and 81 assertions.
+- `DEC-001` was closed to match the implemented route contract.
+- `.codex/context/TASK_BOARD.md` was reconciled so FEA-001 is no longer shown
+  as READY after its implementation evidence already existed.
