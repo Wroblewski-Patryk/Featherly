@@ -227,6 +227,8 @@ class UpdateManager
                 'archive_switch_status',
                 'archive_switch_plan_path',
                 'archive_switch_plan_generated_at',
+                'archive_switched_at',
+                'archive_backup_path',
             ] as $archiveField) {
                 if (array_key_exists($archiveField, $result)) {
                     $updates[$archiveField] = $result[$archiveField];
@@ -449,6 +451,8 @@ class UpdateManager
             'archive_switch_status' => $this->toString($normalized['archive_switch_status'] ?? null, null),
             'archive_switch_plan_path' => $this->toString($normalized['archive_switch_plan_path'] ?? null, null),
             'archive_switch_plan_generated_at' => $this->toString($normalized['archive_switch_plan_generated_at'] ?? null, null),
+            'archive_switched_at' => $this->toString($normalized['archive_switched_at'] ?? null, null),
+            'archive_backup_path' => $this->toString($normalized['archive_backup_path'] ?? null, null),
             'manual_review_required' => $this->toBool($normalized['manual_review_required'] ?? false, false),
             'minimum_php_version' => $this->toString($normalized['minimum_php_version'] ?? null, null),
             'php_requirement_ok' => $this->toBool($normalized['php_requirement_ok'] ?? true, true),

@@ -168,6 +168,36 @@ class ArchiveUpdateDriver implements UpdateDriver
 
         $switchPlan = $this->writeSwitchPlan($targetVersion, $filename, $extraction);
 
+        if ($this->switchEnabled()) {
+            $switch = $this->switchRelease($targetVersion, $extraction);
+
+            return [
+                'ok' => true,
+                'applied' => true,
+                'apply_status' => 'archive_switched',
+                'message' => 'Release archive downloaded, verified, staged, and switched into the configured release path.',
+                'operator_instructions' => [
+                    'Run post-deploy smoke checks immediately.',
+                    'Run php artisan updates:confirm after the runtime reports the new APP_VERSION.',
+                    'Use the recorded archive backup path if rollback is required.',
+                ],
+                'rollback_note' => 'Restore the recorded archive backup path if smoke checks fail.',
+                'archive_verified_at' => Carbon::now()->toIso8601String(),
+                'archive_verified_sha256' => $actualSha256,
+                'archive_verified_bytes' => $bytes,
+                'archive_verified_filename' => $filename,
+                'archive_extraction_status' => 'validated',
+                'archive_extraction_message' => 'Archive extracted to staging and required files were found.',
+                'archive_extracted_directory' => $extraction['directory'] ?? null,
+                'archive_extracted_file_count' => $extraction['file_count'] ?? null,
+                'archive_switch_status' => 'switched',
+                'archive_switch_plan_path' => $switchPlan['path'],
+                'archive_switch_plan_generated_at' => $switchPlan['generated_at'],
+                'archive_switched_at' => $switch['switched_at'],
+                'archive_backup_path' => $switch['backup_path'],
+            ];
+        }
+
         return [
             'ok' => true,
             'applied' => false,
@@ -206,6 +236,11 @@ class ArchiveUpdateDriver implements UpdateDriver
         $value = config('updates.drivers.archive.release_path');
 
         return is_string($value) ? trim($value) : '';
+    }
+
+    private function switchEnabled(): bool
+    {
+        return filter_var(config('updates.drivers.archive.switch_enabled', false), FILTER_VALIDATE_BOOL);
     }
 
     private function hasArchiveIntegrityMetadata(array $status): bool
@@ -346,13 +381,17 @@ class ArchiveUpdateDriver implements UpdateDriver
         }
     }
 
-    private function removeDirectory(string $directory): void
+    private function removeDirectory(string $directory, ?string $allowedRoot = null): void
     {
-        $stagingRoot = realpath($this->ensureStagingDirectory());
+        $stagingRoot = realpath($allowedRoot ?? $this->ensureStagingDirectory());
         $target = realpath($directory);
 
-        if ($stagingRoot === false || $target === false || !str_starts_with($target, $stagingRoot)) {
-            throw new RuntimeException('Refusing to remove a directory outside archive staging.');
+        if (
+            $stagingRoot === false
+            || $target === false
+            || !($target === $stagingRoot || str_starts_with($target, $stagingRoot . DIRECTORY_SEPARATOR))
+        ) {
+            throw new RuntimeException('Refusing to remove a directory outside the allowed archive path.');
         }
 
         $items = new \RecursiveIteratorIterator(
@@ -404,11 +443,7 @@ class ArchiveUpdateDriver implements UpdateDriver
             'archive_filename' => $archiveFilename,
             'extracted_directory' => $extraction['directory'] ?? null,
             'release_path' => $this->releasePath(),
-            'preserve_paths' => [
-                '.env',
-                'storage',
-                'public/storage',
-            ],
+            'preserve_paths' => $this->preservePaths(),
             'required_before_switch' => [
                 'database backup captured',
                 'current release backup captured',
@@ -430,6 +465,180 @@ class ArchiveUpdateDriver implements UpdateDriver
             'path' => $planPath,
             'generated_at' => $generatedAt,
         ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $extraction
+     * @return array{switched_at: string, backup_path: string}
+     */
+    private function switchRelease(string $targetVersion, array $extraction): array
+    {
+        $releasePath = $this->releasePath();
+        $extractedDirectory = $this->stringValue($extraction['directory'] ?? null);
+
+        if ($releasePath === '' || $extractedDirectory === '' || !is_dir($extractedDirectory)) {
+            throw new RuntimeException('Archive switch requires a validated extracted directory and release path.');
+        }
+
+        $this->ensureReleaseDirectory();
+        $backupPath = $this->backupDirectory($targetVersion);
+        $this->resetDirectory($backupPath);
+        $this->copyDirectoryContents($releasePath, $backupPath);
+        $this->removeReleaseContentsExceptPreserved($releasePath);
+        $this->copyDirectoryContents($extractedDirectory, $releasePath, $this->preservePaths());
+
+        $missing = $this->missingRequiredFiles($releasePath);
+        if ($missing !== []) {
+            $this->removeReleaseContentsExceptPreserved($releasePath);
+            $this->copyDirectoryContents($backupPath, $releasePath);
+
+            throw new RuntimeException('Archive switch validation failed. Release path was restored from backup.');
+        }
+
+        return [
+            'switched_at' => Carbon::now()->toIso8601String(),
+            'backup_path' => $backupPath,
+        ];
+    }
+
+    private function ensureReleaseDirectory(): string
+    {
+        $releasePath = $this->releasePath();
+
+        if ($releasePath === '') {
+            throw new RuntimeException('Archive release path is not configured.');
+        }
+
+        if (!is_dir($releasePath) && !mkdir($releasePath, 0775, true) && !is_dir($releasePath)) {
+            throw new RuntimeException('Archive release directory could not be created.');
+        }
+
+        if (!is_writable($releasePath)) {
+            throw new RuntimeException('Archive release directory is not writable.');
+        }
+
+        return $releasePath;
+    }
+
+    private function backupDirectory(string $targetVersion): string
+    {
+        $safeVersion = preg_replace('/[^A-Za-z0-9._-]/', '-', $targetVersion) ?: 'release';
+        $stamp = Carbon::now()->format('YmdHis');
+
+        return $this->ensureStagingDirectory() . DIRECTORY_SEPARATOR . 'backups' . DIRECTORY_SEPARATOR . $safeVersion . '-' . $stamp;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function preservePaths(): array
+    {
+        return [
+            '.env',
+            'storage',
+            'public/storage',
+        ];
+    }
+
+    private function removeReleaseContentsExceptPreserved(string $releasePath): void
+    {
+        $preserve = $this->preservePaths();
+        $items = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($releasePath, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($items as $item) {
+            $relative = str_replace('\\', '/', substr($item->getPathname(), strlen($releasePath) + 1));
+
+            if ($this->isPreservedPath($relative, $preserve) || $this->hasPreservedDescendant($relative, $preserve)) {
+                continue;
+            }
+
+            if ($item->isDir()) {
+                $this->removeDirectory($item->getPathname(), $releasePath);
+            } else {
+                unlink($item->getPathname());
+            }
+        }
+    }
+
+    /**
+     * @param  array<int, string>  $skipPaths
+     */
+    private function copyDirectoryContents(string $source, string $destination, array $skipPaths = []): void
+    {
+        if (!is_dir($source)) {
+            return;
+        }
+
+        if (!is_dir($destination) && !mkdir($destination, 0775, true) && !is_dir($destination)) {
+            throw new RuntimeException('Archive destination directory could not be created.');
+        }
+
+        $items = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($source, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        foreach ($items as $item) {
+            $relative = str_replace('\\', '/', substr($item->getPathname(), strlen($source) + 1));
+
+            if ($this->isPreservedPath($relative, $skipPaths)) {
+                continue;
+            }
+
+            $target = $destination . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relative);
+
+            if ($item->isDir()) {
+                if (!is_dir($target) && !mkdir($target, 0775, true) && !is_dir($target)) {
+                    throw new RuntimeException('Archive destination subdirectory could not be created.');
+                }
+            } else {
+                $parent = dirname($target);
+                if (!is_dir($parent) && !mkdir($parent, 0775, true) && !is_dir($parent)) {
+                    throw new RuntimeException('Archive destination parent directory could not be created.');
+                }
+
+                copy($item->getPathname(), $target);
+            }
+        }
+    }
+
+    /**
+     * @param  array<int, string>  $paths
+     */
+    private function isPreservedPath(string $relativePath, array $paths): bool
+    {
+        $normalized = str_replace('\\', '/', trim($relativePath, '/'));
+
+        foreach ($paths as $path) {
+            $preserved = trim($path, '/');
+
+            if ($normalized === $preserved || str_starts_with($normalized, $preserved . '/')) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param  array<int, string>  $paths
+     */
+    private function hasPreservedDescendant(string $relativePath, array $paths): bool
+    {
+        $normalized = str_replace('\\', '/', trim($relativePath, '/'));
+
+        foreach ($paths as $path) {
+            $preserved = trim($path, '/');
+
+            if (str_starts_with($preserved, $normalized . '/')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function stringValue(mixed $value): string

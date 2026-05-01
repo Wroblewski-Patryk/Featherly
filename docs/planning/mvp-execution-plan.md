@@ -74,6 +74,12 @@
 - [x] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## Progress Log
+- 2026-05-01: Completed FEA-015N by adding gated archive live switch execution
+  behind `FEATHERLY_UPDATE_ARCHIVE_SWITCH_ENABLED`: the driver backs up the
+  existing release path, preserves `.env`, `storage`, and `public/storage`,
+  copies validated staged release files into the configured release path,
+  records switch/backup evidence, and marks the update applied only in the
+  explicitly enabled switch path.
 - 2026-05-01: Completed FEA-015M by writing archive switch/rollback plan
   evidence after staging validation; the plan records the target version,
   archive, extracted directory, release path, preserve paths, required

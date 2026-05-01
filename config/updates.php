@@ -14,6 +14,7 @@ return [
         'archive' => [
             'staging_path' => env('FEATHERLY_UPDATE_ARCHIVE_STAGING_PATH'),
             'release_path' => env('FEATHERLY_UPDATE_ARCHIVE_RELEASE_PATH'),
+            'switch_enabled' => env('FEATHERLY_UPDATE_ARCHIVE_SWITCH_ENABLED', false),
         ],
     ],
 ];

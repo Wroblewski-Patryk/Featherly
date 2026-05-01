@@ -219,7 +219,12 @@ without relying on chat history or stale planning notes.
     live files
   - archive staging validation writes a switch plan that records preserve
     paths, required pre-switch approvals, and rollback strategy
-  - archive apply execution is not enabled yet
+  - archive switch execution is available only behind
+    `FEATHERLY_UPDATE_ARCHIVE_SWITCH_ENABLED`; it preserves `.env`, `storage`,
+    and `public/storage`, backs up the previous release path, and records
+    switch evidence
+  - archive apply execution remains disabled by default and must be explicitly
+    enabled by the operator before live files are switched
 - Safety posture:
   - no deploy secrets are exposed to the browser
   - admin routes stay behind `manage-settings`
@@ -252,5 +257,5 @@ without relying on chat history or stale planning notes.
   confirmation plus an operator rollout runbook, but still needs captured
   live-environment rollout evidence; archive apply has a no-switch
   download/verification, staging extraction validation, and switch-plan evidence
-  path but still needs switch execution and rollback; Docker and Git runtime
-  drivers are deferred from v1 by DEC-009.
+  path plus gated switch execution but still needs a dedicated rollback command;
+  Docker and Git runtime drivers are deferred from v1 by DEC-009.
