@@ -74,6 +74,11 @@
 - [x] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## Progress Log
+- 2026-05-02: Reconciled active project state after route/taxonomy work:
+  FEA-001, FEA-010, FEA-013, FEA-014, and FEA-016 were already implemented
+  and validated, so the task board now exposes FEA-011 as the next local READY
+  task. `PublicRouteContractTest` was re-run to verify the public route
+  contract before closing DEC-001 in planning truth.
 - 2026-05-01: Completed FEA-015P by recording the remaining System Update
   Manager v1 production gate blocker: local implementation and tests cover
   update discovery, Coolify trigger/confirmation contracts, archive

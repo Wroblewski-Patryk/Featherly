@@ -24,18 +24,18 @@
 ## Public Runtime Scope
 - Exposed routes:
   - `GET /{locale}`
+  - `GET /{locale}/{path}` for the named public content resolver
   - `GET /{locale}/forms/{id}/preview`
   - `GET /sitemap.xml`
   - `GET /robots.txt`
   - `GET /lang/{lang}`
 - Planned routes:
-  - public dynamic page resolution
-  - public post/blog detail routes
-  - public project detail/list routes
+  - module-qualified public taxonomy routes, if approved after V1
+  - fuller `/api/v1/headless/*` route set, if productized after MVP
 
 ## In Progress
-- Final public route wiring for dynamic content.
-- Validation of taxonomy/category implementation consistency.
+- Module contract audit for pages/posts/projects/forms/templates.
+- Coolify staging/live evidence capture for production update enablement.
 
 ## Explicitly Out of Scope (Current MVP)
 - Plugin marketplace.

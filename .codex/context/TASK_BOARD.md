@@ -4,35 +4,16 @@ Last updated: 2026-05-01
 
 ## READY
 
-- [ ] FEA-001 Finalize public dynamic routes for page/post/project
-  - Status: READY
-  - Owner: Backend Builder
-  - Depends on: none
-  - Priority: P1
-  - Done when:
-    - routes are explicit in `routes/public.php`
-    - localized behavior is covered by smoke or feature tests
-    - docs and project state reflect the chosen route contract
-
-## BACKLOG
-
-- [ ] FEA-010 Category/taxonomy alignment decision
-  - Status: BACKLOG
-  - Owner: Product Docs Agent
-  - Depends on: FEA-001
-  - Priority: P1
-  - Done when:
-    - taxonomy direction is explicit in docs
-    - implementation implications are queued as follow-up tasks
-
 - [ ] FEA-011 Module contract audit for pages/posts/projects/forms/templates
-  - Status: BACKLOG
+  - Status: READY
   - Owner: Planning Agent
-  - Depends on: FEA-001
+  - Depends on: FEA-001, FEA-010, FEA-013, FEA-014, FEA-016
   - Priority: P2
   - Done when:
     - contracts are checked against routes/controllers/models
     - mismatches are documented and queued
+
+## BACKLOG
 
 - [ ] FEA-012 Residual legacy docs normalization
   - Status: BACKLOG
@@ -62,6 +43,11 @@ Last updated: 2026-05-01
 
 ## DONE
 
+- [x] FEA-016 Remove legacy project category authoring from admin project surfaces
+- [x] FEA-014 Use taxonomy-backed project presentation in public runtime
+- [x] FEA-013 Restrict V1 public taxonomy archives to posts
+- [x] FEA-010 Category/taxonomy alignment decision
+- [x] FEA-001 Finalize public dynamic routes for page/post/project
 - [x] FEA-015P Record Coolify rollout evidence blocker for v1 gate
 - [x] FEA-015O Add archive rollback command from recorded backup
 - [x] FEA-015N Add gated archive live switch with backup and preserve paths

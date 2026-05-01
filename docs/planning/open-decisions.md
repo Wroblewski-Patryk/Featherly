@@ -9,7 +9,14 @@
 - Recommendation: B
 - Owner: Backend Builder + QA/Test
 - Due date: 2026-03-31
-- Status: OPEN
+- Status: CLOSED
+- Decision: Expose localized public content through explicit home and named
+  resolver entrypoints in `routes/public.php`, while keeping
+  `PageController@show` as the single settings-aware resolver for pages, blog
+  post detail paths, and project detail paths. Archive page settings remain the
+  source of truth for post/project URL shape, and
+  `PublicRouteContractTest` covers the localized home/page/post/project
+  contract.
 
 ## Decision Item
 - ID: DEC-002

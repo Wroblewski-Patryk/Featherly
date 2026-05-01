@@ -116,8 +116,8 @@ Last updated: 2026-05-01
 ## Current Focus
 - Main active objective: continue the next smallest CMS delivery slice with strong admin, i18n, and builder integrity
 - Top blockers:
-  - public dynamic routes still need finalization and validation
-  - some legacy docs and taxonomy decisions remain open
+  - Coolify production update enablement still needs staging/live rollout evidence
+  - residual legacy docs remain after module-contract truth is audited
 - Success criteria for this phase:
   - small reversible execution slices
   - synchronized docs and task context
