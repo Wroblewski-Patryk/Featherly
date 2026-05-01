@@ -31,6 +31,8 @@ task/context discipline.
 - `docs/governance/subagent-delegation-policy.md`
 - `docs/governance/code-quality-guardrails.md` (optional)
 - `docs/governance/template-usage.md`
+- `docs/governance/function-coverage-ledger-standard.md`
+- `docs/governance/function-coverage-ledger-template.csv`
 
 ### Architecture and UX Truth
 
@@ -77,6 +79,16 @@ When architecture and implementation clash:
 - Keep changes tiny, reversible, and evidence-backed.
 - Run relevant validation before proposing a commit.
 - Keep docs and context synchronized with implementation changes.
+- When active work is unclear, a release or handoff needs confidence, or the
+  queue goes stale, use the function coverage ledger standard to turn CMS
+  module confidence gaps into explicit evidence, blocker, fix, or scope-decision
+  tasks before inventing new feature work.
+- If a coverage ledger exists, derive follow-up tasks in this order: release
+  blockers, implementation-review rows, `P0` evidence rows, `P0/P1` unverified
+  rows, then lower-priority scope decisions.
+- Do not turn every `PARTIAL` or evidence-missing ledger row into feature work.
+  Plan verification first, then create a narrow fix only when proof or code
+  inspection finds a real defect.
 - Follow the default loop:
   - plan
   - implement
@@ -121,7 +133,7 @@ If the user sends a short execution nudge (`start`, `go`, `next`, `run`, `dziala
 
 1. Read `.codex/context/TASK_BOARD.md`.
 2. Take the first `READY` or `IN_PROGRESS` task.
-3. If no task is ready, derive the smallest viable one from `docs/planning/mvp-next-commits.md`, `docs/planning/mvp-execution-plan.md`, and `docs/planning/open-decisions.md`, then record it.
+3. If no task is ready, derive the smallest viable one from `docs/planning/mvp-next-commits.md`, `docs/planning/mvp-execution-plan.md`, `docs/planning/open-decisions.md`, and active function coverage artifacts when present, then record it.
 4. Execute exactly one tiny task.
 5. Run relevant checks.
 6. Update planning, docs, and context files.

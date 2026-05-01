@@ -57,5 +57,7 @@ Last updated: 2026-04-16
 - `docs/planning/mvp-execution-plan.md`
 - `docs/planning/mvp-next-commits.md`
 - `docs/planning/open-decisions.md`
+- `docs/governance/function-coverage-ledger-standard.md`
+- `docs/governance/function-coverage-ledger-template.csv`
 - `.codex/context/PROJECT_STATE.md`
 - `.codex/context/TASK_BOARD.md`

@@ -7,6 +7,7 @@
 - Owner: Planner | Product Docs | Backend Builder | Frontend Builder | QA/Test | Security | DB/Migrations | Ops/Release | Review
 - Depends on:
 - Priority: P0 | P1 | P2 | P3
+- Coverage Ledger Rows:
 
 ## Context
 Where this work sits in the current project flow and architecture.
@@ -37,6 +38,8 @@ What must be achieved by this task.
 - Manual checks:
 - Screenshots/logs:
 - High-risk checks:
+- Coverage ledger updated: yes | no | not applicable
+- Coverage rows closed or changed:
 
 ## Architecture Evidence (required for architecture-impacting tasks)
 - Architecture source reviewed:
