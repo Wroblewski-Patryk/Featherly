@@ -74,6 +74,11 @@
 - [x] SCL-060 Add media lifecycle policy (archive, retention, purge)
 
 ## Progress Log
+- 2026-05-02: Completed FEA-011 module contract audit. Pages/posts/projects
+  align with the strongest shared content contract; forms/templates are working
+  modules but need an explicit ownership hardening decision because they use
+  inline validation and settings-route middleware rather than dedicated
+  FormRequests plus policy-backed controllers. Queued FEA-017 and FEA-018.
 - 2026-05-02: Reconciled active project state after route/taxonomy work:
   FEA-001, FEA-010, FEA-013, FEA-014, and FEA-016 were already implemented
   and validated, so the task board now exposes FEA-011 as the next local READY

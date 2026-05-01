@@ -4,16 +4,26 @@ Last updated: 2026-05-01
 
 ## READY
 
-- [ ] FEA-011 Module contract audit for pages/posts/projects/forms/templates
+- [ ] FEA-017 Decide and harden forms/templates admin ownership contract
   - Status: READY
-  - Owner: Planning Agent
-  - Depends on: FEA-001, FEA-010, FEA-013, FEA-014, FEA-016
+  - Owner: Backend Builder
+  - Depends on: FEA-011
   - Priority: P2
   - Done when:
-    - contracts are checked against routes/controllers/models
-    - mismatches are documented and queued
+    - forms/templates ownership is explicitly confirmed as settings-owned or content-owned
+    - validation and authorization contract matches the chosen ownership
+    - regression tests cover access and validation behavior
 
 ## BACKLOG
+
+- [ ] FEA-018 Decide project category compatibility retirement path
+  - Status: BACKLOG
+  - Owner: Backend Builder
+  - Depends on: FEA-011
+  - Priority: P2
+  - Done when:
+    - remaining `projects.category` read/write surfaces are audited
+    - backfill/removal or explicit compatibility policy is documented
 
 - [ ] FEA-012 Residual legacy docs normalization
   - Status: BACKLOG
@@ -43,6 +53,7 @@ Last updated: 2026-05-01
 
 ## DONE
 
+- [x] FEA-011 Module contract audit for pages/posts/projects/forms/templates
 - [x] FEA-016 Remove legacy project category authoring from admin project surfaces
 - [x] FEA-014 Use taxonomy-backed project presentation in public runtime
 - [x] FEA-013 Restrict V1 public taxonomy archives to posts

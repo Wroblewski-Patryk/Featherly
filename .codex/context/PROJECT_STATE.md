@@ -82,6 +82,10 @@ Last updated: 2026-05-01
   production-ready rollout evidence remains blocked on an external configured
   Coolify staging/live environment and must satisfy the deployment gate before
   production enablement.
+- 2026-05-02: Module contract audit verified pages/posts/projects as aligned
+  with the strongest shared content contract and queued forms/templates
+  ownership hardening plus `projects.category` retirement as narrow follow-up
+  tasks.
 
 ## Technical Baseline
 - Backend: Laravel 12 + PHP 8.2+
@@ -117,7 +121,8 @@ Last updated: 2026-05-01
 - Main active objective: continue the next smallest CMS delivery slice with strong admin, i18n, and builder integrity
 - Top blockers:
   - Coolify production update enablement still needs staging/live rollout evidence
-  - residual legacy docs remain after module-contract truth is audited
+  - forms/templates admin ownership needs a hardening decision before broad
+    module cleanup
 - Success criteria for this phase:
   - small reversible execution slices
   - synchronized docs and task context
