@@ -54,20 +54,25 @@ version and passes operational readiness checks.
 5. Watch the Coolify deployment until the service has restarted and is no
    longer crash-looping.
 
-6. Confirm the running Featherly version and readiness:
+6. Confirm the Coolify post-deploy maintenance command ran successfully:
+   `composer deploy:coolify` or `sh scripts/coolify-post-deploy.sh`. The
+   command clears stale Laravel cache, ensures the storage link exists, runs
+   migrations, and rebuilds production cache for the deployed release.
+
+7. Confirm the running Featherly version and readiness:
 
    ```bash
    php artisan updates:confirm
    ```
 
-7. Continue only when the confirmation records:
+8. Continue only when the confirmation records:
 
    - `apply_status=confirmed`
    - `health_status=passed`
    - `update_available=false`
    - `status=current`
 
-8. Run the standard post-deploy smoke checks in
+9. Run the standard post-deploy smoke checks in
    `docs/operations/post-deploy-smoke.md`.
 
 ## Evidence To Capture

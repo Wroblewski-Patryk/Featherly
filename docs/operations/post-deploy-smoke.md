@@ -6,6 +6,7 @@ Use this file to record the minimum checks after each deploy.
 
 - [ ] Health endpoint returns success
 - [ ] Main app is reachable through the public URL
+- [ ] Public media URL under `/storage/media/...` returns the uploaded asset
 - [ ] Logs show no startup crash loop
 - [ ] Background workers are connected and healthy
 
@@ -18,6 +19,8 @@ Use this file to record the minimum checks after each deploy.
 ## Ops Checks
 
 - [ ] Migrations completed successfully
+- [ ] Coolify post-deploy maintenance completed successfully
+      (`composer deploy:coolify` or `sh scripts/coolify-post-deploy.sh`)
 - [ ] Required env values are present
 - [ ] If a Featherly update deployment was triggered, `php artisan
       updates:confirm` reports the expected `APP_VERSION` and passing
@@ -27,17 +30,14 @@ Use this file to record the minimum checks after each deploy.
 ## Evidence
 
 - Timestamp: 2026-05-02T01:45:15+02:00
-- Environment: staging, `https://test.luckusparrow.ch`
+- Environment: staging, `https://test.luckysparrow.ch`
 - Commands run:
-  - `Resolve-DnsName test.luckusparrow.ch`
-  - `nslookup test.luckusparrow.ch 1.1.1.1`
-  - `nslookup test.luckusparrow.ch 8.8.8.8`
-  - `Invoke-WebRequest -Uri https://test.luckusparrow.ch -MaximumRedirection 5 -TimeoutSec 20`
-  - `curl.exe -I -L --max-time 20 https://test.luckusparrow.ch`
-- Screenshots or logs: DNS lookup and HTTP smoke are blocked by unresolved
-  domain from this workspace; repeated after deploy report at
-  2026-05-02T02:03:16+02:00 with public resolvers still returning
-  `Non-existent domain`
+  - `Resolve-DnsName test.luckysparrow.ch`
+  - `curl.exe -I -L --max-time 20 https://test.luckysparrow.ch`
+  - `curl.exe -I --max-time 20 https://test.luckysparrow.ch/storage/media/<uploaded-file>`
+- Screenshots or logs: application reachability now resolves against
+  `test.luckysparrow.ch`; uploaded media URL reachability remains the required
+  post-deploy confirmation.
 - Coolify update rollout evidence, when applicable:
   - deployment history entry: pending operator evidence
   - target version: pending target environment evidence

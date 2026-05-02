@@ -102,10 +102,14 @@ Last updated: 2026-05-01
   data-safe path: inventory, deterministic mapping, dry-run report, backfill,
   rollback, and column-removal criteria are documented, but execution is not
   approved without target environment data.
-- 2026-05-02: Coolify staging target was identified as
-  `https://test.luckusparrow.ch`, but public evidence capture remains blocked
-  because DNS does not resolve from this workspace and post-deploy smoke cannot
-  reach the application.
+- 2026-05-02: Coolify staging target was corrected to
+  `https://test.luckysparrow.ch`; public evidence can reach the application,
+  but uploaded media URLs returned `404` until public storage serving is
+  deployed and confirmed.
+- 2026-05-02: Coolify post-deploy maintenance entrypoint was added as
+  `composer deploy:coolify` / `sh scripts/coolify-post-deploy.sh`; it clears
+  stale Laravel cache, ensures `public/storage`, runs migrations, and rebuilds
+  production cache after each redeploy.
 
 ## Technical Baseline
 - Backend: Laravel 12 + PHP 8.2+
@@ -126,6 +130,8 @@ Last updated: 2026-05-01
   backup path, Docker/Git runtime drivers are deferred from v1, and Coolify
   production readiness is blocked until captured staging/live rollout evidence
   exists for the target environment
+- Deploy maintenance: Coolify should run `composer deploy:coolify` after each
+  redeploy to execute cache clear, storage link, migrations, and cache rebuild.
 - External services: optional Sentry and media/integration surfaces as configured
 - MCP / external tools: design-source workflows may use Figma or Stitch where applicable
 
@@ -141,8 +147,8 @@ Last updated: 2026-05-01
 - Main active objective: continue the next smallest CMS delivery slice with strong admin, i18n, and builder integrity
 - Top blockers:
   - Coolify production update enablement still needs staging/live rollout
-    evidence; staging target `https://test.luckusparrow.ch` is known but DNS
-    reachability is currently failing from this workspace
+    evidence; staging target `https://test.luckysparrow.ch` is reachable, but
+    media serving needs deploy-time confirmation
   - legacy project category column removal needs target environment inventory
     evidence before any backfill or column-removal migration is approved
   - local READY task queue is empty after residual docs normalization; refill
