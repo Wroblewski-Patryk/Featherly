@@ -79,6 +79,10 @@
   blocked because DNS does not resolve from this workspace, so the deployment
   gate still cannot pass. Evidence was recorded in
   `docs/operations/coolify-staging-rollout-evidence-test-luckusparrow-2026-05-02.md`.
+- 2026-05-02: Re-ran FEA-015 public smoke after deploy was reported complete.
+  DNS still returned `Non-existent domain` from local resolution plus public
+  resolvers `1.1.1.1` and `8.8.8.8`, so the blocker remains DNS/reachability
+  rather than application-level smoke.
 - 2026-05-02: Completed FEA-019 as a planning slice by documenting the
   data-safe project category fallback retirement path: target environment
   inventory, deterministic mapping rules, dry-run report, transactional
