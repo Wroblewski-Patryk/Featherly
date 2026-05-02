@@ -30,10 +30,14 @@ Use this file to record the minimum checks after each deploy.
 - Environment: staging, `https://test.luckusparrow.ch`
 - Commands run:
   - `Resolve-DnsName test.luckusparrow.ch`
+  - `nslookup test.luckusparrow.ch 1.1.1.1`
+  - `nslookup test.luckusparrow.ch 8.8.8.8`
   - `Invoke-WebRequest -Uri https://test.luckusparrow.ch -MaximumRedirection 5 -TimeoutSec 20`
   - `curl.exe -I -L --max-time 20 https://test.luckusparrow.ch`
 - Screenshots or logs: DNS lookup and HTTP smoke are blocked by unresolved
-  domain from this workspace
+  domain from this workspace; repeated after deploy report at
+  2026-05-02T02:03:16+02:00 with public resolvers still returning
+  `Non-existent domain`
 - Coolify update rollout evidence, when applicable:
   - deployment history entry: pending operator evidence
   - target version: pending target environment evidence

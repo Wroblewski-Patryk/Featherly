@@ -42,10 +42,37 @@ Result:
 Could not resolve host: test.luckusparrow.ch
 ```
 
+## Evidence Captured After Reported Deploy
+
+Timestamp: `2026-05-02T02:03:16+02:00`
+
+Operator note: deploy was reported as completed.
+
+Commands:
+
+```powershell
+Resolve-DnsName test.luckusparrow.ch
+nslookup test.luckusparrow.ch 1.1.1.1
+nslookup test.luckusparrow.ch 8.8.8.8
+Invoke-WebRequest -Uri https://test.luckusparrow.ch -MaximumRedirection 5 -TimeoutSec 30
+curl.exe -I -L --max-time 30 https://test.luckusparrow.ch
+```
+
+Result:
+
+```text
+Resolve-DnsName: DNS_ERROR_RCODE_NAME_ERROR
+1.1.1.1: Non-existent domain
+8.8.8.8: Non-existent domain
+Invoke-WebRequest: could not resolve remote name 'test.luckusparrow.ch'
+curl: Could not resolve host: test.luckusparrow.ch
+```
+
 ## Gate Result
 
-The staging target is identified, but public smoke checks cannot proceed until
-DNS resolves and the application responds over HTTPS.
+The staging target is identified and deploy was reported complete, but public
+smoke checks still cannot proceed until DNS resolves and the application
+responds over HTTPS.
 
 Current deployment gate blockers:
 
