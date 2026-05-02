@@ -22,15 +22,17 @@ Last updated: 2026-05-01
   - Depends on: FEA-015P
   - Priority: P1
   - Blocker: Coolify staging target is identified as
-    `https://test.luckusparrow.ch`, but DNS does not resolve from this
-    workspace, so public smoke checks and target-environment confirmation
-    evidence cannot pass yet.
+    `https://test.luckysparrow.ch`; public smoke reaches the application, but
+    target-environment confirmation still needs the media serving fix deployed
+    with `composer deploy:coolify` and verified with `/storage/media/...`
+    evidence.
   - Done when:
     - Coolify staging/live rollout evidence is captured from the runbook
     - deployment gate evidence is attached for the target environment
 
 ## DONE
 
+- [x] FEA-020 Add Coolify post-deploy cache and migration maintenance
 - [x] FEA-019 Project category fallback backfill and removal plan
 - [x] FEA-012 Residual legacy docs normalization
 - [x] FEA-018 Decide project category compatibility retirement path

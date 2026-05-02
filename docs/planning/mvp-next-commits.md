@@ -1,8 +1,9 @@
 # MVP Next Commits
 
 ## NOW (max 3)
-- [ ] Fix public DNS/reachability for `https://test.luckusparrow.ch`, then
-  resume `FEA-015` Coolify staging rollout evidence capture
+- [ ] Deploy and confirm public media serving for `https://test.luckysparrow.ch`,
+  including `composer deploy:coolify`, then resume `FEA-015` Coolify staging
+  rollout evidence capture
 - [ ] Refill the local task queue from `docs/planning/scaling-backlog-65.md`
   if no external Coolify evidence is available
 

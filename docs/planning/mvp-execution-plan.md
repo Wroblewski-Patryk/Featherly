@@ -75,10 +75,16 @@
 
 ## Progress Log
 - 2026-05-02: Continued FEA-015 external evidence capture after the staging
-  target was identified as `https://test.luckusparrow.ch`. Public smoke remains
-  blocked because DNS does not resolve from this workspace, so the deployment
-  gate still cannot pass. Evidence was recorded in
+  target was corrected to `https://test.luckysparrow.ch`. Public smoke can
+  reach the application, but uploaded media URLs returned `404`, so the
+  deployment gate still needs media serving evidence. Earlier failed DNS
+  evidence was recorded in
   `docs/operations/coolify-staging-rollout-evidence-test-luckusparrow-2026-05-02.md`.
+- 2026-05-02: Added a Coolify post-deploy maintenance entrypoint:
+  `composer deploy:coolify` delegates to `scripts/coolify-post-deploy.sh`,
+  clears stale Laravel caches, ensures `public/storage`, runs migrations, and
+  rebuilds production caches after redeploy. Ops docs and smoke checks now
+  require evidence that this command ran.
 - 2026-05-02: Re-ran FEA-015 public smoke after deploy was reported complete.
   DNS still returned `Non-existent domain` from local resolution plus public
   resolvers `1.1.1.1` and `8.8.8.8`, so the blocker remains DNS/reachability

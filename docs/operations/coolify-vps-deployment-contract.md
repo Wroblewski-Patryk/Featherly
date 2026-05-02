@@ -9,7 +9,7 @@ production target in `.codex/context/PROJECT_STATE.md`.
 - VPS provider:
 - Coolify project or environment: staging target identified, exact Coolify
   project name pending operator evidence
-- Public domains: `https://test.luckusparrow.ch`
+- Public domains: `https://test.luckysparrow.ch`
 - Private services:
 
 ## Runtime Inventory
@@ -19,7 +19,9 @@ production target in `.codex/context/PROJECT_STATE.md`.
 - Worker or cron services:
 - Databases:
 - Cache or queue:
-- Persistent volumes:
+- Persistent volumes: Laravel `storage` path, including
+  `storage/app/public/media`; public media must be reachable through
+  `/storage/...` after deploy.
 
 ## Required Artifacts
 
@@ -27,7 +29,10 @@ production target in `.codex/context/PROJECT_STATE.md`.
 - Compose or service-definition paths:
 - Env example files: `.env.example`
 - Health or readiness endpoints:
-- Migration entrypoint:
+- Migration/cache entrypoint: configure Coolify to run
+  `composer deploy:coolify` after each successful redeploy, or run
+  `sh scripts/coolify-post-deploy.sh` directly when Composer scripts are not
+  available.
 
 ## Env And Secrets Contract
 
@@ -35,15 +40,34 @@ production target in `.codex/context/PROJECT_STATE.md`.
 - Which values must come from Coolify secrets:
 - Which values are safe to keep in examples:
 - Who owns secret rotation:
+- Optional deploy toggles:
+  - `FEATHERLY_DEPLOY_RUN_MIGRATIONS=false` disables automatic
+    `php artisan migrate --force` for an emergency/manual migration window.
+  - `FEATHERLY_DEPLOY_REFRESH_CACHE=false` disables automatic production cache
+    rebuild for an emergency/manual cache window.
 
 ## Release Requirements
 
 - Required checks before deploy:
 - Required smoke checks after deploy: `docs/operations/post-deploy-smoke.md`;
-  current staging evidence is blocked because `test.luckusparrow.ch` does not
-  resolve publicly from this workspace
+  current staging evidence must include public `/storage/media/...` asset
+  reachability after deployment.
 - Rollback trigger:
 - Rollback method:
+
+## Coolify Post-Deploy Maintenance
+
+The post-deploy maintenance script is idempotent and should run after every
+successful Coolify redeploy:
+
+1. `php artisan optimize:clear --no-interaction`
+2. `php artisan storage:link --force --no-interaction`
+3. `php artisan migrate --force --no-interaction`
+4. `php artisan optimize --no-interaction`
+
+This keeps route/config/view/event cache aligned with the currently deployed
+release and prevents stale cached configuration from serving old filesystem or
+routing behavior.
 
 ## Automatic Updates
 
