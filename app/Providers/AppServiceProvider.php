@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $rootUrl = config('app.coolify_url') ?: config('app.url');
+        $rootUrl = config('app.url');
 
         if (app()->environment('production') || str_starts_with((string) $rootUrl, 'https://')) {
             URL::forceScheme('https');

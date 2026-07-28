@@ -54,8 +54,6 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    'coolify_url' => env('COOLIFY_URL'),
-
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
