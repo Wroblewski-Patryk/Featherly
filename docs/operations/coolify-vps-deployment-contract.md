@@ -15,7 +15,22 @@ production target in `.codex/context/PROJECT_STATE.md`.
   - staging: `https://test.luckysparrow.ch`
   - production: `https://wroblewskipatryk.pl` and
     `https://www.wroblewskipatryk.pl`
+- Production resources:
+  - application: `dc1mn3hep62twm6ih582kblw`
+  - PostgreSQL: `wvc2hjhrzfkekixfg389mwwo`
+  - verified revision: `5646ccd`
+  - latest successful deployment: `bkdd55plrx5tsmkairh55pxb`
 - Private services:
+
+### 2026-07-28 Production Evidence
+
+- Migrations and seeders completed on PostgreSQL.
+- `/up`, `/pl`, `/pl/login`, database/cache/queue health, two queue workers,
+  scheduler execution, and public storage before and after restart pass.
+- Coolify deployment history provides the rollback path.
+- Trusted TLS remains blocked outside Coolify by stale apex and `www` AAAA
+  records for `2001:41d0:301:5::27`; the A records correctly target
+  `141.227.149.67`.
 
 ## Runtime Inventory
 

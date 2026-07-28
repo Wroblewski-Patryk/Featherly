@@ -5,7 +5,7 @@
 - Title: Deploy the first Featherly-backed portfolio production instance
 - Task Type: release
 - Current Stage: implementation
-- Status: IN_PROGRESS
+- Status: BLOCKED
 - Owner: Ops/Release
 - Depends on: FEA-020
 - Priority: P0
@@ -54,10 +54,11 @@ rollback path.
 ## Autonomous Loop Evidence
 
 ### 1. Analyze Current State
-- Issues: Coolify access is restored and the selected environment is now
-  configured; the first production deployment and smoke evidence remain.
-- Gaps: successful deployment history, restart persistence, and production
-  route/media smoke evidence are not yet captured.
+- Issues: the application is deployed and runtime smoke passes, but the public
+  TLS certificate is blocked by stale apex and `www` AAAA records pointing to
+  `2001:41d0:301:5::27` instead of the selected VPS.
+- Gaps: trusted HTTPS evidence can only be captured after the stale AAAA records
+  are removed or changed to an IPv6 address routed to this VPS.
 - Inconsistencies: operations docs currently name only the existing staging
   target, while the owner has now confirmed a separate production target.
 - Architecture constraints: preserve the Laravel/Inertia runtime, localized
@@ -85,6 +86,9 @@ rollback path.
   persistent public media storage, `/up` healthcheck, and Laravel scheduler.
   The repository also contains the documented Coolify/Nixpacks all-in-one
   runtime with Nginx, PHP-FPM, and two queue workers.
+  PostgreSQL compatibility was added for legacy text-to-JSON migrations and
+  the obsolete template type check constraint. Production migrations and
+  seeders completed, and the initial administrator was secured.
 
 ### 5. Verify and Test
 - Validation performed: `npm run build`, `npm run lint`,
@@ -92,7 +96,9 @@ rollback path.
   and PHPStan under both PHP 8.5 and the declared PHP 8.3-compatible runtime.
 - Result: frontend checks and dependency architecture pass; the focused
   backend test passes with an explicit test `APP_KEY`; the 20 PHPStan findings
-  were resolved and PHPStan now passes on PHP 8.3.
+  were resolved and PHPStan now passes on PHP 8.3. Production application,
+  operational health, scheduler, queue workers, public route, login route, and
+  persistent storage pass; trusted TLS remains blocked by DNS AAAA records.
 
 ### 6. Self-Review
 - Simpler option considered: deploy the existing Featherly repository directly
@@ -109,11 +115,11 @@ rollback path.
 - Learning journal updated: not applicable.
 
 ## Acceptance Criteria
-- [ ] The selected Coolify project deploys the Featherly repository without
+- [x] The selected Coolify project deploys the Featherly repository without
   deleting or modifying unrelated Coolify resources.
 - [ ] `https://wroblewskipatryk.pl/up` and the localized public route return
   successful responses over HTTPS.
-- [ ] Database migrations, persistent public media, admin login route, queue,
+- [x] Database migrations, persistent public media, admin login route, queue,
   scheduler, refresh behavior, and rollback path are verified with evidence.
 
 ## Success Signal
@@ -159,9 +165,12 @@ missing access or deployment evidence.
     pass with no errors.
   - A first broader test attempt without `APP_KEY` was invalid and stopped
     after confirming `MissingAppKeyException`; it is not acceptance evidence.
-- Manual checks: pending.
-- Screenshots/logs: Coolify shows the dedicated PostgreSQL resource running;
-  the application resource is configured and awaits its first deployment.
+- Manual checks: `/up` 200, `/pl` 200, `/pl/login` 200, unauthenticated
+  `/pl/admin` redirects to login, and `www` redirects to the apex route when
+  certificate verification is bypassed only for diagnostic purposes.
+- Screenshots/logs: Coolify deployment `bkdd55plrx5tsmkairh55pxb` succeeded on
+  commit `5646ccd`; PostgreSQL, two queue workers, Nginx, and PHP-FPM are
+  running; scheduler last run is successful.
 - High-risk checks: no target resource was modified or deleted.
 - Coverage ledger updated: not applicable.
 
@@ -222,9 +231,10 @@ missing access or deployment evidence.
 - How tested: frontend build/lint/format, dependency architecture, focused
   backend feature test, PHPStan on PHP 8.3, authoritative DNS queries, and
   direct HTTP/HTTPS probes against the VPS.
-- What is incomplete: first deployment and all production smoke evidence.
-- Next steps: push the verified revision, deploy it in the selected resource,
-  and capture health, route, migration, worker, scheduler, media, and rollback
-  evidence without deleting any existing resource.
+- What is incomplete: a browser-trusted Let's Encrypt certificate.
+- Next steps: remove the apex and `www` AAAA records for
+  `2001:41d0:301:5::27` (or route the correct VPS IPv6), wait for DNS
+  propagation and Traefik ACME retry, then repeat HTTPS smoke without bypassing
+  certificate verification.
 - Decisions made: use Featherly directly as the production application rather
   than maintaining a duplicated frontend codebase.

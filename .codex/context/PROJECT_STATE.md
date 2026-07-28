@@ -147,8 +147,9 @@ Last updated: 2026-07-28
 - Main active objective: deploy the first Featherly-backed production portfolio
   instance to the owner-selected Coolify project for `wroblewskipatryk.pl`
  - Top blockers:
-  - first production deployment and end-to-end smoke evidence are still in
-    progress after restoring Coolify access and clearing the PHPStan gate
+  - production runtime smoke passes, but trusted HTTPS is blocked by stale
+    apex and `www` AAAA records pointing to `2001:41d0:301:5::27`; remove or
+    correct those DNS records so Traefik can complete ACME validation
   - Coolify production update enablement still needs staging/live rollout
     evidence; staging target `https://test.luckysparrow.ch` is reachable, but
     media serving needs deploy-time confirmation

@@ -12,21 +12,24 @@ Last updated: 2026-07-28
 
 ## IN_PROGRESS
 
+- [ ] (none)
+
+## BLOCKED
+
 - [ ] FEA-021 Deploy the first Featherly-backed portfolio production instance
-  - Status: IN_PROGRESS
+  - Status: BLOCKED
   - Owner: Ops/Release
   - Priority: P0
   - Target: Coolify project `a14a7zgzt6r13wtqxe5c916y`, environment
     `gz5uke25v3tpqcc0o47gyw2e`, domain `wroblewskipatryk.pl`
   - Constraint: do not delete or modify unrelated Coolify resources
-  - Current state: database, application, secrets, storage, healthcheck,
-    scheduler, and queue-enabled Nixpacks runtime are configured; verified
-    revision deployment and production smoke remain
-  - Done when: Featherly is deployed and production health, localized public
-    and admin routes, migrations, persistent media, queue/scheduler, reload,
-    and rollback checks have evidence
-
-## BLOCKED
+  - Current state: application, PostgreSQL, migrations, seed data, secure admin,
+    persistent media, healthcheck, scheduler, workers, restart, and rollback
+    history are verified
+  - Blocker: stale apex and `www` AAAA DNS records point to
+    `2001:41d0:301:5::27`, preventing Let's Encrypt validation on this VPS
+  - Done when: the stale AAAA records are removed/corrected and trusted HTTPS
+    smoke passes without bypassing certificate verification
 
 - [ ] FEA-015 Implement archive/Docker/Git update drivers and Coolify rollout hardening
   - Status: BLOCKED
