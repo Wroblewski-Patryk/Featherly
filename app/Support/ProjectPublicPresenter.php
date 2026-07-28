@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\Project;
+use App\Models\Taxonomy;
 use Illuminate\Support\Collection;
 
 class ProjectPublicPresenter
@@ -42,6 +43,8 @@ class ProjectPublicPresenter
 
         $primaryCategory = $taxonomies->firstWhere('type', 'category') ?? $taxonomies->first();
 
-        return $primaryCategory?->getTranslations('title') ?? $project->category;
+        return $primaryCategory instanceof Taxonomy
+            ? $primaryCategory->getTranslations('title')
+            : $project->category;
     }
 }

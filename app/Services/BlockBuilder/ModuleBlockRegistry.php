@@ -60,7 +60,7 @@ class ModuleBlockRegistry
         $merged = [];
 
         foreach ($categories as $category) {
-            if (!is_array($category) || empty($category['id'])) {
+            if (empty($category['id'])) {
                 continue;
             }
 

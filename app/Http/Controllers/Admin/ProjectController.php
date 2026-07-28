@@ -130,7 +130,10 @@ class ProjectController extends BaseAdminContentController
     protected function serializeProjectForIndex(Project $project): array
     {
         $data = $project->toArray();
-        $data['category'] = $project->taxonomies->first()?->getTranslations('title');
+        $category = $project->taxonomies->first();
+        $data['category'] = $category instanceof \App\Models\Taxonomy
+            ? $category->getTranslations('title')
+            : null;
         unset($data['taxonomies']);
 
         return $data;

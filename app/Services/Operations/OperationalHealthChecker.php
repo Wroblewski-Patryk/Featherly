@@ -21,7 +21,7 @@ class OperationalHealthChecker
             'queue' => $this->queueCheck(),
         ];
 
-        $allHealthy = collect($checks)->every(fn (array $item) => (bool) ($item['ok'] ?? false));
+        $allHealthy = collect($checks)->every(fn (array $item) => $item['ok']);
 
         return [
             'checked_at' => Carbon::now()->toIso8601String(),

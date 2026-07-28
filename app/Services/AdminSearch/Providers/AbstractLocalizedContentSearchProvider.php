@@ -39,19 +39,21 @@ abstract class AbstractLocalizedContentSearchProvider implements AdminSearchProv
 
         $results = $records
             ->map(function ($record) use ($query, $locale) {
-                $title = $this->resolveLocalizedValue($record->title, $locale, "Untitled #{$record->id}");
-                $slug = $this->resolveLocalizedValue($record->slug, $locale, (string) $record->id);
+                $id = $record->getKey();
+                $status = $record->getAttribute('status');
+                $title = $this->resolveLocalizedValue($record->getAttribute('title'), $locale, "Untitled #{$id}");
+                $slug = $this->resolveLocalizedValue($record->getAttribute('slug'), $locale, (string) $id);
 
                 return new AdminSearchResult(
                     type: $this->resultType(),
-                    id: $record->id,
+                    id: $id,
                     title: $title,
                     url: route($this->editRouteName(), [
                         'locale' => app()->getLocale(),
-                        $this->resultType() => $record->id,
+                        $this->resultType() => $id,
                     ]),
-                    subtitle: sprintf('%s · %s', $record->status ?? 'draft', $slug),
-                    score: $this->calculateScore($query, $title, $slug, (string) ($record->status ?? 'draft')),
+                    subtitle: sprintf('%s · %s', $status ?? 'draft', $slug),
+                    score: $this->calculateScore($query, $title, $slug, (string) ($status ?? 'draft')),
                 );
             })
             ->sortByDesc(fn (AdminSearchResult $result) => $result->score)

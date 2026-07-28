@@ -316,6 +316,7 @@ abstract class BaseAdminContentController extends Controller
                         'publish' => 'published',
                         'unpublish' => 'draft',
                         'archive' => 'archived',
+                        default => throw new \LogicException("Unsupported bulk action [{$action}]."),
                     },
                 ]);
             }

@@ -21,7 +21,7 @@ class UpdateManager
 
     public function getSettings(): array
     {
-        $stored = Setting::query()->get()->pluck('value', 'key')->all();
+        $stored = Setting::query()->pluck('value', 'key')->all();
 
         return [
             'update_checks_enabled' => $this->toBool($stored['update_checks_enabled'] ?? true, true),
@@ -300,15 +300,15 @@ class UpdateManager
         if (version_compare($currentVersion, $latestVersion, '>=')) {
             $health = ($healthChecker ?? app(OperationalHealthChecker::class))->check();
 
-            if (!($health['ok'] ?? false)) {
+            if (!$health['ok']) {
                 $message = 'Deployment version matches, but operational health checks failed.';
 
                 $this->writeApplyStatus($status, [
                     'current_version' => $currentVersion,
                     'last_attempted_at' => $confirmedAt,
-                    'health_checked_at' => $this->toString($health['checked_at'] ?? null, $confirmedAt),
+                    'health_checked_at' => $this->toString($health['checked_at'], $confirmedAt),
                     'health_status' => 'failed',
-                    'health_checks' => $health['checks'] ?? [],
+                    'health_checks' => $health['checks'],
                     'apply_status' => 'confirmation_health_failed',
                     'failure_message' => $message,
                     'operator_message' => $message,
@@ -330,9 +330,9 @@ class UpdateManager
                 'current_version' => $currentVersion,
                 'last_attempted_at' => $confirmedAt,
                 'confirmed_at' => $confirmedAt,
-                'health_checked_at' => $this->toString($health['checked_at'] ?? null, $confirmedAt),
+                'health_checked_at' => $this->toString($health['checked_at'], $confirmedAt),
                 'health_status' => 'passed',
-                'health_checks' => $health['checks'] ?? [],
+                'health_checks' => $health['checks'],
                 'update_available' => false,
                 'failure_message' => null,
                 'apply_status' => 'confirmed',

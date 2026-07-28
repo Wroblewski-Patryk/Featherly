@@ -199,6 +199,6 @@ class TaxonomyController extends Controller
             return $default;
         }
 
-        return $activeLocales[0] ?? app()->getLocale() ?? 'en';
+        return $activeLocales[0] ?? app()->getLocale();
     }
 }

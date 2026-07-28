@@ -45,7 +45,7 @@ class ManualUpdateDriver implements UpdateDriver
             'applied' => false,
             'apply_status' => 'manual_required',
             'message' => 'Manual update instructions are ready. No application files were changed.',
-            'operator_instructions' => array_values(array_filter([
+            'operator_instructions' => array_filter([
                 "Download the trusted Featherly release for {$latestVersion}.",
                 'Review the release notes and migration risk before updating.',
                 'Back up the database, .env file, storage directory, and uploaded media.',
@@ -54,7 +54,7 @@ class ManualUpdateDriver implements UpdateDriver
                 is_string($releaseNotesUrl) && $releaseNotesUrl !== ''
                     ? "Release notes: {$releaseNotesUrl}"
                     : null,
-            ])),
+            ]),
             'rollback_note' => 'Restore the previous deployment artifact and database backup if post-update smoke checks fail.',
         ];
     }

@@ -1,6 +1,6 @@
 # PROJECT_STATE
 
-Last updated: 2026-05-01
+Last updated: 2026-07-28
 
 ## Product Snapshot
 - Name: Featherly CMS
@@ -144,8 +144,11 @@ Last updated: 2026-05-01
 - Local dev runtime: `composer run dev`
 
 ## Current Focus
-- Main active objective: continue the next smallest CMS delivery slice with strong admin, i18n, and builder integrity
-- Top blockers:
+- Main active objective: deploy the first Featherly-backed production portfolio
+  instance to the owner-selected Coolify project for `wroblewskipatryk.pl`
+ - Top blockers:
+  - first production deployment and end-to-end smoke evidence are still in
+    progress after restoring Coolify access and clearing the PHPStan gate
   - Coolify production update enablement still needs staging/live rollout
     evidence; staging target `https://test.luckysparrow.ch` is reachable, but
     media serving needs deploy-time confirmation
@@ -196,8 +199,8 @@ Last updated: 2026-05-01
 - `.codex/context/TASK_BOARD.md`
 
 ## Autonomous Iteration State
-- Current iteration:
-- Current operation mode: BUILDER | ARCHITECT | TESTER
+- Current iteration: 1
+- Current operation mode: BUILDER
 - Last completed iteration:
 - Last completed task:
-- Next required mode:
+- Next required mode: BUILDER

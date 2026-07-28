@@ -7,9 +7,14 @@ production target in `.codex/context/PROJECT_STATE.md`.
 ## Deployment Target
 
 - VPS provider:
-- Coolify project or environment: staging target identified, exact Coolify
-  project name pending operator evidence
-- Public domains: `https://test.luckysparrow.ch`
+- Coolify project or environment:
+  - staging: existing target behind `https://test.luckysparrow.ch`
+  - production: project `a14a7zgzt6r13wtqxe5c916y`, environment
+    `gz5uke25v3tpqcc0o47gyw2e`
+- Public domains:
+  - staging: `https://test.luckysparrow.ch`
+  - production: `https://wroblewskipatryk.pl` and
+    `https://www.wroblewskipatryk.pl`
 - Private services:
 
 ## Runtime Inventory
