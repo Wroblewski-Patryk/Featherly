@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -15,9 +16,14 @@ return new class extends Migration
             $table->dropUnique(['slug']);
         });
 
-        Schema::table('projects', function (Blueprint $table) {
-            $table->json('slug')->nullable()->change();
-        });
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE "projects" ALTER COLUMN "slug" DROP NOT NULL');
+            DB::statement('ALTER TABLE "projects" ALTER COLUMN "slug" TYPE JSON USING CASE WHEN "slug" IS NULL THEN NULL ELSE json_build_object(\'pl\', "slug") END');
+        } else {
+            Schema::table('projects', function (Blueprint $table) {
+                $table->json('slug')->nullable()->change();
+            });
+        }
     }
 
     /**
@@ -25,8 +31,16 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->string('slug')->unique()->change();
-        });
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE "projects" ALTER COLUMN "slug" TYPE VARCHAR(255) USING COALESCE("slug"->>\'pl\', "slug"::text)');
+
+            Schema::table('projects', function (Blueprint $table) {
+                $table->unique('slug');
+            });
+        } else {
+            Schema::table('projects', function (Blueprint $table) {
+                $table->string('slug')->unique()->change();
+            });
+        }
     }
 };
