@@ -14,7 +14,10 @@ class TemplateSeeder extends Seeder
     public function run(): void
     {
         // 1. Header Template
-        \App\Models\Template::create([
+        \App\Models\Template::updateOrCreate([
+            'type' => 'header',
+            'is_default' => true,
+        ], [
             'title' => [
                 'pl' => 'Główny Nagłówek',
                 'en' => 'Main Header'
@@ -40,7 +43,10 @@ class TemplateSeeder extends Seeder
         ]);
 
         // 2. Footer Template
-        \App\Models\Template::create([
+        \App\Models\Template::updateOrCreate([
+            'type' => 'footer',
+            'is_default' => true,
+        ], [
             'title' => [
                 'pl' => 'Główna Stopka',
                 'en' => 'Main Footer'
@@ -65,7 +71,10 @@ class TemplateSeeder extends Seeder
         ]);
 
         // 3. Default Page Template (The "Master" Page Layout)
-        \App\Models\Template::create([
+        \App\Models\Template::updateOrCreate([
+            'type' => 'page',
+            'is_default' => true,
+        ], [
             'title' => [
                 'pl' => 'Główny Szablon Strony',
                 'en' => 'Main Page Template'
