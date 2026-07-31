@@ -349,10 +349,10 @@ const save = ({ autosave = false } = {}) => {
 
     if (props.page?.id) {
         form.put(route('admin.pages.update', props.page.id), {
-            onSuccess: () => {
+            onSuccess: (response) => {
                 store.isDirty = false;
                 store.markSavedSnapshot();
-                form.optimistic_lock = new Date().toISOString();
+                form.optimistic_lock = response?.props?.page?.updated_at || form.optimistic_lock;
                 if (!autosave) {
                     toast.success(t('admin.pages.update_success', 'Page updated successfully.'));
                 }

@@ -33,19 +33,28 @@
                     <input type="text" v-model="modelValue.title" placeholder="Brand Title" class="input input-sm input-bordered w-full font-bold focus:border-primary transition-all" />
                 </div>
                 <div class="form-control">
+                    <label class="label py-1"><span class="label-text text-[10px] uppercase font-bold opacity-50">Brand URL</span></label>
+                    <input type="text" v-model="modelValue.brandHref" placeholder="/" class="input input-sm input-bordered w-full font-mono focus:border-primary transition-all" />
+                </div>
+                <div class="form-control">
                     <label class="label py-1"><span class="label-text text-[10px] uppercase font-bold opacity-50">Action Button Text</span></label>
                     <input type="text" v-model="modelValue.actionButton" placeholder="Action Button Text" class="input input-sm input-bordered w-full focus:border-primary transition-all" />
+                </div>
+                <div class="form-control">
+                    <label class="label py-1"><span class="label-text text-[10px] uppercase font-bold opacity-50">Action Button URL</span></label>
+                    <input type="text" v-model="modelValue.actionHref" placeholder="#contact" class="input input-sm input-bordered w-full font-mono focus:border-primary transition-all" />
                 </div>
                 
                 <div class="divider my-1 opacity-10"></div>
                 
                 <div class="space-y-3">
                     <label class="text-[10px] opacity-40 uppercase font-black ml-1">Navigation Links</label>
-                    <div v-for="(link, idx) in modelValue.links" :key="idx" class="flex gap-2 group">
-                         <input type="text" v-model="modelValue.links[idx]" class="input input-sm input-bordered flex-1 focus:border-primary transition-all rounded-xl" />
+                    <div v-for="(link, idx) in modelValue.links" :key="idx" class="grid grid-cols-[1fr_1fr_auto] gap-2 group">
+                         <input type="text" v-model="link.label" placeholder="Label" class="input input-sm input-bordered min-w-0 focus:border-primary transition-all rounded-xl" />
+                         <input type="text" v-model="link.href" placeholder="#section" class="input input-sm input-bordered min-w-0 font-mono focus:border-primary transition-all rounded-xl" />
                          <button @click="modelValue.links.splice(idx, 1)" class="btn btn-sm btn-circle btn-ghost text-error opacity-0 group-hover:opacity-100 transition-opacity"><PhX weight="bold" class="w-3 h-3" /></button>
                     </div>
-                    <button @click="modelValue.links.push('New Link')" class="btn btn-xs btn-outline btn-block rounded-xl border-dashed opacity-50 hover:opacity-100 mt-2">
+                    <button @click="modelValue.links.push({ label: 'New Link', href: '#' })" class="btn btn-xs btn-outline btn-block rounded-xl border-dashed opacity-50 hover:opacity-100 mt-2">
                         <PhPlus weight="bold" class="mr-1 w-3 h-3" /> Add Link
                     </button>
                 </div>
@@ -62,6 +71,7 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
 import { PhX, PhPlus } from '@phosphor-icons/vue';
 
 const props = defineProps({
@@ -78,5 +88,14 @@ const props = defineProps({
         default: 'content'
     }
 });
-</script>
 
+onMounted(() => {
+    if (props.type !== 'navbar') return;
+
+    props.modelValue.links = (props.modelValue.links || []).map((link) => (
+        typeof link === 'string' ? { label: link, href: '#' } : link
+    ));
+    props.modelValue.brandHref ||= '/';
+    props.modelValue.actionHref ||= '#contact';
+});
+</script>

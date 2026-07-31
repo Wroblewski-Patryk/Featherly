@@ -5,7 +5,7 @@ import { useForm, usePage, Link } from '@inertiajs/vue3';
 // Self-import removed to avoid Vite recursion issues. 
 // Vue 3 naturally supports recursive components via their own name.
 import draggable from 'vuedraggable';
-import { PhArrowsOut, PhCopy, PhTrash, PhInfo, PhCheckCircle, PhSlidersHorizontal, PhPuzzlePiece, PhSquare, PhCube, PhLayout, PhCalendarBlank, PhUser, PhStack } from '@phosphor-icons/vue';
+import { PhArrowsOut, PhCopy, PhTrash, PhInfo, PhCheckCircle, PhSlidersHorizontal, PhPuzzlePiece, PhSquare, PhCube, PhLayout, PhCalendarBlank, PhUser, PhStack, PhList, PhX } from '@phosphor-icons/vue';
 import { useBlockBuilderStore } from '@/features/admin/block-builder/store/useBlockBuilderStore';
 import { useTranslations } from '@/Composables/useTranslations';
 import placeholderImg from '@/../images/placeholder.png';
@@ -95,6 +95,7 @@ const menuItems = computed(() => {
 });
 
 const blockRef = ref(null);
+const navbarOpen = ref(false);
 const { animateBlock } = useGsapRuntime();
 
 const initAnimations = () => {
@@ -927,6 +928,25 @@ const safeHtml = (value) => sanitizeHtml(String(value ?? ''));
             <input type="file" class="file-input file-input-bordered w-full max-w-xs" :disabled="isEditor" @change="(e) => formValue = e.target.files[0]" />
         </div>
 
+        <figure v-else-if="block.type === 'image'" class="w-full" :class="blockClasses">
+            <img
+                v-if="resolvedContent?.url"
+                :src="resolveMediaUrl(resolvedContent.url)"
+                :alt="t(resolvedContent.alt)"
+                class="block h-auto w-full object-cover"
+                loading="lazy"
+            />
+            <img
+                v-else-if="isEditor"
+                :src="placeholderImg"
+                :alt="t(resolvedContent.alt, 'Image placeholder')"
+                class="block h-auto w-full object-cover opacity-40"
+            />
+            <figcaption v-if="resolvedContent?.caption" class="mt-2 text-sm opacity-70">
+                {{ t(resolvedContent.caption) }}
+            </figcaption>
+        </figure>
+
         <!-- 6. Navigation -->
         <div v-else-if="block.type === 'breadcrumbs'" class="breadcrumbs text-sm">
             <ul v-if="page.props.menus">
@@ -940,23 +960,54 @@ const safeHtml = (value) => sanitizeHtml(String(value ?? ''));
             </ul>
         </div>
 
-        <div v-else-if="block.type === 'navbar'" 
+        <nav v-else-if="block.type === 'navbar'"
+             @keydown.escape="navbarOpen = false"
              class="navbar bg-base-100 shadow-sm border-b border-base-content/5 px-4 md:px-8 min-h-[70px]"
              :class="[
                 block.appearance?.sticky ? 'sticky top-0 z-[50]' : 'relative'
              ]">
             <div class="flex-1">
-                <a class="btn btn-ghost text-xl font-black italic tracking-tighter uppercase">{{ t(resolvedContent?.title) || 'Featherly' }}</a>
+                <a :href="resolvedContent?.brandHref || '/'" class="btn btn-ghost text-xl font-black italic tracking-tighter uppercase">{{ t(resolvedContent?.title) || 'Featherly' }}</a>
             </div>
             <div class="flex-none hidden lg:flex">
                 <ul v-if="page.props.menus" class="menu menu-horizontal px-1 font-bold uppercase tracking-widest text-xs opacity-70">
-                    <li v-for="(link, i) in (resolvedContent?.links || [])" :key="i"><a>{{ t(link) }}</a></li>
+                    <li v-for="(link, i) in (resolvedContent?.links || [])" :key="i">
+                        <a :href="typeof link === 'string' ? '#' : (link.href || '#')">{{ t(typeof link === 'string' ? link : link.label) }}</a>
+                    </li>
                 </ul>
             </div>
-            <div class="flex-none">
-                <a class="btn btn-primary btn-sm rounded-full px-6 ml-4" v-if="resolvedContent?.actionButton">{{ t(resolvedContent.actionButton) }}</a>
+            <div class="flex-none hidden lg:block">
+                <a :href="resolvedContent?.actionHref || '#contact'" class="btn btn-primary btn-sm rounded-full px-6 ml-4" v-if="resolvedContent?.actionButton">{{ t(resolvedContent.actionButton) }}</a>
             </div>
-        </div>
+            <button
+                type="button"
+                class="btn btn-ghost btn-square lg:hidden"
+                :aria-expanded="navbarOpen ? 'true' : 'false'"
+                :aria-controls="`${blockId}-mobile-menu`"
+                :aria-label="navbarOpen ? 'Close navigation' : 'Open navigation'"
+                @click="navbarOpen = !navbarOpen"
+            >
+                <PhX v-if="navbarOpen" class="h-5 w-5" aria-hidden="true" />
+                <PhList v-else class="h-5 w-5" aria-hidden="true" />
+            </button>
+            <div
+                v-if="navbarOpen"
+                :id="`${blockId}-mobile-menu`"
+                class="absolute inset-x-0 top-full z-50 border-t border-base-content/10 bg-base-100 p-4 shadow-lg lg:hidden"
+            >
+                <ul class="menu w-full font-bold uppercase tracking-widest text-xs">
+                    <li v-for="(link, i) in (resolvedContent?.links || [])" :key="`mobile-${i}`">
+                        <a :href="typeof link === 'string' ? '#' : (link.href || '#')" @click="navbarOpen = false">{{ t(typeof link === 'string' ? link : link.label) }}</a>
+                    </li>
+                </ul>
+                <a
+                    v-if="resolvedContent?.actionButton"
+                    :href="resolvedContent?.actionHref || '#contact'"
+                    class="btn btn-primary btn-sm mt-3 w-full rounded-full"
+                    @click="navbarOpen = false"
+                >{{ t(resolvedContent.actionButton) }}</a>
+            </div>
+        </nav>
 
         <div v-else-if="block.type === 'steps'">
             <ul class="steps w-full">

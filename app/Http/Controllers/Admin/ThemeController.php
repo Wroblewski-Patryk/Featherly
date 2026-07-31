@@ -190,7 +190,7 @@ class ThemeController extends Controller
     {
         $validated = $request->validate([
             'globals' => 'required|array',
-            'block_defaults' => 'required|array',
+            'block_defaults' => 'present|array',
         ]);
 
         Setting::updateOrCreate(

@@ -309,7 +309,16 @@ export const useBlockBuilderStore = defineStore('blockBuilder', {
                 // 6. Navigation
                 breadcrumbs: { items: ['Home', 'Documents', 'Add Document'] },
                 menu: { items: ['Home', 'About', 'Contact'] },
-                navbar: { title: 'daisyUI', links: ['Home', 'About'], actionButton: 'Get Started' },
+                navbar: {
+                    title: 'daisyUI',
+                    brandHref: '/',
+                    links: [
+                        { label: 'Home', href: '/' },
+                        { label: 'About', href: '#about' },
+                    ],
+                    actionButton: 'Get Started',
+                    actionHref: '#contact',
+                },
                 steps: { items: ['Register', 'Choose plan', 'Purchase', 'Receive Product'] },
                 tabs: { tabs: [{ title: 'Tab 1', content: 'Tab 1 content' }, { title: 'Tab 2', content: 'Tab 2 content' }] },
 

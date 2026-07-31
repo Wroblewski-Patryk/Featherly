@@ -1,6 +1,6 @@
 # TASK_BOARD
 
-Last updated: 2026-07-28
+Last updated: 2026-07-31
 
 ## READY
 
@@ -12,7 +12,28 @@ Last updated: 2026-07-28
 
 ## IN_PROGRESS
 
-- [ ] (none)
+- [ ] FEA-022 Build the owner portfolio through the Featherly CMS
+  - Status: IN_PROGRESS
+  - Owner: Frontend Builder
+  - Priority: P0
+  - Target: production homepage at `wroblewskipatryk.pl`
+  - Reference: owner-provided source archive with SHA-256
+    `15DD863BCF142A5FC6DB83C3C921CAEA1F31E41F66AE4FDE88629C56F69F111C`
+  - Constraint: use native Featherly CMS pages, blocks, media, templates, and
+    theme controls only; do not modify unrelated Coolify resources
+  - Current state: production page `#7` is published and selected as the `/pl/`
+    homepage; native templates `#10` and `#11`, Polish portfolio copy, and the
+    canonical hero media are live and persist across refresh
+  - Current implementation slice: fixes for canonical theme persistence,
+    image-block public rendering, navbar destinations, and server-derived page
+    locks are implemented locally with frontend build/lint/contract evidence
+  - Remaining product gap: responsive mobile navbar interaction and localized
+    structured navigation editing are recorded in the portfolio CMS gap register
+  - Next slice: deploy the verified Featherly fixes, re-author page `#7` into
+    semantic sections, and complete desktop/tablet/mobile parity without a
+    parallel frontend
+  - Done when: the owner-provided reference is recreated with desktop, tablet,
+    mobile, interaction, persistence, and visual-parity evidence
 
 ## BLOCKED
 

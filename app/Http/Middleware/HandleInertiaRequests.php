@@ -117,7 +117,7 @@ class HandleInertiaRequests extends Middleware
             $themeRadius = isset($settings['theme_radius']) ? (is_array($settings['theme_radius']) ? $settings['theme_radius'] : json_decode($settings['theme_radius'], true)) : [];
             $themeTypography = isset($settings['theme_typography']) ? (is_array($settings['theme_typography']) ? $settings['theme_typography'] : json_decode($settings['theme_typography'], true)) : [];
 
-            $themeConfig = [
+            $legacyThemeConfig = [
                 'globals' => [
                     'colors' => $themeColors,
                     'borderRadius' => $themeRadius,
@@ -139,6 +139,15 @@ class HandleInertiaRequests extends Middleware
                     'heading' => ['fontWeight' => '900', 'letterSpacing' => '-0.05em'],
                 ]
             ];
+
+            $storedThemeConfig = $settings['theme_config'] ?? null;
+            if (is_string($storedThemeConfig)) {
+                $storedThemeConfig = json_decode($storedThemeConfig, true);
+            }
+
+            $themeConfig = is_array($storedThemeConfig)
+                ? array_replace_recursive($legacyThemeConfig, $storedThemeConfig)
+                : $legacyThemeConfig;
 
 
 

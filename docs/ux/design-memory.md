@@ -34,10 +34,15 @@ of rediscovering them.
 
 ## Entries
 
-### YYYY-MM-DD - Add first approved design memory
-- Type:
-- Context:
-- Decision:
-- Reuse when:
-- Avoid when:
-- Evidence:
+### 2026-07-31 - CMS parity requires semantic sections
+- Type: reusable_pattern
+- Context: Recreating the owner portfolio in Featherly from an approved visual
+  source.
+- Decision: Build each visual chapter as a semantic container with shared
+  tokens, responsive spacing, a stable anchor ID, and source assets; do not
+  approximate the page with a flat sequence of oversized text blocks.
+- Reuse when: translating a designed landing page or portfolio into the block
+  builder.
+- Avoid when: the source is intentionally a simple document flow.
+- Evidence: FEA-022 desktop comparison in `docs/ux/evidence/fea-022` and the
+  portfolio CMS gap register.
