@@ -1,6 +1,6 @@
 # PROJECT_STATE
 
-Last updated: 2026-07-28
+Last updated: 2026-07-31
 
 ## Product Snapshot
 - Name: Featherly CMS
@@ -146,17 +146,18 @@ Last updated: 2026-07-28
 ## Current Focus
 - Main active objective: deploy the first Featherly-backed production portfolio
   instance to the owner-selected Coolify project for `wroblewskipatryk.pl`
- - Top blockers:
-  - production runtime smoke passes, but trusted HTTPS is blocked by stale
-    apex and `www` AAAA records pointing to `2001:41d0:301:5::27`; remove or
-    correct those DNS records so Traefik can complete ACME validation
+- Top blockers:
+  - production HTTPS and Coolify runtime are healthy on commit `ae80eaea`; the
+    current portfolio parity pass is waiting for the owner to restore the
+    expired Featherly admin browser session
   - Coolify production update enablement still needs staging/live rollout
     evidence; staging target `https://test.luckysparrow.ch` is reachable, but
     media serving needs deploy-time confirmation
   - legacy project category column removal needs target environment inventory
     evidence before any backfill or column-removal migration is approved
-  - local READY task queue is empty after residual docs normalization; refill
-    should come from `mvp-next-commits.md` or the scaling backlog
+  - FEA-022 visual authoring is the active P0 task; do not refill the queue
+    until the production CMS session is restored and that task is completed or
+    explicitly rescheduled
 - Success criteria for this phase:
   - small reversible execution slices
   - synchronized docs and task context

@@ -54,12 +54,12 @@ instance that faithfully represents the owner-provided reference URL.
 ## Autonomous Loop Evidence
 
 ### 1. Analyze Current State
-- Issues: production currently contains seeded CMS content rather than the
-  requested owner portfolio.
-- Gaps: canonical desktop/mobile reference capture from the owner-provided
-  source archive is required before editing.
-- Inconsistencies: FEA-021 still records the now-resolved TLS blocker and will
-  require a separate truth-sync closure.
+- Issues: production contains the complete portfolio copy and source media, but
+  its composition still differs materially from the reference.
+- Gaps: equal-viewport comparison confirms P1 hero, theme-token, section-layout,
+  and navigation-destination mismatches.
+- Inconsistencies: none in the deployment record; FEA-021 and the Coolify
+  contract now reflect the healthy trusted-TLS production runtime.
 - Architecture constraints: preserve localized public/admin routes, block
   content contracts, media references, and shared theme controls.
 
@@ -89,18 +89,22 @@ instance that faithfully represents the owner-provided reference URL.
   created and assigned to the page. General settings now select page `#7` as
   the homepage, so both `/pl/` and `/pl/portfolio` render the portfolio. No
   unrelated page, template, media, or Coolify resource was deleted.
+  On 2026-07-31 the reusable Featherly blockers were fixed and deployed as
+  commit `ae80eaea`: canonical theme persistence, empty theme-map validation,
+  public image rendering, structured navbar destinations, accessible mobile
+  navigation, and server-derived optimistic locks.
 
 ### 5. Verify and Test
 - Validation performed: public `/pl/` and `/pl/portfolio` refresh checks,
   desktop screenshots, native 375px editor preview, content persistence after
   reload, header/footer assignment, and root-routing verification.
 - Result: the localized portfolio, custom PW navigation, contact copy, footer,
-  and hero asset are live. Pixel-close parity is not yet achieved because the
-  native theme configurator does not persist color/font changes after refresh,
-  the native image block does not render its configured URL publicly, and the
-  native navbar exposes labels without destination fields. The hero therefore
-  uses the CMS background-image fill and the built-in text gradient as a
-  reversible native fallback while those Featherly defects remain open.
+  and hero asset are live. The previously confirmed persistence, image-render,
+  navigation-schema, mobile-menu, and optimistic-lock defects are fixed and
+  deployed. Pixel-close parity is not yet achieved: equal-viewport evidence
+  confirms P1 hero, token, and section-layout gaps. CMS re-authoring is paused
+  only because the production admin session expired and redirects to
+  `/pl/login`.
 
 ### 6. Self-Review
 - Simpler option considered: use the seeded page and replace its content rather
@@ -114,11 +118,11 @@ instance that faithfully represents the owner-provided reference URL.
 
 ### 7. Update Documentation and Knowledge
 - Docs updated: task contract and task board.
-- Context updated: production implementation and remaining native-CMS gaps are
-  recorded here; PROJECT_STATE remains unchanged because no architecture or
-  runtime contract changed.
-- Learning journal updated: not applicable unless a recurring CMS issue is
-  confirmed.
+- Context updated: production implementation, deployment evidence, current
+  authentication blocker, and remaining native-CMS gaps are synchronized in
+  the task board, project state, deployment contract, and gap register.
+- Learning journal updated: reusable theme, image, navbar, and optimistic-lock
+  findings are recorded.
 
 ## Acceptance Criteria
 - [ ] The production homepage matches the owner-provided reference structure,
@@ -150,11 +154,16 @@ re-authoring of the production portfolio.
 - Do not guess missing visual evidence.
 
 ## Validation Evidence
-- Tests: content-only production change; repository code checks not applicable.
-- Manual checks: `/pl/`, `/pl/portfolio`, page `#7`, template `#10`, template
-  `#11`, media upload persistence, homepage selection, and refresh persistence.
-- Screenshots/logs: browser evidence captured for the source reference, live
-  desktop root, hero, lower sections, and the native mobile preview.
+- Tests: 13/13 focused JavaScript contracts pass; focused theme and optimistic-
+  lock PHP tests pass; ESLint, Prettier, Vite production build, direct PHPStan,
+  and `git diff --check` pass. The full PHP suite remains non-green because the
+  existing translation-integrity scan reports one generated key; the local
+  environment also lacks its normal `.env`/SQLite setup.
+- Manual checks: Coolify deployment `ln9f8lap3d81yf9wbf0jugjo` is `Running` on
+  `ae80eaea`; `/pl/` renders the canonical image and portfolio copy without
+  browser console errors; admin currently redirects to `/pl/login`.
+- Screenshots/logs: equal-viewport reference, deployed implementation, and
+  combined comparison evidence are stored under `docs/ux/evidence/fea-022`.
 - High-risk checks: preserve unrelated production resources and content.
 - Coverage ledger updated: not applicable.
 
@@ -202,11 +211,11 @@ re-authoring of the production portfolio.
 - Architecture source reviewed: architecture source of truth, module block
   registry, builder design controls, and media picker contracts.
 - Fits approved architecture: yes.
-- Mismatch discovered: yes; theme config persistence, image-block public
-  rendering, navbar destinations, and reliable repeated optimistic-lock saves
-  need narrow Featherly implementation tasks before pixel-close parity.
-- Decision required from user: authorize the next Featherly development slice
-  if those native defects should be fixed before further visual polishing.
+- Mismatch discovered: yes; the confirmed reusable runtime defects were fixed,
+  while the CMS still needs stronger reusable semantic section/layout controls
+  for efficient source-faithful composition.
+- Decision required from user: none for the current slice; owner authentication
+  is required before CMS-only visual authoring can resume.
 
 ## UX/UI Evidence
 - Design source type: approved_snapshot

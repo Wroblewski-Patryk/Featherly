@@ -18,8 +18,8 @@ production target in `.codex/context/PROJECT_STATE.md`.
 - Production resources:
   - application: `dc1mn3hep62twm6ih582kblw`
   - PostgreSQL: `wvc2hjhrzfkekixfg389mwwo`
-  - verified revision: `5646ccd`
-  - latest successful deployment: `bkdd55plrx5tsmkairh55pxb`
+  - verified revision: `ae80eaea`
+  - latest successful deployment: `ln9f8lap3d81yf9wbf0jugjo`
 - Private services:
 
 ### 2026-07-28 Production Evidence
@@ -28,9 +28,8 @@ production target in `.codex/context/PROJECT_STATE.md`.
 - `/up`, `/pl`, `/pl/login`, database/cache/queue health, two queue workers,
   scheduler execution, and public storage before and after restart pass.
 - Coolify deployment history provides the rollback path.
-- Trusted TLS remains blocked outside Coolify by stale apex and `www` AAAA
-  records for `2001:41d0:301:5::27`; the A records correctly target
-  `141.227.149.67`.
+- Trusted TLS now passes for the production domain; the portfolio runtime and
+  media render through HTTPS without certificate bypass.
 
 ## Runtime Inventory
 

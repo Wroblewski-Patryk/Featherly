@@ -25,32 +25,22 @@ Last updated: 2026-07-31
     homepage; native templates `#10` and `#11`, Polish portfolio copy, and the
     canonical hero media are live and persist across refresh
   - Current implementation slice: fixes for canonical theme persistence,
-    image-block public rendering, navbar destinations, and server-derived page
-    locks are implemented locally with frontend build/lint/contract evidence
-  - Remaining product gap: responsive mobile navbar interaction and localized
-    structured navigation editing are recorded in the portfolio CMS gap register
-  - Next slice: deploy the verified Featherly fixes, re-author page `#7` into
-    semantic sections, and complete desktop/tablet/mobile parity without a
-    parallel frontend
+    image-block public rendering, responsive navbar destinations, and
+    server-derived page locks are deployed on production commit `ae80eaea`
+  - Verification: Coolify reports `Running`; `/pl/` renders the canonical image
+    and portfolio copy with no public console errors
+  - Current blocker: the Featherly admin session expired and page `#7` redirects
+    to `/pl/login`; visual re-authoring resumes after owner authentication
+  - Remaining product gap: the CMS lacks reusable semantic section/layout
+    composition controls needed for source-faithful authoring; all confirmed
+    limitations and their evidence are recorded in the portfolio CMS gap register
+  - Next slice: after owner authentication, re-author page `#7` into semantic
+    sections, configure the repaired theme/navigation contracts, and complete
+    desktop/tablet/mobile parity without a parallel frontend
   - Done when: the owner-provided reference is recreated with desktop, tablet,
     mobile, interaction, persistence, and visual-parity evidence
 
 ## BLOCKED
-
-- [ ] FEA-021 Deploy the first Featherly-backed portfolio production instance
-  - Status: BLOCKED
-  - Owner: Ops/Release
-  - Priority: P0
-  - Target: Coolify project `a14a7zgzt6r13wtqxe5c916y`, environment
-    `gz5uke25v3tpqcc0o47gyw2e`, domain `wroblewskipatryk.pl`
-  - Constraint: do not delete or modify unrelated Coolify resources
-  - Current state: application, PostgreSQL, migrations, seed data, secure admin,
-    persistent media, healthcheck, scheduler, workers, restart, and rollback
-    history are verified
-  - Blocker: stale apex and `www` AAAA DNS records point to
-    `2001:41d0:301:5::27`, preventing Let's Encrypt validation on this VPS
-  - Done when: the stale AAAA records are removed/corrected and trusted HTTPS
-    smoke passes without bypassing certificate verification
 
 - [ ] FEA-015 Implement archive/Docker/Git update drivers and Coolify rollout hardening
   - Status: BLOCKED
@@ -67,6 +57,19 @@ Last updated: 2026-07-31
     - deployment gate evidence is attached for the target environment
 
 ## DONE
+
+- [x] FEA-021 Deploy the first Featherly-backed portfolio production instance
+  - Status: DONE
+  - Owner: Ops/Release
+  - Priority: P0
+  - Target: Coolify project `a14a7zgzt6r13wtqxe5c916y`, environment
+    `gz5uke25v3tpqcc0o47gyw2e`, domain `wroblewskipatryk.pl`
+  - Constraint: do not delete or modify unrelated Coolify resources
+  - Current state: application, PostgreSQL, migrations, seed data, secure admin,
+    persistent media, healthcheck, scheduler, workers, restart, and rollback
+    history are verified
+  - Evidence: trusted `https://wroblewskipatryk.pl/pl/`, runtime and public
+    media smoke pass; Coolify reports `Running` on `ae80eaea`.
 
 - [x] FEA-020 Add Coolify post-deploy cache and migration maintenance
 - [x] FEA-019 Project category fallback backfill and removal plan
