@@ -36,8 +36,9 @@ instance that faithfully represents the owner-provided reference URL.
   settings, and navigation surfaces exposed through the admin UI.
 - Desktop, tablet, and mobile browser verification.
 - Task, context, and visual evidence documentation.
-- Portfolio content remains CMS-authored; reusable Featherly defects confirmed
-  to block this task may be fixed in PHP/Vue with tests and normal deployment.
+- Portfolio content remains CMS-authored. Reusable Featherly defects confirmed
+  to block this task are recorded only in the canonical gap register and are
+  not fixed as part of FEA-022.
 - No database-console, direct SQL, parallel frontend, or unrelated Coolify
   mutation.
 
@@ -93,6 +94,11 @@ instance that faithfully represents the owner-provided reference URL.
   commit `ae80eaea`: canonical theme persistence, empty theme-map validation,
   public image rendering, structured navbar destinations, accessible mobile
   navigation, and server-derived optimistic locks.
+  On 2026-08-08 CMS-only polish hid the duplicate in-content hero figure and
+  duplicate footer line, increased the major section heading scale and
+  line-height to match the reference hierarchy, and retained the native header
+  and footer templates. Every production change was made through the Featherly
+  editor and explicitly saved; no Featherly source code was changed.
 
 ### 5. Verify and Test
 - Validation performed: public `/pl/` and `/pl/portfolio` refresh checks,
@@ -103,7 +109,12 @@ instance that faithfully represents the owner-provided reference URL.
   navigation-schema, mobile-menu, and optimistic-lock defects are fixed and
   deployed. Pixel-close parity is not yet achieved: equal-viewport evidence
   confirms P1 hero, token, and section-layout gaps. The owner restored the
-  production admin session; CMS-only re-authoring resumed on 2026-08-08.
+  production admin session; CMS-only re-authoring resumed on 2026-08-08. A
+  fresh public reload confirmed the duplicate image/footer are `display:none`,
+  `#notes` renders at `84px/84px`, and the main section hierarchy now follows
+  the reference more closely. The same check confirmed a new CMS gap: heading
+  weight and tracking controls target the wrapper while the heading primitive
+  continues to compute `900` and `-0.05em`.
 
 ### 6. Self-Review
 - Simpler option considered: use the seeded page and replace its content rather
@@ -257,7 +268,10 @@ re-authoring of the production portfolio.
 - How tested: public route/refresh smoke, CMS persistence checks, desktop visual
   inspection, and native mobile preview.
 - What is incomplete: pixel-close color/layout polish and reliable responsive
-  parity; confirmed CMS limitations are linked from the single gap register.
+  parity; the black reference header, amber inline headline accent, light
+  display weights, responsive two-column composition, project ecosystem, and
+  contact form remain limited by the confirmed CMS contracts linked from the
+  single gap register.
 - Next steps: continue with working production CMS controls only, repeat the
   desktop/tablet/mobile comparison, and hand the gap register to agents working
   on Featherly itself.

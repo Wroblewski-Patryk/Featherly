@@ -1,6 +1,6 @@
 # TASK_BOARD
 
-Last updated: 2026-07-31
+Last updated: 2026-08-08
 
 ## READY
 
@@ -33,6 +33,9 @@ Last updated: 2026-07-31
     session; page `#7` now has the canonical four-line hero rhythm, corrected
     background crop/repeat behavior, and dark/light chapter surfaces authored
     and published through Featherly only
+  - 2026-08-08 CMS-only polish: duplicate in-content hero media and footer copy
+    are hidden, major section scales/line-heights are closer to the reference,
+    and explicit save plus cold public reload confirmed persistence
   - Remaining product gaps: tracked exclusively in
     `docs/planning/featherly-portfolio-cms-gap-register.md` for separate CMS
     agents; FEA-022 must not patch Featherly
