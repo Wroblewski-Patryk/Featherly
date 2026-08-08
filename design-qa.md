@@ -13,6 +13,8 @@
 - The source asset, Titillium Web, Polish headline, deliberate four-line title
   rhythm, 760px hero surface, `cover`, centered crop, and `no-repeat` background
   are now saved through Featherly and visible publicly.
+- Introduction, notes/projects, principles, and contact copy now use the
+  source's dark/dark/paper/dark chapter rhythm through native block classes.
 - Navigation destinations resolve to `#start`, `#notes`, `#projects`, `#about`,
   and `#contact`.
 - The result is not yet source-faithful.
@@ -32,6 +34,8 @@
     yet been regrouped and its layout controls lack breakpoint variants.
 - [P2] Responsive and interaction parity has not been re-verified after the
   current CMS changes.
+- [P0] The sticky header is visually present but loses pointer hit-testing to
+  content after the first anchor jump, so subsequent navigation clicks fail.
 
 ## Blocker and handoff
 
@@ -46,6 +50,8 @@ Featherly; it continues with working production CMS controls only.
 - Repeat at tablet and mobile widths.
 - Verify theme values after cold reload, headline fill persistence, navigation,
   overflow, focus order, and public console errors.
+- Current public console error check: no errors observed after cold reload and
+  section navigation tests.
 - Resolve every P0–P2 finding before changing this result to passed.
 
 final result: blocked

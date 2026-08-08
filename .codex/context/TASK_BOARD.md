@@ -30,7 +30,9 @@ Last updated: 2026-07-31
   - Verification: Coolify reports `Running`; `/pl/` renders the canonical image
     and portfolio copy with no public console errors
   - Current state: the owner has restored the authenticated production admin
-    session; page `#7` is being re-authored through Featherly only
+    session; page `#7` now has the canonical four-line hero rhythm, corrected
+    background crop/repeat behavior, and dark/light chapter surfaces authored
+    and published through Featherly only
   - Remaining product gaps: tracked exclusively in
     `docs/planning/featherly-portfolio-cms-gap-register.md` for separate CMS
     agents; FEA-022 must not patch Featherly
