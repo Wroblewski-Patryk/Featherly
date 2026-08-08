@@ -6,13 +6,13 @@
             <div v-else></div>
 
             <div class="join bg-base-200 rounded-md">
-                <button @click="toggleLinkAll" class="btn btn-sm join-item min-h-0 h-8 w-10 border-none" :class="linkAll ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" :title="t('admin.builder.unit_link_all', 'Link All')">
+                <button type="button" @click="toggleLinkAll" class="btn btn-sm join-item min-h-0 h-8 w-10 border-none" :class="linkAll ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" :title="t('admin.builder.unit_link_all', 'Link All')">
                     <PhLinkSimple class="w-4 h-4" weight="bold" />
                 </button>
-                <button @click="toggleLinkY" class="btn btn-sm join-item min-h-0 h-8 w-10 border-none" :class="linkY ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" :title="t('admin.builder.unit_link_y', 'Link Top & Bottom')">
+                <button type="button" @click="toggleLinkY" class="btn btn-sm join-item min-h-0 h-8 w-10 border-none" :class="linkY ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" :title="t('admin.builder.unit_link_y', 'Link Top & Bottom')">
                     <PhArrowsVertical class="w-4 h-4" weight="bold" />
                 </button>
-                <button @click="toggleLinkX" class="btn btn-sm join-item min-h-0 h-8 w-10 border-none" :class="linkX ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" :title="t('admin.builder.unit_link_x', 'Link Left & Right')">
+                <button type="button" @click="toggleLinkX" class="btn btn-sm join-item min-h-0 h-8 w-10 border-none" :class="linkX ? 'btn-primary' : 'bg-transparent text-base-content/50 hover:bg-base-content/10'" :title="t('admin.builder.unit_link_x', 'Link Left & Right')">
                     <PhArrowsHorizontal class="w-4 h-4" weight="bold" />
                 </button>
             </div>

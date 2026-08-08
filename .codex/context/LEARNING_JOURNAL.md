@@ -48,3 +48,17 @@ Use this file to capture verified recurring pitfalls and execution guardrails.
   path, accessible output, and regression test in the same vertical slice.
 - Preferred pattern: test editor schema and runtime output together.
 - Avoid: shipping an editor-only capability as a completed CMS feature.
+
+- Date: 2026-08-08
+- Context: block-builder style controls rendered inside the page/template editor
+  form.
+- Symptom: fill-mode and linked-spacing buttons appeared clickable but submitted
+  the editor form, reloaded persisted state, and left the selected control
+  unchanged.
+- Root cause: reusable toolbar buttons omitted `type="button"`, so HTML treated
+  them as submit buttons inside the surrounding form.
+- Guardrail: every non-submit button in an editor form must declare
+  `type="button"` and have a source contract that rejects an implicit submit.
+- Preferred pattern: explicit button semantics in shared controls, followed by a
+  browser save/reload persistence smoke.
+- Avoid: relying on the browser's default `<button>` type inside any admin form.

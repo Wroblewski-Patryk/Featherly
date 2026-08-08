@@ -14,6 +14,14 @@ const pageEditor = fs.readFileSync(
     new URL('../../resources/js/Pages/Admin/Pages/Edit.vue', import.meta.url),
     'utf8',
 );
+const fillControl = fs.readFileSync(
+    new URL('../../resources/js/features/admin/theme/components/FillControl.vue', import.meta.url),
+    'utf8',
+);
+const linkedUnitInput = fs.readFileSync(
+    new URL('../../resources/js/features/admin/theme/components/LinkedUnitInput.vue', import.meta.url),
+    'utf8',
+);
 
 test('image block renders its persisted media URL with accessible alternative text', () => {
     assert.match(dynamicBlock, /block\.type === 'image'/);
@@ -33,4 +41,9 @@ test('navbar supports persisted destinations for brand, links, and action', () =
 test('page editor refreshes its lock from the server response', () => {
     assert.match(pageEditor, /response\?\.props\?\.page\?\.updated_at/);
     assert.doesNotMatch(pageEditor, /form\.optimistic_lock = new Date\(\)\.toISOString\(\)/);
+});
+
+test('style control buttons never submit the surrounding editor form', () => {
+    assert.doesNotMatch(fillControl, /<button(?![^>]*type="button")/);
+    assert.doesNotMatch(linkedUnitInput, /<button(?![^>]*type="button")/);
 });

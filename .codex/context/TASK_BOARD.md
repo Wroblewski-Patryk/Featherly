@@ -29,14 +29,14 @@ Last updated: 2026-07-31
     server-derived page locks are deployed on production commit `ae80eaea`
   - Verification: Coolify reports `Running`; `/pl/` renders the canonical image
     and portfolio copy with no public console errors
-  - Current blocker: the Featherly admin session expired and page `#7` redirects
-    to `/pl/login`; visual re-authoring resumes after owner authentication
+  - Current blocker: reusable fill-mode and linked-spacing buttons submitted
+    the editor form because they lacked explicit button semantics; the tested
+    fix is awaiting production deployment and browser persistence smoke
   - Remaining product gap: the CMS lacks reusable semantic section/layout
     composition controls needed for source-faithful authoring; all confirmed
     limitations and their evidence are recorded in the portfolio CMS gap register
-  - Next slice: after owner authentication, re-author page `#7` into semantic
-    sections, configure the repaired theme/navigation contracts, and complete
-    desktop/tablet/mobile parity without a parallel frontend
+  - Next slice: deploy the editor-control fix, resume CMS-only section styling,
+    and complete desktop/tablet/mobile parity without a parallel frontend
   - Done when: the owner-provided reference is recreated with desktop, tablet,
     mobile, interaction, persistence, and visual-parity evidence
 

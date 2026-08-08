@@ -147,9 +147,9 @@ Last updated: 2026-07-31
 - Main active objective: deploy the first Featherly-backed production portfolio
   instance to the owner-selected Coolify project for `wroblewskipatryk.pl`
 - Top blockers:
-  - production HTTPS and Coolify runtime are healthy on commit `ae80eaea`; the
-    current portfolio parity pass is waiting for the owner to restore the
-    expired Featherly admin browser session
+  - production HTTPS and Coolify runtime are healthy; FEA-022 is actively
+    closing a confirmed editor-form button semantics defect before the next
+    CMS-only portfolio styling pass
   - Coolify production update enablement still needs staging/live rollout
     evidence; staging target `https://test.luckysparrow.ch` is reachable, but
     media serving needs deploy-time confirmation

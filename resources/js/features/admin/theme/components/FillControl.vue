@@ -4,28 +4,28 @@
         <div class="flex items-center justify-between">
             <label class="label-text text-[10px] uppercase font-bold tracking-widest opacity-50">{{ label }}</label>
             <div class="join bg-base-200 rounded-md items-center">
-                <button 
+                <button type="button"
                     @click="setType('none')" 
                     class="btn btn-sm join-item min-h-0 h-8 w-10 border-none text-[10px]"
                     :class="type === 'none' ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"
                     :title="t('admin.builder.fill_none', 'None')">
                     <PhProhibit weight="bold" class="w-4 h-4" />
                 </button>
-                <button 
+                <button type="button"
                     @click="setType('color')" 
                     class="btn btn-sm join-item min-h-0 h-8 w-10 border-none text-[10px]"
                     :class="type === 'color' ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"
                     :title="t('admin.builder.fill_color', 'Solid Color')">
                     <PhPaintBucket weight="bold" class="w-4 h-4" />
                 </button>
-                <button 
+                <button type="button"
                     @click="setType('gradient')" 
                     class="btn btn-sm join-item min-h-0 h-8 w-10 border-none text-[10px]"
                     :class="type === 'gradient' ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"
                     :title="t('admin.builder.fill_gradient', 'Gradient')">
                     <PhSwatches weight="bold" class="w-4 h-4" />
                 </button>
-                <button 
+                <button type="button"
                     @click="setType('image')" 
                     class="btn btn-sm join-item min-h-0 h-8 w-10 border-none text-[10px]"
                     :class="type === 'image' ? 'btn-primary' : 'bg-transparent opacity-50 text-base-content/70 hover:opacity-100 hover:bg-base-content/10'"
@@ -80,16 +80,16 @@
                 <div v-if="internalImage" class="relative group/img overflow-hidden rounded-xl aspect-video w-full">
                     <img :src="resolveMediaSrc(internalImage)" class="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-110" />
                     <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[2px]">
-                        <button @click="openMediaLibrary" class="btn btn-circle btn-sm btn-primary shadow-lg" :title="t('admin.builder.fill_image_change', 'Change Image')">
+                        <button type="button" @click="openMediaLibrary" class="btn btn-circle btn-sm btn-primary shadow-lg" :title="t('admin.builder.fill_image_change', 'Change Image')">
                             <PhImage weight="bold" class="w-3 h-3" />
                         </button>
-                        <button @click="internalImage = ''; emitUpdate()" class="btn btn-circle btn-sm btn-error shadow-lg" :title="t('admin.builder.fill_image_remove', 'Remove Image')">
+                        <button type="button" @click="internalImage = ''; emitUpdate()" class="btn btn-circle btn-sm btn-error shadow-lg" :title="t('admin.builder.fill_image_remove', 'Remove Image')">
                             <PhTrash weight="bold" class="w-3 h-3" />
                         </button>
                     </div>
                 </div>
                 
-                <button v-else @click="openMediaLibrary" class="btn btn-sm btn-outline border-dashed border-white/10 hover:border-primary/50 text-[10px] uppercase tracking-widest gap-2 w-full h-24 flex flex-col items-center justify-center bg-base-200/50">
+                <button type="button" v-else @click="openMediaLibrary" class="btn btn-sm btn-outline border-dashed border-white/10 hover:border-primary/50 text-[10px] uppercase tracking-widest gap-2 w-full h-24 flex flex-col items-center justify-center bg-base-200/50">
                     <PhImage weight="bold" class="w-6 h-6 opacity-30" /> 
                     <span>{{ t('admin.builder.fill_image_browse', 'Browse Media') }}</span>
                 </button>
@@ -237,4 +237,3 @@ const openMediaLibrary = async () => {
     }
 };
 </script>
-
