@@ -3,77 +3,49 @@
 ## Comparison target
 
 - Source visual truth: `docs/ux/evidence/fea-022/reference-hero.png`
-- Implementation: `docs/ux/evidence/fea-022/production-after-deploy-hero.png`
-- Combined evidence: `docs/ux/evidence/fea-022/comparison-after-deploy-hero.jpg`
-- Viewport: 1440 × 900 CSS px, device scale factor 1
-- Source and implementation pixels: 1425 × 891 each after browser chrome
-  normalization
-- State: Polish homepage, top of page, production commit `ae80eaea`
+- Production route: `https://wroblewskipatryk.pl/pl/`
+- State: Polish homepage, top of page, page `#7`, CMS-only authoring
+- Current evidence: public cold reload plus DOM/computed-style inspection on
+  2026-08-08; a new equal-viewport comparison remains required.
+
+## Current result
+
+- The source asset, Titillium Web, Polish headline, deliberate four-line title
+  rhythm, 760px hero surface, `cover`, centered crop, and `no-repeat` background
+  are now saved through Featherly and visible publicly.
+- Navigation destinations resolve to `#start`, `#notes`, `#projects`, `#about`,
+  and `#contact`.
+- The result is not yet source-faithful.
 
 ## Findings
 
-- [P1] Hero composition is not source-faithful.
-  - Evidence: the source uses a left-aligned, narrow editorial headline with
-    amber emphasis, body copy and two CTAs; production centers one dark
-    oversized line over a brighter, differently cropped image and moves body
-    copy below it.
-  - Impact: the primary identity and hierarchy are materially different.
-  - Fix: rebuild the hero as a semantic section container, apply the canonical
-    composite crop, Titillium hierarchy, amber emphasis, body column and CTA
-    row through Featherly controls.
-- [P1] Global palette and typography are still default Featherly.
-  - Evidence: production header/content uses white surfaces, black heavy type
-    and a purple CTA; the source uses ink, paper, amber and restrained light
-    display typography.
-  - Impact: every section reads as an unstyled CMS document.
-  - Fix: save the reference tokens and Titillium Web/Roboto through the repaired
-    theme configurator, then verify persistence after reload.
-- [P1] Page structure is a flat document flow.
-  - Evidence: production places the next chapter directly under the hero with
-    no section surface, grid, measured spacing or visual rhythm.
-  - Impact: the source's chapter-based portfolio composition is absent.
-  - Fix: group the 30 content blocks into semantic containers with responsive
-    spacing, surfaces and stable IDs.
-- [P2] Navigation destinations remain legacy placeholders.
-  - Evidence: Start, Notatki, Projekty and O mnie currently resolve to `#`.
-  - Impact: the primary journey is not functional.
-  - Fix: edit template `#10` using the deployed structured destination fields
-    and connect it to section IDs.
+- [P1] Hero composition still differs materially.
+  - Source: restrained left editorial column, paper and amber emphasis, body
+    copy, two CTAs, and the subject on the right.
+  - Production: the image and four-line heading occupy the hero, but body copy
+    and CTAs are outside the surface and amber emphasis is unavailable.
+- [P1] Public palette does not use the values saved in Theme.
+  - Production still computes DaisyUI `light` defaults, leaving a white header
+    and purple CTA instead of ink, paper, amber, and cyan.
+- [P1] The remaining page is still a flat sequence of blocks.
+  - Featherly has a nestable Container, but the existing page content has not
+    yet been regrouped and its layout controls lack breakpoint variants.
+- [P2] Responsive and interaction parity has not been re-verified after the
+  current CMS changes.
 
-## Open questions and blocker
+## Blocker and handoff
 
-- The production CMS session expired after deployment and `/pl/admin/pages/7/edit`
-  redirects to `/pl/login`. The owner must authenticate in the in-app browser;
-  credentials for Coolify are not assumed to be Featherly credentials and no
-  terminal or database bypass will be used.
+The exact reusable Featherly limitations, evidence, impact, and completion
+contracts are maintained only in
+`docs/planning/featherly-portfolio-cms-gap-register.md`. FEA-022 must not patch
+Featherly; it continues with working production CMS controls only.
 
-## Required fidelity surfaces
+## Required next QA
 
-- Fonts and typography: blocked by CMS authentication; current production is a
-  P1 mismatch.
-- Spacing and layout rhythm: blocked by CMS authentication; current production
-  is a P1 mismatch.
-- Colors and visual tokens: repaired runtime is deployed, authoring remains
-  blocked by CMS authentication.
-- Image quality and asset fidelity: canonical source asset renders; crop and
-  composition remain P1 mismatches.
-- Copy and content: Polish copy is present and readable; section composition
-  remains incomplete.
-
-## Comparison history
-
-- Pass 1: confirmed the deployed renderer now exposes the source image and all
-  portfolio copy without console errors. P1 hero, token and section-layout
-  differences remain. No visual fix can be applied until the CMS session is
-  restored.
-
-## Implementation checklist
-
-- Authenticate in Featherly admin.
-- Save and reload the canonical theme.
-- Rebuild page `#7` as semantic section containers.
-- Configure template `#10` destinations and mobile navigation.
-- Run desktop/mobile interaction and persistence smoke.
-- Repeat equal-viewport comparison until no P0-P2 findings remain.
+- Capture source and production at the same desktop viewport and state.
+- Repeat at tablet and mobile widths.
+- Verify theme values after cold reload, headline fill persistence, navigation,
+  overflow, focus order, and public console errors.
+- Resolve every P0–P2 finding before changing this result to passed.
 
 final result: blocked

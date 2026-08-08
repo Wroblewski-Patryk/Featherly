@@ -148,16 +148,16 @@ Last updated: 2026-07-31
   instance to the owner-selected Coolify project for `wroblewskipatryk.pl`
 - Top blockers:
   - production HTTPS and Coolify runtime are healthy on commit `ae80eaea`; the
-    current portfolio parity pass is waiting for the owner to restore the
-    expired Featherly admin browser session
+    owner restored the Featherly admin browser session and CMS-only portfolio
+    authoring has resumed; confirmed CMS limitations are tracked in the single
+    portfolio gap register for separate agents
   - Coolify production update enablement still needs staging/live rollout
     evidence; staging target `https://test.luckysparrow.ch` is reachable, but
     media serving needs deploy-time confirmation
   - legacy project category column removal needs target environment inventory
     evidence before any backfill or column-removal migration is approved
   - FEA-022 visual authoring is the active P0 task; do not refill the queue
-    until the production CMS session is restored and that task is completed or
-    explicitly rescheduled
+    until that task is completed or explicitly rescheduled
 - Success criteria for this phase:
   - small reversible execution slices
   - synchronized docs and task context

@@ -102,9 +102,8 @@ instance that faithfully represents the owner-provided reference URL.
   and hero asset are live. The previously confirmed persistence, image-render,
   navigation-schema, mobile-menu, and optimistic-lock defects are fixed and
   deployed. Pixel-close parity is not yet achieved: equal-viewport evidence
-  confirms P1 hero, token, and section-layout gaps. CMS re-authoring is paused
-  only because the production admin session expired and redirects to
-  `/pl/login`.
+  confirms P1 hero, token, and section-layout gaps. The owner restored the
+  production admin session; CMS-only re-authoring resumed on 2026-08-08.
 
 ### 6. Self-Review
 - Simpler option considered: use the seeded page and replace its content rather
@@ -118,9 +117,9 @@ instance that faithfully represents the owner-provided reference URL.
 
 ### 7. Update Documentation and Knowledge
 - Docs updated: task contract and task board.
-- Context updated: production implementation, deployment evidence, current
-  authentication blocker, and remaining native-CMS gaps are synchronized in
-  the task board, project state, deployment contract, and gap register.
+- Context updated: production implementation, deployment evidence, and the
+  single native-CMS gap handoff are synchronized in the task board, project
+  state, deployment contract, and gap register.
 - Learning journal updated: reusable theme, image, navbar, and optimistic-lock
   findings are recorded.
 
@@ -211,11 +210,10 @@ re-authoring of the production portfolio.
 - Architecture source reviewed: architecture source of truth, module block
   registry, builder design controls, and media picker contracts.
 - Fits approved architecture: yes.
-- Mismatch discovered: yes; the confirmed reusable runtime defects were fixed,
-  while the CMS still needs stronger reusable semantic section/layout controls
-  for efficient source-faithful composition.
-- Decision required from user: none for the current slice; owner authentication
-  is required before CMS-only visual authoring can resume.
+- Mismatch discovered: yes; confirmed production limitations are recorded only
+  in `docs/planning/featherly-portfolio-cms-gap-register.md` for separate CMS
+  agents and are not being implemented by FEA-022.
+- Decision required from user: none for the current CMS-only slice.
 
 ## UX/UI Evidence
 - Design source type: approved_snapshot
@@ -258,10 +256,10 @@ re-authoring of the production portfolio.
   templates `#10` and `#11`, the homepage setting, and owner-provided media.
 - How tested: public route/refresh smoke, CMS persistence checks, desktop visual
   inspection, and native mobile preview.
-- What is incomplete: pixel-close color/layout polish, functional navbar
-  destinations, reliable mobile parity, and the CMS defects listed above.
-- Next steps: implement and verify the smallest native Featherly fixes for theme
-  persistence, image rendering, navbar destinations, and optimistic locking;
-  then complete the desktop/tablet/mobile parity pass.
+- What is incomplete: pixel-close color/layout polish and reliable responsive
+  parity; confirmed CMS limitations are linked from the single gap register.
+- Next steps: continue with working production CMS controls only, repeat the
+  desktop/tablet/mobile comparison, and hand the gap register to agents working
+  on Featherly itself.
 - Decisions made: build through Featherly only; no code or direct DB content
   manipulation.

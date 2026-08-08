@@ -1,6 +1,6 @@
 # Featherly Portfolio CMS Gap Register
 
-Date: 2026-07-31
+Date: 2026-08-08
 
 Source task: FEA-022
 
@@ -12,6 +12,11 @@ Reference: owner-provided portfolio source archive, SHA-256
 This register separates portfolio content work from reusable Featherly product
 gaps. A row is recorded only when code inspection, a reproducible CMS action,
 or browser evidence confirms the behavior.
+
+This file is the single handoff for agents who develop Featherly itself.
+FEA-022 must not implement the open rows below: portfolio work may only use the
+capabilities already exposed by the production CMS. Do not copy these gaps into
+parallel implementation notes; link to this register instead.
 
 ## Resolved In The Current Slice
 
@@ -27,19 +32,21 @@ or browser evidence confirms the behavior.
 
 | Priority | Contract | Evidence | Product impact | Required completion contract |
 | --- | --- | --- | --- | --- |
-| P1 | Semantic section/layout composition | Equal-viewport QA shows the page as a flat block flow; the builder exposes individual content blocks but no reusable section container contract for grouped grid, surface, spacing, and stable-anchor behavior. | Source-faithful responsive pages require fragile per-block styling and cannot express the reference's chapter hierarchy cleanly through the CMS. | Add one shared, nestable section/container block with responsive width, grid/stack, spacing, surface, alignment, and HTML ID controls; preserve localized content and render identical structure in editor and public runtime. |
+| P0 | Editor style-control persistence | On production page `#7`, selecting solid/gradient/image fill or changing linked-spacing mode immediately submits the surrounding page form; the selected mode does not remain active. Direct edits to both gradient color fields followed by save/reload also return to `#000000ff` and `#ffffffff`. Browser console shows no application error. Code inspection confirms the mode/link buttons in `FillControl.vue` and `LinkedUnitInput.vue` omit explicit non-submit semantics. | Editors cannot reliably use native background/text fill controls or independently tune spacing, blocking the paper/amber headline and asymmetric hero geometry required by the reference. | Make every editor-only action inside a form explicitly non-submit, verify that color-field events update the same model contract, add interaction tests for mode/color/link changes without form submission, then verify save/reload persistence on a real page. |
+| P0 | Public theme color application | The production theme editor saves the requested palette and retains it after admin reload, but `/pl/` still computes DaisyUI `light` defaults: `--color-primary: oklch(45% .24 277.023)` and `--color-base-100: oklch(100% 0 0)`. The saved font does reach public runtime (`--font-sans: 'Titillium Web'`). | The header remains white, the CTA remains purple, and global ink/paper/amber/cyan styling cannot be authored through the theme UI even though the administrator receives a successful save state. | Map the canonical saved color configuration to public CSS variables/theme selection, cover admin-save to public-render integration for every palette token, and verify values after a cold public reload. |
+| P1 | Responsive container layout | Featherly already has a nestable `container` block, drag-and-drop children, HTML tag, stable ID, boxed mode, flex/grid layout, spacing, and fill controls. However, `layoutType`, `flexConfig.direction`, and `gridConfig.cols` are single values with no breakpoint variants; public rendering applies the same row/column count at every viewport. | A two-column desktop hero or project row cannot natively collapse to one column on mobile while preserving the same CMS-authored structure. | Add mobile/tablet/desktop variants for container direction, column count, gap, alignment, and width; editor preview and public runtime must resolve the same breakpoint contract and preserve legacy single-value content. |
 | P1 | Theme source ownership | Default theme structures still exist in both `ThemeController` and shared Inertia composition. | Future token additions can drift between admin and public runtime. | Extract one canonical theme-default/normalization service and cover old-setting migration plus public/admin parity. |
 | P2 | Localized structured navigation editing | The new destination model supports runtime localized labels, but `NavigationSettings` currently edits one plain label value rather than using the shared locale-aware text control. | A multilingual site cannot author each navbar label with the same explicit locale workflow as headings and paragraphs. | Reuse the shared localized input primitive for `links[].label`, brand title, and action label without changing the `{ label, href }` runtime schema. |
 | P2 | Design-token validation | Theme globals accept broad arrays without validating individual colors, fonts, radii, or advanced CSS token values. | Invalid values can be stored and silently ignored by the browser. | Add nested validation, normalized defaults, field-local errors, and persistence tests for each theme tab. |
 
-## Portfolio-Specific Work Remaining After CMS Deployment
+## Portfolio Work That Remains In FEA-022
 
-- Re-author page `#7` into semantic section containers rather than a flat stack
-  of headings and paragraphs.
-- Apply the canonical ink/paper/amber/cyan palette and Titillium Web/Roboto
-  typography through the repaired theme configurator.
-- Attach stable HTML IDs to the notes, projects, about, and contact sections,
-  then set the new navbar destinations.
+- Continue authoring page `#7` only through the production Featherly UI, using
+  the existing container and working style controls where they are sufficient.
+- Keep the canonical ink/paper/amber/cyan palette, Titillium Web typography,
+  stable section IDs, and navbar destinations already saved through the CMS.
+- Do not patch Featherly while executing this portfolio task. New confirmed CMS
+  limitations belong in the open-gap table above for a separate agent.
 - Complete equal-viewport desktop and mobile visual comparisons against the
   source implementation and fix all P0-P2 differences.
 - Verify repeated save, reload persistence, image rendering, keyboard
