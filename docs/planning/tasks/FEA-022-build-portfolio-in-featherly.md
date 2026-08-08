@@ -93,12 +93,6 @@ instance that faithfully represents the owner-provided reference URL.
   commit `ae80eaea`: canonical theme persistence, empty theme-map validation,
   public image rendering, structured navbar destinations, accessible mobile
   navigation, and server-derived optimistic locks.
-  On 2026-08-08 the authenticated CMS pass saved the source palette, Titillium
-  Web, structured navbar anchors, semantic section IDs, and revised hero
-  metrics. Browser evidence then reproduced an editor-wide implicit-submit
-  defect in fill-mode and linked-spacing tool buttons. The shared controls now
-  declare explicit non-submit semantics and the contract test prevents a
-  regression.
 
 ### 5. Verify and Test
 - Validation performed: public `/pl/` and `/pl/portfolio` refresh checks,

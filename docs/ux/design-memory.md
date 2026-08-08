@@ -46,15 +46,3 @@ of rediscovering them.
 - Avoid when: the source is intentionally a simple document flow.
 - Evidence: FEA-022 desktop comparison in `docs/ux/evidence/fea-022` and the
   portfolio CMS gap register.
-
-### 2026-08-08 - Editor tool buttons must not submit content forms
-- Type: ux_learning
-- Context: Interactive fill and spacing controls in the Featherly block-builder
-  inspector.
-- Decision: Give every tool, toggle, mode, alignment, and link button explicit
-  `type="button"`; reserve submit behavior for the named save action only.
-- Reuse when: adding any reusable control inside page, template, theme, form, or
-  content editor forms.
-- Avoid when: the control is intentionally the form's primary submit action.
-- Evidence: reproducible FEA-022 production behavior plus the
-  `portfolioCmsContracts` regression test.
