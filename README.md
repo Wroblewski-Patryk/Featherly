@@ -3,6 +3,11 @@
 Featherly is a custom CMS built with Laravel 12, Inertia, and Vue 3.  
 It focuses on block-based content editing, multilingual content, and a custom admin panel.
 
+**Status (2026-11-18):** the CMS is unfinished and is not the runtime of
+`www.wroblewskipatryk.pl`. The public website runs from a separate OpenAI
+Sites source repository. Older portfolio deployment records in this Git
+history describe previous work, not the current website.
+
 ## Local Development
 
 Use one of these options:

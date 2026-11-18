@@ -1,6 +1,6 @@
 # TASK_BOARD
 
-Last updated: 2026-08-08
+Last updated: 2026-11-18
 
 ## READY
 
@@ -12,38 +12,7 @@ Last updated: 2026-08-08
 
 ## IN_PROGRESS
 
-- [ ] FEA-022 Build the owner portfolio through the Featherly CMS
-  - Status: IN_PROGRESS
-  - Owner: Frontend Builder
-  - Priority: P0
-  - Target: production homepage at `wroblewskipatryk.pl`
-  - Reference: owner-provided source archive with SHA-256
-    `15DD863BCF142A5FC6DB83C3C921CAEA1F31E41F66AE4FDE88629C56F69F111C`
-  - Constraint: use native Featherly CMS pages, blocks, media, templates, and
-    theme controls only; do not modify unrelated Coolify resources
-  - Current state: production page `#7` is published and selected as the `/pl/`
-    homepage; native templates `#10` and `#11`, Polish portfolio copy, and the
-    canonical hero media are live and persist across refresh
-  - Current implementation slice: fixes for canonical theme persistence,
-    image-block public rendering, responsive navbar destinations, and
-    server-derived page locks are deployed on production commit `ae80eaea`
-  - Verification: Coolify reports `Running`; `/pl/` renders the canonical image
-    and portfolio copy with no public console errors
-  - Current state: the owner has restored the authenticated production admin
-    session; page `#7` now has the canonical four-line hero rhythm, corrected
-    background crop/repeat behavior, and dark/light chapter surfaces authored
-    and published through Featherly only
-  - 2026-08-08 CMS-only polish: duplicate in-content hero media and footer copy
-    are hidden, major section scales/line-heights are closer to the reference,
-    and explicit save plus cold public reload confirmed persistence
-  - Remaining product gaps: tracked exclusively in
-    `docs/planning/featherly-portfolio-cms-gap-register.md` for separate CMS
-    agents; FEA-022 must not patch Featherly
-  - Next slice: use the existing container and working native controls to close
-    as much desktop/tablet/mobile parity as the production CMS supports, then
-    attach equal-viewport evidence and hand off any confirmed CMS limitation
-  - Done when: the owner-provided reference is recreated with desktop, tablet,
-    mobile, interaction, persistence, and visual-parity evidence
+- [ ] (none; owner portfolio work is in the separate Sites repository)
 
 ## BLOCKED
 
@@ -62,19 +31,6 @@ Last updated: 2026-08-08
     - deployment gate evidence is attached for the target environment
 
 ## DONE
-
-- [x] FEA-021 Deploy the first Featherly-backed portfolio production instance
-  - Status: DONE
-  - Owner: Ops/Release
-  - Priority: P0
-  - Target: Coolify project `a14a7zgzt6r13wtqxe5c916y`, environment
-    `gz5uke25v3tpqcc0o47gyw2e`, domain `wroblewskipatryk.pl`
-  - Constraint: do not delete or modify unrelated Coolify resources
-  - Current state: application, PostgreSQL, migrations, seed data, secure admin,
-    persistent media, healthcheck, scheduler, workers, restart, and rollback
-    history are verified
-  - Evidence: trusted `https://wroblewskipatryk.pl/pl/`, runtime and public
-    media smoke pass; Coolify reports `Running` on `ae80eaea`.
 
 - [x] FEA-020 Add Coolify post-deploy cache and migration maintenance
 - [x] FEA-019 Project category fallback backfill and removal plan

@@ -1,5 +1,7 @@
 # Featherly Portfolio CMS Gap Register
 
+> Historical CMS gap inventory from the retired portfolio experiment. Preserve the reusable Featherly findings, but do not use this as the current website backlog.
+
 Date: 2026-08-08
 
 Source task: FEA-022

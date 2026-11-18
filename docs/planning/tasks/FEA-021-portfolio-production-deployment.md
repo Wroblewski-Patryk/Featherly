@@ -1,5 +1,7 @@
 # Task
 
+> Retired historical rollout record. The public website now runs on OpenAI Sites from a separate repository; the target and status below are not current.
+
 ## Header
 - ID: FEA-021
 - Title: Deploy the first Featherly-backed portfolio production instance

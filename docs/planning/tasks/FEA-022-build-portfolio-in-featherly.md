@@ -1,5 +1,7 @@
 # Task
 
+> Retired historical portfolio task. The public website now runs on OpenAI Sites from a separate repository; this task is not active.
+
 ## Header
 - ID: FEA-022
 - Title: Build the owner portfolio through the Featherly CMS

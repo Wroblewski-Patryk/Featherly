@@ -1,5 +1,14 @@
 # AGENTS.md - Featherly CMS
 
+## Repository Boundary
+
+This repository contains the unfinished Featherly CMS. The production website
+at `www.wroblewskipatryk.pl` runs from a separate OpenAI Sites repository.
+Do not route website work, site documentation, or Sites deployment commands
+through this CMS repository. Retired `FEA-021` and `FEA-022` portfolio rollout
+records are historical Git material, not active tasks or proof of the current
+website runtime. No CMS production target is selected here.
+
 ## Purpose
 
 This repository follows a project-specific multi-agent workflow so delivery can

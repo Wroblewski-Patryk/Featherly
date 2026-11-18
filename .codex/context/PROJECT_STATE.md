@@ -1,6 +1,14 @@
 # PROJECT_STATE
 
-Last updated: 2026-07-31
+Last updated: 2026-11-18
+
+## Current Boundary
+- Featherly remains an unfinished CMS in its own repository.
+- `www.wroblewskipatryk.pl` runs on OpenAI Sites from a separate source
+  repository; this CMS is not its production runtime.
+- No current CMS production target or portfolio cutover is selected. Older
+  deployment evidence below is historical and must not be treated as current
+  website status.
 
 ## Product Snapshot
 - Name: Featherly CMS
@@ -144,20 +152,13 @@ Last updated: 2026-07-31
 - Local dev runtime: `composer run dev`
 
 ## Current Focus
-- Main active objective: deploy the first Featherly-backed production portfolio
-  instance to the owner-selected Coolify project for `wroblewskipatryk.pl`
+- Main objective: continue CMS stabilization as a separate product when its
+  next scope is selected. This repository has no active public-site task.
 - Top blockers:
-  - production HTTPS and Coolify runtime are healthy on commit `ae80eaea`; the
-    owner restored the Featherly admin browser session and CMS-only portfolio
-    authoring has resumed; confirmed CMS limitations are tracked in the single
-    portfolio gap register for separate agents
-  - Coolify production update enablement still needs staging/live rollout
-    evidence; staging target `https://test.luckysparrow.ch` is reachable, but
-    media serving needs deploy-time confirmation
+  - a current CMS release target and acceptance scope need a separate decision
+  - Coolify update enablement still needs target-environment rollout evidence
   - legacy project category column removal needs target environment inventory
     evidence before any backfill or column-removal migration is approved
-  - FEA-022 visual authoring is the active P0 task; do not refill the queue
-    until that task is completed or explicitly rescheduled
 - Success criteria for this phase:
   - small reversible execution slices
   - synchronized docs and task context

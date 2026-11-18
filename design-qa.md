@@ -1,5 +1,7 @@
 # Design QA — FEA-022 portfolio in Featherly
 
+> Historical FEA-022 evidence. The current public website runs on OpenAI Sites; this comparison does not describe its runtime or current appearance.
+
 ## Comparison target
 
 - Source visual truth: `docs/ux/evidence/fea-022/reference-hero.png`

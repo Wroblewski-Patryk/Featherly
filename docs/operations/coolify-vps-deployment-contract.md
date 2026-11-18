@@ -4,32 +4,22 @@ Featherly uses this file to make the deployment target explicit. Coolify on a
 VPS is the default contract shape until the project records a different
 production target in `.codex/context/PROJECT_STATE.md`.
 
+No current production target is selected for this unfinished CMS. The staging
+URL below is a historical environment reference and requires fresh verification
+before operational use. The public website is deployed separately on OpenAI
+Sites.
+
 ## Deployment Target
 
 - VPS provider:
 - Coolify project or environment:
   - staging: existing target behind `https://test.luckysparrow.ch`
-  - production: project `a14a7zgzt6r13wtqxe5c916y`, environment
-    `gz5uke25v3tpqcc0o47gyw2e`
+  - production: not selected
 - Public domains:
   - staging: `https://test.luckysparrow.ch`
-  - production: `https://wroblewskipatryk.pl` and
-    `https://www.wroblewskipatryk.pl`
-- Production resources:
-  - application: `dc1mn3hep62twm6ih582kblw`
-  - PostgreSQL: `wvc2hjhrzfkekixfg389mwwo`
-  - verified revision: `ae80eaea`
-  - latest successful deployment: `ln9f8lap3d81yf9wbf0jugjo`
+  - production: not assigned
+- Production resources: not selected
 - Private services:
-
-### 2026-07-28 Production Evidence
-
-- Migrations and seeders completed on PostgreSQL.
-- `/up`, `/pl`, `/pl/login`, database/cache/queue health, two queue workers,
-  scheduler execution, and public storage before and after restart pass.
-- Coolify deployment history provides the rollback path.
-- Trusted TLS now passes for the production domain; the portfolio runtime and
-  media render through HTTPS without certificate bypass.
 
 ## Runtime Inventory
 
